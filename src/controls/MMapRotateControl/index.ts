@@ -54,7 +54,7 @@ export class MMapRotateControl extends mappable.MMapComplexEntity<MMapRotateCont
     }
 }
 
-const ROTATE_CONTROL_CLASS = 'mappable--rotate';
+const ROTATE_CONTROL_CLASS = 'mappable--rotate-control';
 
 export class InternalRotateControl extends mappable.MMapComplexEntity<MMapRotateControlProps, DefaultProps> {
     private _listener!: MMapListener;

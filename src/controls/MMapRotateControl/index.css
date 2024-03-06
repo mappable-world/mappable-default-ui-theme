@@ -1,4 +1,4 @@
-.mappable--rotate {
+.mappable--rotate-control {
     position: relative;
 
     display: flex;
@@ -23,7 +23,7 @@
     box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.2);
 }
 
-.mappable--rotate:hover {
+.mappable--rotate-control:hover {
     color: #050d33;
     background-image: url('../assets/mappable-compass_hover.svg?inline');
 
