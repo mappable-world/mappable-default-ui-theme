@@ -127,7 +127,7 @@ class InternalTiltControl extends mappable.MMapComplexEntity<MMapTiltControlProp
         }
         const {duration, easing} = this._props;
         const targetTiltDeg = toggleTilt(radToDeg(this.root.tilt), MIN_TILT_DEG, MAX_TILT_DEG);
-        this.root.update({camera: {tilt: degToRad(targetTiltDeg), duration, easing}});
+        this.root.setCamera({tilt: degToRad(targetTiltDeg), duration, easing});
     };
 
     private _onTiltStart = (event: MouseEvent) => {
@@ -167,7 +167,7 @@ class InternalTiltControl extends mappable.MMapComplexEntity<MMapTiltControlProp
             this._tiltIn?.classList.toggle(TILT_INDICATOR_ACTIVE_CLASS, tiltDiff > 0);
         }
 
-        this.root.update({camera: {tilt: currentTilt}});
+        this.root.setCamera({tilt: currentTilt});
         this._prevTilt = currentTilt;
     };
 

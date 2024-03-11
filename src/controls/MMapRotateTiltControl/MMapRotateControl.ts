@@ -61,7 +61,7 @@ export class MMapRotateControl extends mappable.MMapGroupEntity<MMapRotateTiltCo
         }
         const {duration, easing} = this._props;
         let targetAzimuth = toggleRotate(this.root.azimuth);
-        this.root.update({camera: {azimuth: targetAzimuth, duration, easing}});
+        this.root.setCamera({azimuth: targetAzimuth, duration, easing});
     };
 
     private _onRotateStart = (event: MouseEvent) => {
@@ -94,7 +94,7 @@ export class MMapRotateControl extends mappable.MMapGroupEntity<MMapRotateTiltCo
             y: event.pageY
         });
         this._isClick = false;
-        this.root?.update({camera: {azimuth: this._startAzimuth + deltaAzimuth}});
+        this.root?.setCamera({azimuth: this._startAzimuth + deltaAzimuth});
     };
 
     private _onRotateEnd = () => {

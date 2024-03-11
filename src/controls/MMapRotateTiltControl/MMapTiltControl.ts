@@ -58,7 +58,7 @@ export class MMapTiltControl extends mappable.MMapComplexEntity<MMapRotateTiltCo
         }
         const {duration, easing} = this._props;
         const targetTiltDeg = toggleTilt(radToDeg(this.root.tilt), MIN_TILT_DEG, MAX_TILT_DEG);
-        this.root.update({camera: {tilt: degToRad(targetTiltDeg), duration, easing}});
+        this.root.setCamera({tilt: degToRad(targetTiltDeg), duration, easing});
     };
 
     private _onTiltStart = (event: MouseEvent) => {
@@ -87,7 +87,7 @@ export class MMapTiltControl extends mappable.MMapComplexEntity<MMapRotateTiltCo
         }
         const deltaTilt = (Math.PI * delta) / this.root.size.y;
         this._isClick = false;
-        this.root.update({camera: {tilt: this._startTilt + deltaTilt}});
+        this.root.setCamera({tilt: this._startTilt + deltaTilt});
     };
 
     private _onTiltEnd = () => {
