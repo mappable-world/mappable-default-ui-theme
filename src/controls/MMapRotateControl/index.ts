@@ -1,6 +1,7 @@
 import type {EasingFunctionDescription, MMapControl, MMapListener} from '@mappable-world/mappable-types';
 import {MMapCameraRequest} from '@mappable-world/mappable-types/imperative/MMap';
 import {Position, getDeltaAzimuth, toggleRotate} from '../utils/angle-utils';
+import {MMapRotateControlVuefyOptions} from './vue';
 
 import './index.css';
 
@@ -30,6 +31,7 @@ type DefaultProps = typeof defaultProps;
  */
 export class MMapRotateControl extends mappable.MMapComplexEntity<MMapRotateControlProps, DefaultProps> {
     static defaultProps = defaultProps;
+    static [mappable.optionsKeyVuefy] = MMapRotateControlVuefyOptions;
     private _control!: MMapControl;
     private _rotateControl!: InternalRotateControl;
 

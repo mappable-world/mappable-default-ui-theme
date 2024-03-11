@@ -1,16 +1,17 @@
 import type {EasingFunctionDescription, MMapControl, MMapListener} from '@mappable-world/mappable-types';
+import {MMapCameraRequest} from '@mappable-world/mappable-types/imperative/MMap';
 import {
     CLICK_TOLERANCE_PX,
     MAX_TILT_DEG,
     MIN_TILT_DEG,
-    toggleTilt,
+    Position,
     degToRad,
     radToDeg,
-    Position
+    toggleTilt
 } from '../utils/angle-utils';
+import {MMapTiltControlVuefyOptions} from './vue';
 
 import './index.css';
-import {MMapCameraRequest} from '@mappable-world/mappable-types/imperative/MMap';
 
 /**
  * MMapTiltControl props
@@ -38,6 +39,7 @@ type DefaultProps = typeof defaultProps;
  */
 export class MMapTiltControl extends mappable.MMapComplexEntity<MMapTiltControlProps, DefaultProps> {
     static defaultProps = defaultProps;
+    static [mappable.optionsKeyVuefy] = MMapTiltControlVuefyOptions;
     private _control!: MMapControl;
     private _tiltControl!: InternalTiltControl;
 

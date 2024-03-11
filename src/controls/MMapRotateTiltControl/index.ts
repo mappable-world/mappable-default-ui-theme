@@ -1,6 +1,7 @@
 import type {EasingFunctionDescription, MMapControl} from '@mappable-world/mappable-types';
 import {MMapRotateControl} from './MMapRotateControl';
 import {MMapTiltControl} from './MMapTiltControl';
+import {MMapRotateTiltControlVuefyOptions} from './vue';
 
 /**
  * MMapRotateTiltControl props
@@ -28,6 +29,7 @@ type DefaultProps = typeof defaultProps;
  */
 export class MMapRotateTiltControl extends mappable.MMapComplexEntity<MMapRotateTiltControlProps, DefaultProps> {
     static defaultProps = defaultProps;
+    static [mappable.optionsKeyVuefy] = MMapRotateTiltControlVuefyOptions;
 
     private _rotateControl!: MMapRotateControl;
     private _tiltControl!: MMapTiltControl;
