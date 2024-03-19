@@ -1,7 +1,7 @@
 import {Api as FigmaApi} from 'figma-api';
 import {GetImageResult} from 'figma-api/lib/api-types';
+import {makeChunks} from '../utils/make-chunks';
 import {ExportFormat, IconDescription} from './get-icon-descriptions';
-import {makeChunks} from '../make-chunks';
 
 const IMAGE_SCALE = 1;
 const ICONS_PER_CHUNK = 100;
