@@ -15,7 +15,8 @@
         "watch": "webpack --watch",
         "start": "webpack serve",
         "bump": "npm version prerelease --preid=beta --no-git-tag-version && npm run bump:git",
-        "bump:git": "git add --all && git commit -m \"New version $npm_package_version\" && git tag $npm_package_version && git push --tags origin HEAD:main"
+        "bump:git": "git add --all && git commit -m \"New version $npm_package_version\" && git tag $npm_package_version && git push --tags origin HEAD:main",
+        "sync-icons": "node -r dotenv/config -r ts-node/register ./tools/sync-icons.ts"
     },
     "devDependencies": {
         "@mappable-world/mappable-cli": "^0.0.32",
@@ -33,6 +34,7 @@
         "eslint": "8.44.0",
         "eslint-config-prettier": "8.8.0",
         "eslint-plugin-prettier": "4.2.1",
+        "figma-api": "^1.11.0",
         "got": "11.8.6",
         "html-webpack-plugin": "^5.5.3",
         "identity-obj-proxy": "3.0.0",
@@ -44,6 +46,7 @@
         "terser-webpack-plugin": "5.3.9",
         "ts-jest": "29.1.1",
         "ts-loader": "9.4.4",
+        "ts-node": "^10.9.2",
         "typescript": "5.1.6",
         "vue": "^3.4.21",
         "webpack": "5.88.1",
