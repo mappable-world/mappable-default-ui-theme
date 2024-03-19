@@ -1,4 +1,4 @@
-import {fetchFigmaIcons} from './figma/figma-api';
+import {fetchFigmaIcons} from './figma/fetch-icons';
 
 async function main() {
     try {
