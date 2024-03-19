@@ -4,10 +4,12 @@ const REGION_CODE_REGEXP = /_([a-z]{2})_/;
 const SIZE_REGEXP = /_([0-9]{2})/;
 const INTL_REGION_CODES = new Intl.DisplayNames(['en', 'ru'], {type: 'region'});
 
+export type ExportFormat = 'png' | 'svg';
+
 export type IconDescription = {
     componentId: string;
     name: string;
-    exportFormat: 'png' | 'svg';
+    exportFormat: ExportFormat;
 };
 
 export const getIconDescriptions = (components: Node<'COMPONENT'>[], availableSizes: number[]): IconDescription[] => {
