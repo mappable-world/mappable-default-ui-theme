@@ -15,6 +15,10 @@ export type IconDescription = {
 export const getIconDescriptions = (components: Node<'COMPONENT'>[], availableSizes: number[]): IconDescription[] => {
     return components
         .filter((component) => {
+            // the component must have export settings
+            if (component.exportSettings === undefined || component.exportSettings.length === 0) {
+                return false;
+            }
             // the component should not have a regional code
             if (componentNameHasRegionCode(component.name)) {
                 return false;
@@ -27,9 +31,7 @@ export const getIconDescriptions = (components: Node<'COMPONENT'>[], availableSi
             return height === width;
         })
         .map<IconDescription>((component) => {
-            const isPng =
-                component.exportSettings?.length &&
-                component.exportSettings.every(({format}) => format === ImageType.PNG);
+            const isPng = component.exportSettings.every(({format}) => format === ImageType.PNG);
             const exportFormat = isPng ? 'png' : 'svg';
             return {componentId: component.id, name: component.name, exportFormat};
         });
