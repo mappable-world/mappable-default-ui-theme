@@ -7,6 +7,7 @@ const IMAGE_SCALE = 1;
 const ICONS_PER_CHUNK = 100;
 
 export type IconDescriptionWithLink = IconDescription & {
+    componentId: string;
     link: string;
 };
 type SeparatedIcons = {

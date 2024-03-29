@@ -1,10 +1,8 @@
-import {fetchFigmaIcons} from '../figma/fetch-icons';
+import {updateFiles} from '../figma/update-files';
 
 async function main() {
     try {
-        console.info('Start update figma icons');
-        await fetchFigmaIcons();
-        console.info('Update figma icons succeed!');
+        await updateFiles();
     } catch (error) {
         console.error(error.message || error.toString());
     }
