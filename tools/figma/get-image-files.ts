@@ -15,12 +15,11 @@ export type IconDescriptionWithData = IconDescription & {
 export const downloadAndTransform = async (icons: IconDescriptionWithLink[]): Promise<IconDescriptionWithData[]> => {
     const iconsWithData = await getImageFiles(icons);
     return iconsWithData
-        .filter((icon) => (icon.exportFormat !== 'svg' ? true : !icon.data.toString().match(ERROR_COLOR_REGEXP)))
-        .map((icon) =>
-            icon.exportFormat !== 'svg'
-                ? icon
-                : {...icon, data: Buffer.from(icon.data.toString().replace(FILL_COLOR_REGEXP, 'fill="currentColor"'))}
-        );
+        .filter((icon) => !icon.data.toString().match(ERROR_COLOR_REGEXP))
+        .map((icon) => ({
+            ...icon,
+            data: Buffer.from(icon.data.toString().replace(FILL_COLOR_REGEXP, 'fill="currentColor"'))
+        }));
 };
 
 const getImageFiles = async (icons: IconDescriptionWithLink[]): Promise<IconDescriptionWithData[]> => {
@@ -28,7 +27,7 @@ const getImageFiles = async (icons: IconDescriptionWithLink[]): Promise<IconDesc
         icons.map(async (icon) => {
             try {
                 const file = await fetchFile(icon.link);
-                return {...file, name: icon.name, exportFormat: icon.exportFormat, componentId: icon.componentId};
+                return {...file, name: icon.name, componentId: icon.componentId};
             } catch (e) {
                 e.message = `${icon.name}: ${e.message}`;
                 throw e;
