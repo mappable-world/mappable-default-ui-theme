@@ -11,7 +11,6 @@ export type LocalIconDescription = {
 };
 
 export const getLocalIcons = async (): Promise<LocalIconDescription[]> => {
-    console.info('Getting static resources dir');
     const currentFilenames = await fs.readdir(ICONS_PATH);
     const descriptions: LocalIconDescription[] = await Promise.all(
         currentFilenames.map(async (filename) => {
