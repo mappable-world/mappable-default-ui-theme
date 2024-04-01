@@ -18,7 +18,7 @@ const AVAILABLE_SIZES = [14, 24];
 /** RegExp for getting the region code from the component name */
 const REGION_CODE_REGEXP = /_([a-z]{2})_/;
 /** RegExp for getting the size from the component name*/
-const SIZE_REGEXP = /_([0-9]{2})/;
+export const SIZE_REGEXP = /_([0-9]{2})/;
 const INTL_REGION_CODES = new Intl.DisplayNames(['en', 'ru'], {type: 'region'});
 /** A number between 0.01 and 4, the image scaling factor */
 const IMAGE_SCALE = 1;

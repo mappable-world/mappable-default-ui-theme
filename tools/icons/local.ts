@@ -2,9 +2,8 @@ import fs from 'fs/promises';
 import path from 'path';
 import {IconDescriptionWithData} from './get-image-files';
 
-const BASE_DIR = path.join(__dirname, '../../');
+export const BASE_DIR = path.join(__dirname, '../../');
 const ICONS_PATH = path.join(BASE_DIR, 'static/icons');
-// const TYPES_PATH = path.join(BASE_DIR, 'src/icons/types');
 
 export type LocalIconDescription = {
     name: string;
