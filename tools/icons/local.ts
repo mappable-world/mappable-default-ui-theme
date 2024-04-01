@@ -3,7 +3,7 @@ import path from 'path';
 import {IconDescriptionWithData} from './get-image-files';
 
 export const BASE_DIR = path.join(__dirname, '../../');
-const ICONS_PATH = path.join(BASE_DIR, 'static/icons');
+export const ICONS_PATH = path.join(BASE_DIR, 'static/icons');
 
 export type LocalIconDescription = {
     name: string;
