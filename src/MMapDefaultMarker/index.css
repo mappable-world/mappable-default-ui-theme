@@ -1,0 +1,13 @@
+.mappable--point {
+    box-sizing: border-box;
+    height: 8px;
+    width: 8px;
+    border: 2px solid #f8f8f8;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+}
+
+.mappable--point svg {
+    transform: translate(calc(-50% + 2px), calc(-100% + 2px));
+}
