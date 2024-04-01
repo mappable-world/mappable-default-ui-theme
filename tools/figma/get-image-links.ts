@@ -1,7 +1,7 @@
 import {Api as FigmaApi} from 'figma-api';
 import {GetImageResult} from 'figma-api/lib/api-types';
 import {makeChunks} from '../utils/make-chunks';
-import {ExportFormat, IconDescription} from './get-icon-descriptions';
+import {IconDescription} from './get-icon-descriptions';
 
 const IMAGE_SCALE = 1;
 const ICONS_PER_CHUNK = 100;
@@ -10,22 +10,19 @@ export type IconDescriptionWithLink = IconDescription & {
     componentId: string;
     link: string;
 };
-type SeparatedIcons = {
-    [key in ExportFormat]: IconDescription[];
-};
 
 export const getImageLinks = async (
     descriptions: IconDescription[],
     fileId: string,
     api: FigmaApi
 ): Promise<IconDescriptionWithLink[]> => {
-    const chunks = separateIntoChunks(descriptions);
+    const chunks = makeChunks(descriptions, ICONS_PER_CHUNK);
     const linkChunks = await Promise.all(
         chunks.map((chunk) =>
             api.getImage(fileId, {
                 ids: chunk.map((icon) => icon.componentId).join(','),
                 scale: IMAGE_SCALE,
-                format: chunk[0].exportFormat
+                format: 'svg'
             })
         )
     );
@@ -53,15 +50,4 @@ export const getImageLinks = async (
         }
         return descriptionsWithLink;
     }, []);
-};
-
-const separateIntoChunks = (descriptions: IconDescription[]): IconDescription[][] => {
-    const separatedIcons = descriptions.reduce<SeparatedIcons>(
-        (result, icon) => {
-            result[icon.exportFormat].push(icon);
-            return result;
-        },
-        {svg: [], png: []}
-    );
-    return [...makeChunks(separatedIcons.svg, ICONS_PER_CHUNK), ...makeChunks(separatedIcons.png, ICONS_PER_CHUNK)];
 };

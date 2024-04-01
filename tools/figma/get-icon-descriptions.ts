@@ -1,15 +1,12 @@
-import {ImageType, type Node} from 'figma-api';
+import {type Node} from 'figma-api';
 
 const REGION_CODE_REGEXP = /_([a-z]{2})_/;
 const SIZE_REGEXP = /_([0-9]{2})/;
 const INTL_REGION_CODES = new Intl.DisplayNames(['en', 'ru'], {type: 'region'});
 
-export type ExportFormat = 'png' | 'svg';
-
 export type IconDescription = {
     componentId: string;
     name: string;
-    exportFormat: ExportFormat;
 };
 
 export const getIconDescriptions = (components: Node<'COMPONENT'>[], availableSizes: number[]): IconDescription[] => {
@@ -30,11 +27,7 @@ export const getIconDescriptions = (components: Node<'COMPONENT'>[], availableSi
             const {height, width} = component.absoluteBoundingBox;
             return height === width;
         })
-        .map<IconDescription>((component) => {
-            const isPng = component.exportSettings.every(({format}) => format === ImageType.PNG);
-            const exportFormat = isPng ? 'png' : 'svg';
-            return {componentId: component.id, name: component.name, exportFormat};
-        });
+        .map<IconDescription>((component) => ({componentId: component.id, name: component.name}));
 };
 
 const componentNameHasRegionCode = (componentName: string): boolean => {
