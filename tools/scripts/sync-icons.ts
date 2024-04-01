@@ -4,6 +4,7 @@ import {generateImports} from '../icons/generate-imports';
 import {generateIconsTypes} from '../icons/generate-types';
 import {getUniqNames} from '../icons/get-uniq-names';
 import {updateIcons} from '../icons/update-icons';
+import {createSpinner} from 'nanospinner';
 
 async function main() {
     const spinner = createSpinner();
