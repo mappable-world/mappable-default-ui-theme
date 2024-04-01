@@ -4,8 +4,10 @@ import {IconDescription, IconDescriptionWithLink} from './fetch-icons';
 
 /** Maximum number of retries when loading an icon */
 const MAX_RETRIES = 20;
-/** Our designer marks these icons with this color that do not need to be worked on yet. */
+/** Our designer marks these icons with this color that do not need to be worked on yet */
 const ERROR_COLOR_REGEXP = /fill="#C90D0D"/;
+/** Our designer marks icons with `fill-opacity="0.1"` that don't need to be worked on yet */
+const FILL_OPACITY_REGEXP = /fill-opacity="0.1"/;
 /** Default icon color from Figma */
 const FILL_COLOR_REGEXP = /fill="black"/g;
 
@@ -20,17 +22,15 @@ export type IconDescriptionWithData = IconDescription & {
  */
 export const downloadAndTransform = async (icons: IconDescriptionWithLink[]): Promise<IconDescriptionWithData[]> => {
     const iconsWithData = await getImageFiles(icons);
-    return iconsWithData
-        .filter((icon) => !icon.data.toString().match(ERROR_COLOR_REGEXP))
-        .map((icon) => {
-            const iconDataString = icon.data.toString();
-            const replacedFillColorIconData = iconDataString.replace(FILL_COLOR_REGEXP, 'fill="currentColor"');
-            const optimizedIcon = optimize(replacedFillColorIconData);
-            return {
-                ...icon,
-                data: Buffer.from(optimizedIcon.data)
-            };
-        });
+    return iconsWithData.reduce((icons, currentIcon) => {
+        const iconDataString = currentIcon.data.toString();
+        if (iconDataString.match(ERROR_COLOR_REGEXP) || iconDataString.match(FILL_OPACITY_REGEXP)) {
+            return icons;
+        }
+        const replacedFillColorIconData = iconDataString.replace(FILL_COLOR_REGEXP, 'fill="currentColor"');
+        const optimizedIcon = optimize(replacedFillColorIconData);
+        return icons.concat({...currentIcon, data: Buffer.from(optimizedIcon.data)});
+    }, [] as IconDescriptionWithData[]);
 };
 
 /**

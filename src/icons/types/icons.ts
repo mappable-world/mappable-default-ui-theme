@@ -101,8 +101,6 @@ type IconName =
   | 'skating_rink'
   | 'software'
   | 'spa'
-  | 'sport'
-  | 'sport_school'
   | 'sportcenter'
   | 'spring'
   | 'stadium'

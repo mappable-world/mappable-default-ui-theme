@@ -22,8 +22,8 @@ export const generateIconsDocsList = async (iconNames: string[]) => {
             const normalAbsolutePath = path.join(ICONS_PATH, normalFileName);
             const smallAbsolutePath = path.join(ICONS_PATH, smallFileName);
 
-            const normalRelativePath = `../../static/icons/${normalFileName}`;
-            const smallRelativePath = `../../static/icons/${smallFileName}`;
+            const normalRelativePath = `../static/icons/${normalFileName}`;
+            const smallRelativePath = `../static/icons/${smallFileName}`;
 
             const normalIcon = existsSync(normalAbsolutePath) ? `![${name}](${normalRelativePath})` : `none`;
             const smallIcon = existsSync(smallAbsolutePath) ? `![${name}](${smallRelativePath})` : `none`;
