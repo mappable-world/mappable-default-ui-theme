@@ -1,4 +1,5 @@
 import got from 'got';
+import {optimize} from 'svgo';
 import {IconDescription, IconDescriptionWithLink} from './fetch-icons';
 
 /** Maximum number of retries when loading an icon */
@@ -21,10 +22,15 @@ export const downloadAndTransform = async (icons: IconDescriptionWithLink[]): Pr
     const iconsWithData = await getImageFiles(icons);
     return iconsWithData
         .filter((icon) => !icon.data.toString().match(ERROR_COLOR_REGEXP))
-        .map((icon) => ({
-            ...icon,
-            data: Buffer.from(icon.data.toString().replace(FILL_COLOR_REGEXP, 'fill="currentColor"'))
-        }));
+        .map((icon) => {
+            const iconDataString = icon.data.toString();
+            const replacedFillColorIconData = iconDataString.replace(FILL_COLOR_REGEXP, 'fill="currentColor"');
+            const optimizedIcon = optimize(replacedFillColorIconData);
+            return {
+                ...icon,
+                data: Buffer.from(optimizedIcon.data)
+            };
+        });
 };
 
 /**

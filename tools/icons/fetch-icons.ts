@@ -91,6 +91,10 @@ const getIconDescriptions = (components: Node<'COMPONENT'>[], availableSizes: nu
             if (!componentAvailableSize(component.name, availableSizes)) {
                 return false;
             }
+            // without fallback icons
+            if (component.name.includes('fallback')) {
+                return false;
+            }
             const {height, width} = component.absoluteBoundingBox;
             return height === width;
         })

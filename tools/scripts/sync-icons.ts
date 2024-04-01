@@ -1,4 +1,4 @@
-import {updateIcons} from '../figma/update-icons';
+import {updateIcons} from '../icons/update-icons';
 
 async function main() {
     try {
