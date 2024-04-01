@@ -1,8 +1,8 @@
-import {updateFiles} from '../figma/update-files';
+import {updateIcons} from '../figma/update-icons';
 
 async function main() {
     try {
-        await updateFiles();
+        await updateIcons();
     } catch (error) {
         console.error(error.message || error.toString());
     }
