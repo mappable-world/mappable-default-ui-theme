@@ -1,7 +1,7 @@
 import got from 'got';
-import {IconDescription} from './get-icon-descriptions';
-import {IconDescriptionWithLink} from './get-image-links';
+import {IconDescription, IconDescriptionWithLink} from './fetch-icons';
 
+/** Maximum number of retries when loading an icon */
 const MAX_RETRIES = 20;
 /** Our designer marks these icons with this color that do not need to be worked on yet. */
 const ERROR_COLOR_REGEXP = /fill="#C90D0D"/;
@@ -12,6 +12,11 @@ export type IconDescriptionWithData = IconDescription & {
     data: Buffer;
 };
 
+/**
+ * Downloads icons from Figma using the link from the description and transforms them
+ * @param icons - Array of objects with icon descriptions
+ * @returns Array of objects with icon descriptions and transformed downloaded data
+ */
 export const downloadAndTransform = async (icons: IconDescriptionWithLink[]): Promise<IconDescriptionWithData[]> => {
     const iconsWithData = await getImageFiles(icons);
     return iconsWithData
@@ -22,6 +27,11 @@ export const downloadAndTransform = async (icons: IconDescriptionWithLink[]): Pr
         }));
 };
 
+/**
+ * Downloads icons from Figma using the link from the description
+ * @param icons - Array of objects with icon descriptions
+ * @returns Array of objects with icon descriptions and downloaded data
+ */
 const getImageFiles = async (icons: IconDescriptionWithLink[]): Promise<IconDescriptionWithData[]> => {
     return Promise.all(
         icons.map(async (icon) => {
@@ -36,6 +46,11 @@ const getImageFiles = async (icons: IconDescriptionWithLink[]): Promise<IconDesc
     );
 };
 
+/**
+ * Download the file from the specified URL
+ * @param url - URL where the file is located
+ * @returns Downloaded data as a buffer
+ */
 const fetchFile = async (url: string) => {
     const response = await got<Buffer>(url, {timeout: 60 * 1000, retry: MAX_RETRIES});
     if (!response.body) {
