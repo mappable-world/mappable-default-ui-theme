@@ -17,7 +17,7 @@ async function main() {
         await generateIconsTypes(iconNames);
 
         spinner.update({text: 'Generating a file with import icons svg'});
-        await generateImports(iconsDescription);
+        await generateImports(iconsDescription, iconNames);
 
         spinner.update({text: 'Generating a markdown file with a list of available icons'});
         await generateIconsDocsList(iconNames);
