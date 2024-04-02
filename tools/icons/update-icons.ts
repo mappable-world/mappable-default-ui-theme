@@ -23,5 +23,7 @@ export const updateIcons = async (spinner: Spinner): Promise<IconDescription[]> 
     spinner.update({text: 'Removing unnecessary old local icons'});
     await deleteLocalFiles(iconsToDelete);
 
-    return iconsWithData.map(({componentId, name}) => ({componentId, name}));
+    return iconsWithData
+        .map(({componentId, name}) => ({componentId, name}))
+        .sort((a, b) => a.name.localeCompare(b.name));
 };

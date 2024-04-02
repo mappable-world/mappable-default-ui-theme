@@ -1,9 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 import {prettierFormat} from '../utils/prettier-format';
-import {BASE_DIR} from './local';
-
-const TYPES_PATH = path.join(BASE_DIR, 'src/icons/types');
+import {SRC_ICONS_PATH} from './paths';
 
 export const generateIconsTypes = async (iconNames: string[]) => {
     const type = 'IconName';
@@ -14,5 +12,5 @@ type ${type} =${iconNames.map((name) => `| '${name}'`).join('\n')};
 export {${type}};
 `;
     const formattedContent = await prettierFormat(content, 'typescript');
-    await fs.writeFile(path.join(TYPES_PATH, 'icons.ts'), formattedContent);
+    await fs.writeFile(path.join(SRC_ICONS_PATH, 'icon-name.ts'), formattedContent);
 };
