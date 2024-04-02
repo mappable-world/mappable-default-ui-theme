@@ -8,6 +8,13 @@
     border-radius: 50%;
 }
 
-.mappable--point svg {
-    transform: translate(calc(-50% + 2px), calc(-100% + 2px));
+.mappable--pin {
+    position: absolute;
+    transform: translate(calc(-50% + 2px), calc(-100%));
+}
+
+.mappable--icon {
+    color: #fffffffc;
+    position: absolute;
+    transform: translate(calc(-24px - 10px),10px);
 }
