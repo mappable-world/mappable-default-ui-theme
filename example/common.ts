@@ -1,3 +1,5 @@
+import type {MMapLocationRequest, LngLatBounds} from '@mappable-world/mappable-types';
+
 mappable.import.loaders.unshift(async (pkg) => {
     if (!pkg.startsWith('@mappable-world/mappable-default-ui-theme')) {
         return;
@@ -8,15 +10,13 @@ mappable.import.loaders.unshift(async (pkg) => {
     } else {
         await mappable.import.script(`https://unpkg.com/${pkg}/dist/index.js`);
     }
-
+    // @ts-ignore
     return window['@mappable-world/mappable-default-ui-theme'];
-})
+});
 
-
-const BOUNDS = [
-    [54.58311, 25.99850],
+const BOUNDS: LngLatBounds = [
+    [54.58311, 25.9985],
     [56.30248, 24.47889]
 ];
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const LOCATION = {bounds: BOUNDS};
+export const LOCATION: MMapLocationRequest = {bounds: BOUNDS};
