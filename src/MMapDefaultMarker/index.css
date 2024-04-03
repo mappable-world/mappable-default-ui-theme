@@ -2,7 +2,7 @@
     box-sizing: border-box;
     height: 8px;
     width: 8px;
-    border: 2px solid #f8f8f8;
+    border: 2px solid;
     position: absolute;
     transform: translate(-50%, -50%);
     border-radius: 50%;
@@ -14,7 +14,6 @@
 }
 
 .mappable--icon {
-    color: #fffffffc;
     position: absolute;
-    transform: translate(calc(-24px - 10px),10px);
+    transform: translate(calc(-24px - 10px), 10px);
 }
