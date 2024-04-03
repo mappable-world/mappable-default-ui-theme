@@ -11,7 +11,7 @@ async function main() {
 
     const {MMapZoomControl} = vuefy.module(await mappable.import('@mappable-world/mappable-controls@0.0.1'));
 
-    const {MMapButtonExample} = vuefy.module(await mappable.import('mappable-default-ui-theme'));
+    const {MMapButtonExample} = vuefy.module(await mappable.import('@mappable-world/mappable-default-ui-theme'));
 
     const app = Vue.createApp({
         components: {

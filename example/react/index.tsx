@@ -13,7 +13,7 @@ async function main() {
 
     const {MMapZoomControl} = reactify.module(await mappable.import('@mappable-world/mappable-controls@0.0.1'));
 
-    const {MMapButtonExample} = reactify.module(await mappable.import('mappable-default-ui-theme'));
+    const {MMapButtonExample} = reactify.module(await mappable.import('@mappable-world/mappable-default-ui-theme'));
 
     ReactDOM.render(
         <React.StrictMode>
