@@ -31,5 +31,5 @@ export const generateIconsDocsList = async (iconNames: string[]) => {
         })
         .join('\n');
     const formattedContent = await prettierFormat(content, 'markdown');
-    await fs.writeFile(DOCS_FILE_PATH, formattedContent);
+    await fs.writeFile(path.join(DOCS_FILE_PATH, 'icons.md'), formattedContent);
 };
