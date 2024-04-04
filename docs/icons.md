@@ -37,6 +37,7 @@
 | drugstores            | ![drugstores](../static/icons/drugstores_24.svg)                       | ![drugstores](../static/icons/drugstores_14.svg)                       |
 | dry_cleaning          | ![dry_cleaning](../static/icons/dry_cleaning_24.svg)                   | ![dry_cleaning](../static/icons/dry_cleaning_14.svg)                   |
 | equestrian            | ![equestrian](../static/icons/equestrian_24.svg)                       | ![equestrian](../static/icons/equestrian_14.svg)                       |
+| fallback              | ![fallback](../static/icons/fallback_24.svg)                           | ![fallback](../static/icons/fallback_14.svg)                           |
 | fast_food             | ![fast_food](../static/icons/fast_food_24.svg)                         | ![fast_food](../static/icons/fast_food_14.svg)                         |
 | film_studio           | ![film_studio](../static/icons/film_studio_24.svg)                     | ![film_studio](../static/icons/film_studio_14.svg)                     |
 | fire_station          | ![fire_station](../static/icons/fire_station_24.svg)                   | ![fire_station](../static/icons/fire_station_14.svg)                   |

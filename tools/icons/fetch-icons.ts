@@ -19,6 +19,8 @@ const AVAILABLE_SIZES = [14, 24];
 const REGION_CODE_REGEXP = /_([a-z]{2})_/;
 /** RegExp for getting the size from the component name*/
 export const SIZE_REGEXP = /_([0-9]{2})/;
+/** RegExp to discard rubrics fallbacks */
+const RUBRIC_FALLBACK_REGEXP = /fallback_.+\d{2}$/;
 const INTL_REGION_CODES = new Intl.DisplayNames(['en', 'ru'], {type: 'region'});
 /** A number between 0.01 and 4, the image scaling factor */
 const IMAGE_SCALE = 1;
@@ -92,7 +94,7 @@ const getIconDescriptions = (components: Node<'COMPONENT'>[], availableSizes: nu
                 return false;
             }
             // without fallback icons
-            if (component.name.includes('fallback')) {
+            if (RUBRIC_FALLBACK_REGEXP.test(component.name)) {
                 return false;
             }
             const {height, width} = component.absoluteBoundingBox;

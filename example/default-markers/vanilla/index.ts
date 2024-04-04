@@ -14,7 +14,7 @@ async function main() {
     map.addChild(new MMapDefaultFeaturesLayer({}));
 
     const defaultMarker = new MMapDefaultMarker({
-        iconName: 'building',
+        iconName: 'fallback',
         color: 'bluebell',
         coordinates: MARKER_LOCATION
     });

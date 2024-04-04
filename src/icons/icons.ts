@@ -57,6 +57,8 @@ import dry_cleaning_14 from '../../static/icons/dry_cleaning_14.svg';
 import dry_cleaning_24 from '../../static/icons/dry_cleaning_24.svg';
 import equestrian_14 from '../../static/icons/equestrian_14.svg';
 import equestrian_24 from '../../static/icons/equestrian_24.svg';
+import fallback_14 from '../../static/icons/fallback_14.svg';
+import fallback_24 from '../../static/icons/fallback_24.svg';
 import fast_food_14 from '../../static/icons/fast_food_14.svg';
 import fast_food_24 from '../../static/icons/fast_food_24.svg';
 import film_studio_14 from '../../static/icons/film_studio_14.svg';
@@ -249,6 +251,7 @@ export const icons: Icons = {
   drugstores: {normal: drugstores_24, small: drugstores_14},
   dry_cleaning: {normal: dry_cleaning_24, small: dry_cleaning_14},
   equestrian: {normal: equestrian_24, small: equestrian_14},
+  fallback: {normal: fallback_24, small: fallback_14},
   fast_food: {normal: fast_food_24, small: fast_food_14},
   film_studio: {normal: film_studio_24, small: film_studio_14},
   fire_station: {normal: fire_station_24, small: fire_station_14},
