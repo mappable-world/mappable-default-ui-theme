@@ -4,11 +4,16 @@ import './index.css';
 import pin from './pin.svg';
 
 export type MMapDefaultMarkerProps = MMapMarkerProps & {
-    name: IconName;
-    color: IconColor;
+    iconName?: IconName;
+    color?: IconColor;
 };
 
-export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMarkerProps> {
+const defaultProps = Object.freeze({color: 'darkgray'});
+type DefaultProps = typeof defaultProps;
+
+export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMarkerProps, DefaultProps> {
+    static defaultProps = defaultProps;
+
     private _marker: MMapMarker;
     private _markerElement: HTMLElement;
     private _pin: HTMLElement;
@@ -17,6 +22,10 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
 
     constructor(props: MMapDefaultMarkerProps) {
         super(props);
+    }
+
+    protected __implGetDefaultProps(): DefaultProps {
+        return MMapDefaultMarker.defaultProps;
     }
 
     protected _onAttach(): void {
@@ -31,7 +40,9 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
         this._pin.innerHTML = pin;
 
         this._icon.classList.add('mappable--icon');
-        this._icon.innerHTML = icons[this._props.name].normal;
+        if (this._props.iconName !== undefined) {
+            this._icon.innerHTML = icons[this._props.iconName].normal;
+        }
 
         this._pin.appendChild(this._icon);
         this._markerElement.appendChild(this._pin);
@@ -46,9 +57,9 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
             this._color = iconColors[this._props.color];
             this._updateTheme();
         }
-        if (propsDiff.name !== undefined) {
-            this._icon.innerHTML = icons[propsDiff.name].normal;
-        }
+
+        this._icon.innerHTML = this._props.iconName !== undefined ? icons[this._props.iconName].normal : '';
+
         this._marker.update(this._props);
     }
 
