@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
     <head>
         <title>Vue example mappable-default-ui-theme</title>
@@ -8,6 +8,12 @@
         <script crossorigin src="https://unpkg.com/@babel/standalone@7/babel.min.js"></script>
         <script src="https://js.api.mappable.world/3.0/?apikey=%APIKEY%&lang=en_US"></script>
 
+        <script
+            data-plugins="transform-modules-umd"
+            data-presets="react, typescript"
+            type="text/babel"
+            src="../../index.ts"
+        ></script>
         <script
             data-plugins="transform-modules-umd"
             data-presets="typescript"
@@ -21,6 +27,7 @@
             src="./index.ts"
         ></script>
 
+        <link rel="stylesheet" href="../../index.css" />
         <link rel="stylesheet" href="../common.css" />
     </head>
     <body>
