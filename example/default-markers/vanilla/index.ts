@@ -13,6 +13,10 @@ async function main() {
     map.addChild(new MMapDefaultSchemeLayer({}));
     map.addChild(new MMapDefaultFeaturesLayer({}));
 
-    const defaultMarker = new MMapDefaultMarker({name: 'building', color: 'bluebell', coordinates: MARKER_LOCATION});
+    const defaultMarker = new MMapDefaultMarker({
+        iconName: 'building',
+        color: 'bluebell',
+        coordinates: MARKER_LOCATION
+    });
     map.addChild(defaultMarker);
 }

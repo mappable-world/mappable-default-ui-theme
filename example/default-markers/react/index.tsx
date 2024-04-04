@@ -27,7 +27,7 @@ async function main() {
             <MMap location={location} ref={(x) => (map = x)}>
                 <MMapDefaultSchemeLayer />
                 <MMapDefaultFeaturesLayer />
-                <MMapDefaultMarker name="building" color="bluebell" coordinates={MARKER_LOCATION} />
+                <MMapDefaultMarker iconName="building" color="bluebell" coordinates={MARKER_LOCATION} />
             </MMap>
         );
     }

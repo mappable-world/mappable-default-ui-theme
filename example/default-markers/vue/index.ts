@@ -28,7 +28,7 @@ async function main() {
             <MMap :location="LOCATION" :ref="refMap">
                 <MMapDefaultSchemeLayer />
                 <MMapDefaultFeaturesLayer />
-                <MMapDefaultMarker name="building" color="bluebell" :coordinates="MARKER_LOCATION"/>
+                <MMapDefaultMarker iconName="building" color="bluebell" :coordinates="MARKER_LOCATION"/>
             </MMap>`
     });
     app.mount('#app');
