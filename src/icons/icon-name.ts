@@ -33,6 +33,7 @@ export type IconName =
   | 'drugstores'
   | 'dry_cleaning'
   | 'equestrian'
+  | 'fallback'
   | 'fast_food'
   | 'film_studio'
   | 'fire_station'
