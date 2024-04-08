@@ -1,19 +1,62 @@
-.mappable--point {
-    box-sizing: border-box;
-    height: 8px;
-    width: 8px;
-    border: 2px solid;
+.mappable--default-marker-point {
+    position: absolute;
+    cursor: pointer;
+}
+.mappable--default-marker-point svg {
+    display: block;
+}
+
+/* normal size */
+.mappable--normal-pin {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    row-gap: 2px;
+    position: absolute;
+    transform: translate(-50%, calc(-100% + 4px));
+    filter: drop-shadow(0px 2px 6px rgba(24, 27, 34, 0.4));
+}
+.mappable--normal-icon {
+    position: absolute;
+    transform: translate(-50%, calc(-4px - 2px - 51px + 10px)); /* 51px - pin height, 10px - offset */
+}
+.mappable--normal-pin_circle {
+    display: block;
+    width: 4px;
+    height: 4px;
+    border-width: 2px;
+    border-style: solid;
+    border-radius: 50%;
+    box-shadow: 0px 1px 4px 0px rgba(24, 27, 34, 0.3);
+}
+
+/* small size */
+.mappable--small-poi {
     position: absolute;
     transform: translate(-50%, -50%);
-    border-radius: 50%;
+}
+.mappable--small-poi_stroke {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    z-index: -1;
+    -webkit-filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.1));
+    filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.1));
+}
+.mappable--small-icon {
+    position: absolute;
+    z-index: 1;
+    transform: translate(-50%, -50%);
 }
 
-.mappable--pin {
+/* micro size */
+.mappable--micro-poi {
     position: absolute;
-    transform: translate(calc(-50% + 2px), calc(-100%));
+    transform: translate(-50%, -50%);
 }
-
-.mappable--icon {
+.mappable--micro-poi_stroke {
     position: absolute;
-    transform: translate(calc(-24px - 10px), 10px);
+    transform: translate(-50%, -50%);
+    z-index: -1;
+    -webkit-filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.1));
+    filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.1));
 }
