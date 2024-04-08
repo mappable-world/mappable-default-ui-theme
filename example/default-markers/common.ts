@@ -13,15 +13,19 @@ const STEP = 0.3;
 
 export const MARKER_LOCATIONS: MMapDefaultMarkerProps[] = [
     // no icon markers
-    {coordinates: [CENTER[0] - STEP, CENTER[1]], size: 'normal'},
-    {coordinates: CENTER},
-    {coordinates: [CENTER[0] + STEP, CENTER[1]], size: 'micro'},
+    {coordinates: [CENTER[0] - STEP, CENTER[1] + STEP / 2], size: 'normal'},
+    {coordinates: [CENTER[0], CENTER[1] + STEP / 2]},
+    {coordinates: [CENTER[0] + STEP, CENTER[1] + STEP / 2], size: 'micro'},
     // airport icon
-    {iconName: 'airport', coordinates: [CENTER[0] - STEP, CENTER[1] + STEP], size: 'normal'},
-    {iconName: 'airport', coordinates: [CENTER[0], CENTER[1] + STEP]},
-    {iconName: 'airport', coordinates: [CENTER[0] + STEP, CENTER[1] + STEP], size: 'micro'},
-    // color icon
-    {color: 'steelblue', coordinates: [CENTER[0] - STEP, CENTER[1] - STEP], size: 'normal'},
-    {color: 'steelblue', coordinates: [CENTER[0], CENTER[1] - STEP]},
-    {color: 'steelblue', coordinates: [CENTER[0] + STEP, CENTER[1] - STEP], size: 'micro'}
+    {iconName: 'airport', coordinates: [CENTER[0] - STEP, CENTER[1] - STEP / 2], size: 'normal'},
+    {iconName: 'airport', coordinates: [CENTER[0], CENTER[1] - STEP / 2]},
+    {iconName: 'airport', coordinates: [CENTER[0] + STEP, CENTER[1] - STEP / 2], size: 'micro'},
+    // color
+    {color: 'steelblue', coordinates: [CENTER[0] - STEP, CENTER[1] + STEP], size: 'normal'},
+    {color: 'steelblue', coordinates: [CENTER[0], CENTER[1] + STEP]},
+    {color: 'steelblue', coordinates: [CENTER[0] + STEP, CENTER[1] + STEP], size: 'micro'},
+    // color and icon
+    {color: 'pink', iconName: 'attraction', coordinates: [CENTER[0] - STEP, CENTER[1] - STEP], size: 'normal'},
+    {color: 'pink', iconName: 'attraction', coordinates: [CENTER[0], CENTER[1] - STEP]},
+    {color: 'pink', iconName: 'attraction', coordinates: [CENTER[0] + STEP, CENTER[1] - STEP], size: 'micro'}
 ];

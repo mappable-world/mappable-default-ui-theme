@@ -1,4 +1,4 @@
-import {LOCATION, MARKER_LOCATION} from '../common';
+import {LOCATION, MARKER_LOCATIONS} from '../common';
 
 window.map = null;
 
@@ -27,7 +27,9 @@ async function main() {
             <MMap location={location} ref={(x) => (map = x)}>
                 <MMapDefaultSchemeLayer />
                 <MMapDefaultFeaturesLayer />
-                <MMapDefaultMarker iconName="fallback" color="bluebell" coordinates={MARKER_LOCATION} />
+                {MARKER_LOCATIONS.map((props, i) => (
+                    <MMapDefaultMarker {...props} key={i} />
+                ))}
             </MMap>
         );
     }

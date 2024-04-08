@@ -1,4 +1,4 @@
-import {LOCATION, MARKER_LOCATION} from '../common';
+import {LOCATION, MARKER_LOCATIONS} from '../common';
 
 window.map = null;
 
@@ -22,13 +22,13 @@ async function main() {
             const refMap = (ref) => {
                 window.map = ref?.entity;
             };
-            return {LOCATION, refMap, MARKER_LOCATION};
+            return {LOCATION, refMap, MARKER_LOCATIONS};
         },
         template: `
             <MMap :location="LOCATION" :ref="refMap">
                 <MMapDefaultSchemeLayer />
                 <MMapDefaultFeaturesLayer />
-                <MMapDefaultMarker iconName="fallback" color="bluebell" :coordinates="MARKER_LOCATION"/>
+                <MMapDefaultMarker v-for="(props, i) in MARKER_LOCATIONS" v-bind="props" :key="i" />
             </MMap>`
     });
     app.mount('#app');
