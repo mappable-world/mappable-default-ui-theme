@@ -1,4 +1,4 @@
-import {LOCATION, MARKER_LOCATION} from '../common';
+import {LOCATION, MARKER_LOCATIONS} from '../common';
 window.map = null;
 
 main();
@@ -13,10 +13,5 @@ async function main() {
     map.addChild(new MMapDefaultSchemeLayer({}));
     map.addChild(new MMapDefaultFeaturesLayer({}));
 
-    const defaultMarker = new MMapDefaultMarker({
-        iconName: 'fallback',
-        color: 'bluebell',
-        coordinates: MARKER_LOCATION
-    });
-    map.addChild(defaultMarker);
+    MARKER_LOCATIONS.forEach((props) => map.addChild(new MMapDefaultMarker(props)));
 }
