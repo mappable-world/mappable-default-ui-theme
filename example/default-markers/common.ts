@@ -17,9 +17,9 @@ export const MARKER_LOCATIONS: MMapDefaultMarkerProps[] = [
     {coordinates: [CENTER[0], CENTER[1] + STEP / 2]},
     {coordinates: [CENTER[0] + STEP, CENTER[1] + STEP / 2], size: 'micro'},
     // airport icon
-    {iconName: 'airport', coordinates: [CENTER[0] - STEP, CENTER[1] - STEP / 2], size: 'normal'},
-    {iconName: 'airport', coordinates: [CENTER[0], CENTER[1] - STEP / 2]},
-    {iconName: 'airport', coordinates: [CENTER[0] + STEP, CENTER[1] - STEP / 2], size: 'micro'},
+    {iconName: 'viewpoint', coordinates: [CENTER[0] - STEP, CENTER[1] - STEP / 2], size: 'normal'},
+    {iconName: 'viewpoint', coordinates: [CENTER[0], CENTER[1] - STEP / 2]},
+    {iconName: 'viewpoint', coordinates: [CENTER[0] + STEP, CENTER[1] - STEP / 2], size: 'micro'},
     // color
     {color: 'steelblue', coordinates: [CENTER[0] - STEP, CENTER[1] + STEP], size: 'normal'},
     {color: 'steelblue', coordinates: [CENTER[0], CENTER[1] + STEP]},

@@ -111,10 +111,13 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
     }
 
     private _getIcon(): string {
-        if (this._props.size === 'micro') {
+        if (this._props.size === 'micro' || this._props.iconName === undefined) {
             return '';
         }
-        return this._props.iconName !== undefined ? icons[this._props.iconName][this._props.size] : '';
+        if (icons[this._props.iconName][this._props.size]) {
+            return icons[this._props.iconName][this._props.size];
+        }
+        return icons[this._props.iconName].normal.replace(/<svg/, '$& style="transform:scale(calc(10/24)"');
     }
 
     private _getColor(): ThemesColor {
