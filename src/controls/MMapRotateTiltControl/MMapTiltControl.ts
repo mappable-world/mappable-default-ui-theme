@@ -1,20 +1,12 @@
 import type {MMapListener} from '@mappable-world/mappable-types';
 import {MMapCameraRequest} from '@mappable-world/mappable-types/imperative/MMap';
 import type {MMapRotateTiltControlProps} from '.';
-import {
-    CLICK_TOLERANCE_PX,
-    MAX_TILT_DEG,
-    MIN_TILT_DEG,
-    Position,
-    degToRad,
-    radToDeg,
-    toggleTilt
-} from '../utils/angle-utils';
+import {CLICK_TOLERANCE_PX, Position, degToRad, radToDeg, toggleTilt} from '../utils/angle-utils';
 import './MMapTiltControl.css';
 
-const TILT_CONTROL_CLASS = 'mappable--tilt-control';
-const TILT_CONTROL_IN_ACTION_CLASS = 'mappable--tilt-control__in-action';
-const TILT_CONTROL_TILTED_CLASS = 'mappable--tilt-control__tilted';
+const TILT_CONTROL_CLASS = 'mappable--rotate-tilt_tilt';
+const TILT_CONTROL_IN_ACTION_CLASS = 'mappable--rotate-tilt_tilt__in-action';
+const TILT_CONTROL_TILTED_CLASS = 'mappable--rotate-tilt_tilt__tilted';
 
 export class MMapTiltControl extends mappable.MMapComplexEntity<MMapRotateTiltControlProps> {
     private _element?: HTMLElement;
@@ -37,7 +29,8 @@ export class MMapTiltControl extends mappable.MMapComplexEntity<MMapRotateTiltCo
 
         this._element = document.createElement('mappable');
         this._element.classList.add(TILT_CONTROL_CLASS);
-        this._element.textContent = this.root?.tilt === MIN_TILT_DEG ? '3D' : '2D';
+        const {tilt, tiltRange} = this.root;
+        this._element.textContent = tilt === tiltRange.min ? '3D' : '2D';
         this._element.addEventListener('click', this._toggleMapTilt);
         this._element.addEventListener('mousedown', this._onTiltStart);
 
@@ -57,7 +50,11 @@ export class MMapTiltControl extends mappable.MMapComplexEntity<MMapRotateTiltCo
             return;
         }
         const {duration, easing} = this._props;
-        const targetTiltDeg = toggleTilt(radToDeg(this.root.tilt), MIN_TILT_DEG, MAX_TILT_DEG);
+        const {
+            tilt,
+            tiltRange: {max, min}
+        } = this.root;
+        const targetTiltDeg = toggleTilt(radToDeg(tilt), min, max);
         this.root.setCamera({tilt: degToRad(targetTiltDeg), duration, easing});
     };
 
@@ -100,7 +97,7 @@ export class MMapTiltControl extends mappable.MMapComplexEntity<MMapRotateTiltCo
             return;
         }
         const degTilt = radToDeg(radTilt ?? 0);
-        const isMinTilt = Math.round(degTilt) === MIN_TILT_DEG;
+        const isMinTilt = Math.round(degTilt) === this.root.tiltRange.min;
 
         this._element.style.transform = `rotateX(${degTilt}deg)`;
         this._element.textContent = isMinTilt ? '3D' : '2D';

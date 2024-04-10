@@ -1,14 +1,6 @@
 import type {EasingFunctionDescription, MMapControl, MMapListener} from '@mappable-world/mappable-types';
 import {MMapCameraRequest} from '@mappable-world/mappable-types/imperative/MMap';
-import {
-    CLICK_TOLERANCE_PX,
-    MAX_TILT_DEG,
-    MIN_TILT_DEG,
-    Position,
-    degToRad,
-    radToDeg,
-    toggleTilt
-} from '../utils/angle-utils';
+import {CLICK_TOLERANCE_PX, Position, degToRad, radToDeg, toggleTilt} from '../utils/angle-utils';
 import {MMapTiltControlVuefyOptions} from './vue';
 
 import './index.css';
@@ -100,7 +92,8 @@ class InternalTiltControl extends mappable.MMapComplexEntity<MMapTiltControlProp
 
         this._element.classList.add(TILT_CONTROL_CLASS);
         this._label.classList.add(TILT_LABEL_CLASS);
-        this._label.textContent = this.root?.tilt === MIN_TILT_DEG ? '3D' : '2D';
+        const {tilt, tiltRange} = this.root;
+        this._label.textContent = tilt === tiltRange.min ? '3D' : '2D';
         this._tiltIn.classList.add(TILT_INDICATOR_IN_CLASS, HIDE_INDICATOR_CLASS);
         this._tiltOut.classList.add(TILT_INDICATOR_OUT_CLASS, HIDE_INDICATOR_CLASS);
 
@@ -126,7 +119,11 @@ class InternalTiltControl extends mappable.MMapComplexEntity<MMapTiltControlProp
             return;
         }
         const {duration, easing} = this._props;
-        const targetTiltDeg = toggleTilt(radToDeg(this.root.tilt), MIN_TILT_DEG, MAX_TILT_DEG);
+        const {
+            tilt,
+            tiltRange: {min, max}
+        } = this.root;
+        const targetTiltDeg = toggleTilt(radToDeg(tilt), min, max);
         this.root.setCamera({tilt: degToRad(targetTiltDeg), duration, easing});
     };
 
@@ -183,7 +180,7 @@ class InternalTiltControl extends mappable.MMapComplexEntity<MMapTiltControlProp
             return;
         }
         const degTilt = radToDeg(radTilt ?? 0);
-        const isMinTilt = Math.round(degTilt) === MIN_TILT_DEG;
+        const isMinTilt = Math.round(degTilt) === this.root.tiltRange.min;
         this._label.textContent = isMinTilt ? '3D' : '2D';
         this._element.classList.toggle(TILT_CONTROL_ACTIVE_CLASS, !isMinTilt);
     }

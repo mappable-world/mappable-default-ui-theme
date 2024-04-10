@@ -4,9 +4,9 @@ import type {MMapRotateTiltControlProps} from '.';
 import {Position, getDeltaAzimuth, toggleRotate} from '../utils/angle-utils';
 import './MMapRotateControl.css';
 
-const ROTATE_CONTROL_CLASS = 'mappable--rotate-control';
-const ROTATE_RING_CLASS = 'mappable--rotate-control_ring';
-const ROTATE_CONTAINER_CLASS = 'mappable--rotate-control_container';
+const ROTATE_CONTROL_CLASS = 'mappable--rotate-tilt_rotate';
+const ROTATE_RING_CLASS = 'mappable--rotate-tilt_rotate__ring';
+const ROTATE_CONTAINER_CLASS = 'mappable--rotate-tilt_rotate__container';
 
 export class MMapRotateControl extends mappable.MMapGroupEntity<MMapRotateTiltControlProps> {
     private _element?: HTMLElement;

@@ -1,4 +1,4 @@
-.mappable--tilt-control {
+.mappable--rotate-tilt_tilt {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -16,21 +16,21 @@
     background-color: #fff;
 }
 
-.mappable--tilt-control:hover {
+.mappable--rotate-tilt_tilt:hover {
     color: #050d33;
 }
 
-.mappable--tilt-control__tilted {
+.mappable--rotate-tilt_tilt__tilted {
     color: #fff;
     background-color: #196dff;
 
     transition: background-color 0.4s;
 }
 
-.mappable--tilt-control__tilted:hover {
+.mappable--rotate-tilt_tilt__tilted:hover {
     color: #fff;
 }
 
-.mappable--tilt-control__in-action {
+.mappable--rotate-tilt_tilt__in-action {
     cursor: grabbing;
 }

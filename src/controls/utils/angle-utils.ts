@@ -5,8 +5,6 @@ export interface Position {
 
 export const DEG_TO_RAD = Math.PI / 180;
 export const RAD_TO_DEG = 180 / Math.PI;
-export const MIN_TILT_DEG = 0;
-export const MAX_TILT_DEG = 50;
 export const CLICK_TOLERANCE_PX = 3;
 
 /**

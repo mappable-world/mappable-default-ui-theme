@@ -1,4 +1,4 @@
-.mappable--rotate-control {
+.mappable--rotate-tilt_rotate {
     position: relative;
 
     display: flex;
@@ -11,7 +11,7 @@
     user-select: none;
 }
 
-.mappable--rotate-control_ring {
+.mappable--rotate-tilt_rotate__ring {
     position: absolute;
 
     box-sizing: border-box;
@@ -28,7 +28,7 @@
         0 2px 6px 0 rgba(0, 0, 0, 0.2);
 }
 
-.mappable--rotate-control_ring::before {
+.mappable--rotate-tilt_rotate__ring::before {
     position: absolute;
 
     width: 56px;
@@ -42,12 +42,12 @@
     transform: translate(-10px, -10px); /* 10px as border width */
 }
 
-.mappable--rotate-control_ring:hover::before {
+.mappable--rotate-tilt_rotate__ring:hover::before {
     background: url('../assets/mappable-compass_hover.svg?inline') center no-repeat;
 
     transition: background 0.4s;
 }
 
-.mappable--rotate-control_container {
+.mappable--rotate-tilt_rotate__container {
     z-index: 1;
 }
