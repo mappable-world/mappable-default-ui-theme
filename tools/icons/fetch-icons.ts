@@ -14,7 +14,7 @@ export type IconDescriptionWithLink = IconDescription & {
 /** The name of the canvas in the file from which the icons will be loaded */
 const CANVAS_NAME = 'glyphs';
 /** Available icon sizes specified in Figma */
-const AVAILABLE_SIZES = [14, 24];
+const AVAILABLE_SIZES = [24];
 /** RegExp for getting the region code from the component name */
 const REGION_CODE_REGEXP = /_([a-z]{2})_/;
 /** RegExp for getting the size from the component name*/

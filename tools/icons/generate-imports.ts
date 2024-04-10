@@ -14,8 +14,7 @@ export const generateImports = async (iconsDescription: IconDescription[], iconN
     const iconNamesObject = iconNames
         .map((iconName) => {
             const normalIcon = iconsDescription.find((description) => description.name === `${iconName}_24`);
-            const smallIcon = iconsDescription.find((description) => description.name === `${iconName}_14`);
-            return `${iconName}:{normal:${normalIcon?.name ?? 'null'},small:${smallIcon?.name ?? 'null'}},`;
+            return `${iconName}:${normalIcon?.name ?? 'null'},`;
         })
         .join('\n');
 

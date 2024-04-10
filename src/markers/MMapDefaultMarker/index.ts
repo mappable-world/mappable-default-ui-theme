@@ -1,15 +1,18 @@
 import {MMapMarker, MMapMarkerProps} from '@mappable-world/mappable-types';
-import {IconColor, IconName, IconSize, glyphColors, iconColors, icons} from '../icons';
+import {IconColor, IconName, iconColors, icons} from '../../icons';
 import microPoiStrokeSVG from './backgrounds/micro-poi-stroke.svg';
 import microPoiSVG from './backgrounds/micro-poi.svg';
+import normalPinStrokeSVG from './backgrounds/normal-pin-stroke.svg';
 import normalPinSVG from './backgrounds/normal-pin.svg';
 import smallPoiStrokeSVG from './backgrounds/small-poi-stroke.svg';
 import smallPoiSVG from './backgrounds/small-poi.svg';
 import './index.css';
 
+const GLYPH_COLOR = '#FFFFFF';
+
 export type ThemesColor = {day: string; night: string};
 export type MarkerColorProps = IconColor | ThemesColor;
-export type MarkerSizeProps = IconSize | 'micro';
+export type MarkerSizeProps = 'normal' | 'small' | 'micro';
 
 export type MMapDefaultMarkerProps = MMapMarkerProps & {
     iconName?: IconName;
@@ -31,6 +34,7 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
     private _background: HTMLElement;
     private _stroke?: HTMLElement;
     private _icon?: HTMLElement;
+    private _unwatchThemeContext?: () => void;
 
     constructor(props: MMapDefaultMarkerProps) {
         super(props);
@@ -77,7 +81,9 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
         this._marker = new mappable.MMapMarker(this._props, this._markerElement);
         this.addChild(this._marker);
 
-        this._updateTheme();
+        this._unwatchThemeContext = this._watchContext(mappable.ThemeContext, () => this._updateTheme(), {
+            immediate: true
+        });
     }
 
     protected _onUpdate(propsDiff: Partial<MMapDefaultMarkerProps>): void {
@@ -89,35 +95,44 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
         this._marker.update(this._props);
     }
 
+    protected _onDetach(): void {
+        this._unwatchThemeContext?.();
+    }
+
     private _updateTheme() {
+        const themeCtx = this._consumeContext(mappable.ThemeContext);
+        const theme = themeCtx.theme;
+
+        const strokeColor = GLYPH_COLOR;
+        const backgroundColor = theme === 'light' ? this._color.day : this._color.night;
+
         switch (this._props.size) {
             case 'normal':
-                const circle = this._background.querySelector<HTMLElement>('.mappable--normal-pin_circle');
-                this._background.style.color = this._color.day;
-                circle.style.backgroundColor = this._color.day;
-                this._icon.style.color = glyphColors.day;
-                circle.style.borderColor = glyphColors.day;
+                this._background.style.color = backgroundColor;
+                this._stroke.style.color = strokeColor;
+                this._icon.style.color = strokeColor;
                 break;
             case 'small':
-                this._background.style.color = this._color.day;
-                this._stroke.style.color = glyphColors.day;
-                this._icon.style.color = glyphColors.day;
+                this._background.style.color = backgroundColor;
+                this._stroke.style.color = strokeColor;
+                this._icon.style.color = strokeColor;
                 break;
             case 'micro':
-                this._background.style.color = this._color.day;
-                this._stroke.style.color = glyphColors.day;
+                this._background.style.color = backgroundColor;
+                this._stroke.style.color = strokeColor;
                 break;
         }
     }
 
     private _getIcon(): string {
-        if (this._props.size === 'micro' || this._props.iconName === undefined) {
+        const {size} = this._props;
+        if (size === 'micro' || this._props.iconName === undefined) {
             return '';
         }
-        if (icons[this._props.iconName][this._props.size]) {
-            return icons[this._props.iconName][this._props.size];
+        if (size === 'normal') {
+            return icons[this._props.iconName];
         }
-        return icons[this._props.iconName].normal.replace(/<svg/, '$& style="transform:scale(calc(10/24)"');
+        return icons[this._props.iconName].replace(/<svg/, '$& style="transform:scale(calc(14/24)"');
     }
 
     private _getColor(): ThemesColor {
@@ -137,19 +152,19 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
 
     private _createNormalPin(): BackgroundAndIcon {
         const normalPin = document.createElement('mappable');
+        const normalPinStroke = document.createElement('mappable');
         const normalIcon = document.createElement('mappable');
-        const circle = document.createElement('mappable');
 
         normalPin.classList.add('mappable--normal-pin');
         normalPin.innerHTML = normalPinSVG;
 
-        circle.classList.add('mappable--normal-pin_circle');
-        normalPin.appendChild(circle);
+        normalPinStroke.classList.add('mappable--normal-pin_stroke');
+        normalPinStroke.innerHTML = normalPinStrokeSVG;
 
         normalIcon.classList.add('mappable--normal-icon');
         normalIcon.innerHTML = this._getIcon();
 
-        return {background: normalPin, icon: normalIcon};
+        return {background: normalPin, icon: normalIcon, stroke: normalPinStroke};
     }
 
     private _createSmallPoi(): BackgroundAndIcon {

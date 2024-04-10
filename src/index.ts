@@ -1,2 +1,2 @@
 export * from './controls';
-export * from './MMapDefaultMarker';
+export * from './markers';

@@ -6,8 +6,6 @@ const PALETTE_NAME = 'rubrics';
 
 const PRIMARY_DAY = 'maps_pin_primary_day';
 const PRIMARY_NIGHT = 'maps_pin_primary_night';
-const GLYPH_DAY = 'maps_pin_secondary_day';
-const GLYPH_NIGHT = 'maps_pin_secondary_night';
 
 type RubricColors = {
     rubricName: string;
@@ -22,8 +20,6 @@ export type MarkerColors = {
 
 export type FetchedColors = {
     colors: MarkerColors[];
-    glyphDay: string;
-    glyphNight: string;
 };
 
 export const fetchFigmaColors = async (): Promise<FetchedColors> => {
@@ -42,22 +38,12 @@ export const fetchFigmaColors = async (): Promise<FetchedColors> => {
     const canvas = file.document.children.find((child) => child.name === CANVAS_NAME) as Node<'CANVAS'>;
     const rubricsPalette = canvas.children.find((child) => child.name === PALETTE_NAME) as Node<'GROUP'>;
     const rubrics = rubricsPalette.children.filter(({name}) => !name.includes('fallback')) as Node<'GROUP'>[];
-    let glyphDay: string = '';
-    let glyphNight: string = '';
+
     const rubricColors = rubrics.reduce((rubricColors, {name, children}) => {
         const colors = children as Node<'RECTANGLE'>[];
 
         const primaryDay = colors.find((color) => color.name === PRIMARY_DAY)?.fills[0].color;
         const primaryNight = colors.find((color) => color.name === PRIMARY_NIGHT)?.fills[0].color;
-
-        if (glyphDay.length === 0) {
-            const glyphDayColor = colors.find((color) => color.name === GLYPH_DAY)?.fills[0].color;
-            glyphDay = glyphDayColor ? rgbaToHex(glyphDayColor) : glyphDay;
-        }
-        if (glyphNight.length === 0) {
-            const glyphNightColor = colors.find((color) => color.name === GLYPH_NIGHT)?.fills[0].color;
-            glyphNight = glyphNightColor ? rgbaToHex(glyphNightColor) : glyphNight;
-        }
 
         if (primaryDay === undefined || primaryNight === undefined) {
             return rubricColors;
@@ -76,7 +62,7 @@ export const fetchFigmaColors = async (): Promise<FetchedColors> => {
     }, new Map<string, string>());
 
     const colors = Array.from(dayNightColorsMap.entries()).map(([day, night]) => ({day, night}));
-    return {colors, glyphDay, glyphNight};
+    return {colors};
 };
 
 const rgbaToHex = (rgba: Color): string => {

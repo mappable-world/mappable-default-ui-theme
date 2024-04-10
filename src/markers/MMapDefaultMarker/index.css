@@ -8,26 +8,19 @@
 
 /* normal size */
 .mappable--normal-pin {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    row-gap: 2px;
     position: absolute;
-    transform: translate(-50%, calc(-100% + 4px));
+    transform: translate(-50%, calc(-100% + 2px)); /* 2px - point radius */
     filter: drop-shadow(0px 2px 6px rgba(24, 27, 34, 0.4));
+}
+.mappable--normal-pin_stroke {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    z-index: -1;
 }
 .mappable--normal-icon {
     position: absolute;
-    transform: translate(-50%, calc(-4px - 2px - 51px + 10px)); /* 51px - pin height, 10px - offset */
-}
-.mappable--normal-pin_circle {
-    display: block;
-    width: 4px;
-    height: 4px;
-    border-width: 2px;
-    border-style: solid;
-    border-radius: 50%;
-    box-shadow: 0px 1px 4px 0px rgba(24, 27, 34, 0.3);
+    transform: translate(-50%, calc(-59px + 2px + 10px)); /* 59px - pin height, 2px - point radius, 10px - offset */
+    z-index: 1;
 }
 
 /* small size */

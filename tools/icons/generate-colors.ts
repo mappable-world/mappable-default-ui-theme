@@ -16,7 +16,6 @@ export const generateColorsFile = async (fetchedColors: FetchedColors) => {
     export const iconColors = {
         ${colorsObjectValues.join('\n')}
     } as const;
-    export const glyphColors = {day:'${fetchedColors.glyphDay}',night:'${fetchedColors.glyphNight}'} as const;
     export type IconColor = keyof typeof iconColors`;
 
     const formattedContent = await prettierFormat(content, 'typescript');
