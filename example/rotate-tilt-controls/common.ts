@@ -1,3 +1,5 @@
+import {BehaviorType, LngLatBounds, MMapBoundsLocation} from '@mappable-world/mappable-types';
+
 mappable.import.loaders.unshift(async (pkg) => {
     if (!pkg.startsWith('@mappable-world/mappable-default-ui-theme')) {
         return;
@@ -12,12 +14,10 @@ mappable.import.loaders.unshift(async (pkg) => {
     return window['@mappable-world/mappable-default-ui-theme'];
 });
 
-const BOUNDS = [
+const BOUNDS: LngLatBounds = [
     [54.58311, 25.9985],
     [56.30248, 24.47889]
 ];
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const LOCATION = {bounds: BOUNDS};
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const ENABLED_BEHAVIORS = ['drag', 'scrollZoom', 'dblClick', 'mouseTilt', 'mouseRotate'];
+export const LOCATION: MMapBoundsLocation = {bounds: BOUNDS};
+export const ENABLED_BEHAVIORS: BehaviorType[] = ['drag', 'scrollZoom', 'dblClick', 'mouseTilt', 'mouseRotate'];
