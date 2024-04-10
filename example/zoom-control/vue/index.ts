@@ -9,9 +9,7 @@ async function main() {
 
     const {MMap, MMapDefaultSchemeLayer, MMapDefaultFeaturesLayer, MMapControls} = vuefy.module(mappable);
 
-    const {MMapZoomControl} = vuefy.module(await mappable.import('@mappable-world/mappable-controls@0.0.1'));
-
-    const {MMapButtonExample} = vuefy.module(await mappable.import('@mappable-world/mappable-default-ui-theme'));
+    const {MMapZoomControl} = vuefy.module(await mappable.import('@mappable-world/mappable-default-ui-theme'));
 
     const app = Vue.createApp({
         components: {
@@ -19,15 +17,13 @@ async function main() {
             MMapDefaultSchemeLayer,
             MMapDefaultFeaturesLayer,
             MMapControls,
-            MMapZoomControl,
-            MMapButtonExample
+            MMapZoomControl
         },
         setup() {
             const refMap = (ref: any) => {
                 window.map = ref?.entity;
             };
-            const onClick = () => alert('Click!');
-            return {LOCATION, refMap, onClick};
+            return {LOCATION, refMap};
         },
         template: `
             <MMap :location="LOCATION" :ref="refMap">
@@ -35,7 +31,9 @@ async function main() {
                 <MMapDefaultFeaturesLayer />
                 <MMapControls position="right">
                     <MMapZoomControl />
-                    <MMapButtonExample text="My button" :onClick="onClick" />
+                </MMapControls>
+                <MMapControls position="bottom">
+                    <MMapZoomControl />
                 </MMapControls>
             </MMap>`
     });
