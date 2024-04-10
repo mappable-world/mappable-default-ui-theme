@@ -10,5 +10,4 @@ export const iconColors = {
   green: {day: '#5ebd8cff', night: '#468c68ff'},
   darksalmon: {day: '#f09a75ff', night: '#ab6f55ff'}
 } as const;
-export const glyphColors = {day: '#ffffffff', night: '#303741ff'} as const;
 export type IconColor = keyof typeof iconColors;
