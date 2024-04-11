@@ -4,5 +4,3 @@ dist
 node_modules
 .env
 .DS_Store
-# FIXME: ignore static folder for a while
-static
