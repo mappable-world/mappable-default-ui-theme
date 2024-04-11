@@ -38,9 +38,21 @@ export const MARKER_LOCATIONS: MMapDefaultMarkerProps[] = [
         subtitle: 'Normal subtitle'
     },
     // color
-    {color: 'steelblue', coordinates: [CENTER[0] - STEP, CENTER[1] + STEP], size: 'normal'},
-    {color: 'steelblue', coordinates: [CENTER[0], CENTER[1] + STEP]},
-    {color: 'steelblue', coordinates: [CENTER[0] + STEP, CENTER[1] + STEP], size: 'micro'},
+    {
+        color: 'steelblue',
+        coordinates: [CENTER[0] - STEP, CENTER[1] + STEP],
+        size: 'normal',
+        title: 'Hover hint',
+        staticHint: false
+    },
+    {color: 'steelblue', coordinates: [CENTER[0], CENTER[1] + STEP], title: 'Hover hint', staticHint: false},
+    {
+        color: 'steelblue',
+        coordinates: [CENTER[0] + STEP, CENTER[1] + STEP],
+        size: 'micro',
+        title: 'Hover hint',
+        staticHint: false
+    },
     // color and icon
     {
         color: 'pink',

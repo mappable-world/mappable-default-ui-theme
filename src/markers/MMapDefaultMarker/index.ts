@@ -24,6 +24,8 @@ const ICON_CLASS = 'mappable--default-marker__icon';
 const HINT_CLASS = 'mappable--hint';
 const HINT_TITLE_CLASS = 'mappable--hint-title';
 const HINT_SUBTITLE_CLASS = 'mappable--hint-subtitle';
+const HINT_STABLE = 'mappable--hint__stable';
+const HINT_HOVERED = 'mappable--hint__hovered';
 
 export type ThemesColor = {day: string; night: string};
 export type MarkerColorProps = IconColor | ThemesColor;
@@ -35,9 +37,10 @@ export type MMapDefaultMarkerProps = MMapMarkerProps & {
     size?: MarkerSizeProps;
     title?: string;
     subtitle?: string;
+    staticHint?: boolean;
 };
 
-const defaultProps = Object.freeze({color: 'darkgray', size: 'small'});
+const defaultProps = Object.freeze({color: 'darkgray', size: 'small', staticHint: true});
 type DefaultProps = typeof defaultProps;
 
 type BackgroundAndIcon = {background: HTMLElement; stroke?: HTMLElement; icon?: HTMLElement};
@@ -134,6 +137,11 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
             this._markerElement.removeChild(this._hintContainer);
         }
 
+        if (propsDiff.staticHint !== undefined) {
+            this._hintContainer.classList.toggle(HINT_STABLE, this._props.staticHint);
+            this._hintContainer.classList.toggle(HINT_HOVERED, !this._props.staticHint);
+        }
+
         this._marker.update(this._props);
     }
 
@@ -142,12 +150,13 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
     }
 
     private _createHintContainer(): HTMLElement {
-        const {title, subtitle} = this._props;
+        const {title, subtitle, staticHint} = this._props;
         const hintContainer = document.createElement('mappable');
         this._titleHint = document.createElement('mappable');
         this._subtitleHint = document.createElement('mappable');
 
         hintContainer.classList.add(HINT_CLASS);
+        hintContainer.classList.add(staticHint ? HINT_STABLE : HINT_HOVERED);
         this._titleHint.classList.add(HINT_TITLE_CLASS);
         this._subtitleHint.classList.add(HINT_SUBTITLE_CLASS);
 
