@@ -11,91 +11,35 @@ export const LOCATION: MMapLocationRequest = {bounds: BOUNDS};
 const CENTER: LngLat = [(BOUNDS[0][0] + BOUNDS[1][0]) / 2, (BOUNDS[0][1] + BOUNDS[1][1]) / 2];
 const STEP = 0.3;
 
+const getCoordinates = (row: number, col: number): LngLat => [CENTER[0] + row * STEP, CENTER[1] + col * STEP];
+
 export const MARKER_LOCATIONS: MMapDefaultMarkerProps[] = [
-    // no icon markers
-    {coordinates: [CENTER[0] - STEP, CENTER[1] + STEP / 2], size: 'normal'},
-    {coordinates: [CENTER[0], CENTER[1] + STEP / 2]},
-    {coordinates: [CENTER[0] + STEP, CENTER[1] + STEP / 2], size: 'micro'},
-    // airport icon
-    {
-        iconName: 'fallback',
-        coordinates: [CENTER[0] - STEP, CENTER[1] - STEP / 2],
-        size: 'normal',
-        title: 'Normal title',
-        subtitle: 'Normal subtitle'
-    },
-    {
-        iconName: 'fallback',
-        coordinates: [CENTER[0], CENTER[1] - STEP / 2],
-        title: 'Normal title',
-        subtitle: 'Normal subtitle'
-    },
-    {
-        iconName: 'fallback',
-        coordinates: [CENTER[0] + STEP, CENTER[1] - STEP / 2],
-        size: 'micro',
-        title: 'Normal title',
-        subtitle: 'Normal subtitle'
-    },
-    // color
-    {
-        color: 'steelblue',
-        coordinates: [CENTER[0] - STEP, CENTER[1] + STEP],
-        size: 'normal',
-        title: 'Hover hint',
-        staticHint: false
-    },
-    {color: 'steelblue', coordinates: [CENTER[0], CENTER[1] + STEP], title: 'Hover hint', staticHint: false},
-    {
-        color: 'steelblue',
-        coordinates: [CENTER[0] + STEP, CENTER[1] + STEP],
-        size: 'micro',
-        title: 'Hover hint',
-        staticHint: false
-    },
-    // color and icon
-    {
-        color: 'pink',
-        iconName: 'attraction',
-        coordinates: [CENTER[0] - STEP, CENTER[1] - STEP],
-        size: 'normal',
-        title: 'Overflow title Overflow title Overflow title Overflow title',
-        subtitle: 'Overflow subtitle Overflow subtitle Overflow subtitle Overflow subtitle'
-    },
-    {
-        color: 'pink',
-        iconName: 'attraction',
-        coordinates: [CENTER[0], CENTER[1] - STEP],
-        title: 'Overflow title Overflow title Overflow title Overflow title',
-        subtitle: 'Overflow subtitle Overflow subtitle Overflow subtitle Overflow subtitle'
-    },
-    {
-        color: 'pink',
-        iconName: 'attraction',
-        coordinates: [CENTER[0] + STEP, CENTER[1] - STEP],
-        size: 'micro',
-        title: 'Overflow title Overflow title Overflow title Overflow title',
-        subtitle: 'Overflow subtitle Overflow subtitle Overflow subtitle Overflow subtitle'
-    },
-    // new group
-    {
-        color: 'darksalmon',
-        iconName: 'beach',
-        coordinates: [CENTER[0] - STEP, CENTER[1] - STEP * 1.5],
-        size: 'normal',
-        title: 'Normal title'
-    },
-    {
-        color: 'darksalmon',
-        iconName: 'beach',
-        coordinates: [CENTER[0], CENTER[1] - STEP * 1.5],
-        title: 'Normal title'
-    },
-    {
-        color: 'darksalmon',
-        iconName: 'beach',
-        coordinates: [CENTER[0] + STEP, CENTER[1] - STEP * 1.5],
-        size: 'micro',
-        title: 'Normal title'
-    }
+    // default marker
+    {coordinates: getCoordinates(-3, 0.5), size: 'normal'},
+    {coordinates: getCoordinates(-3, 0), size: 'small'},
+    {coordinates: getCoordinates(-3, -0.5), size: 'micro'},
+    // fallback color marker
+    {coordinates: getCoordinates(-2, 0.5), size: 'normal', color: 'bluebell',iconName:'fallback'},
+    {coordinates: getCoordinates(-2, 0), size: 'small', color: 'bluebell',iconName:'fallback'},
+    {coordinates: getCoordinates(-2, -0.5), size: 'micro', color: 'bluebell',iconName:'fallback'},
+    // color icon marker
+    {coordinates: getCoordinates(-1, 0.5), size: 'normal', color: 'ceil', iconName: 'attraction'},
+    {coordinates: getCoordinates(-1, 0), size: 'small', color: 'ceil', iconName: 'attraction'},
+    {coordinates: getCoordinates(-1, -0.5), size: 'micro', color: 'ceil', iconName: 'attraction'},
+    // title hint
+    {coordinates: getCoordinates(0, 0.5), size: 'normal', color: 'darksalmon', iconName: 'restaurants',title:'Normal title'},
+    {coordinates: getCoordinates(0, 0), size: 'small', color: 'darksalmon', iconName: 'restaurants',title:'Normal title'},
+    {coordinates: getCoordinates(0, -0.5), size: 'micro', color: 'darksalmon', iconName: 'restaurants',title:'Normal title'},
+    // title subtitle hint
+    {coordinates: getCoordinates(1, 0.5), size: 'normal', color: 'green', iconName: 'beach',title:'Normal title',subtitle:'Normal subtitle'},
+    {coordinates: getCoordinates(1, 0), size: 'small', color: 'green', iconName: 'beach',title:'Normal title',subtitle:'Normal subtitle'},
+    {coordinates: getCoordinates(1, -0.5), size: 'micro', color: 'green', iconName: 'beach',title:'Normal title',subtitle:'Normal subtitle'},
+    // hover hint
+    {coordinates: getCoordinates(2, 0.5), size: 'normal', color: "pink", iconName: 'medicine',title:'Hover title',subtitle:'Hover subtitle',staticHint:false,},
+    {coordinates: getCoordinates(2, 0), size: 'small', color: "pink", iconName: 'medicine',title:'Hover title',subtitle:'Hover subtitle',staticHint:false,},
+    {coordinates: getCoordinates(2, -0.5), size: 'micro', color: "pink", iconName: 'medicine',title:'Hover title',subtitle:'Hover subtitle',staticHint:false,},
+    // overflow hint
+    {coordinates: getCoordinates(3, 0.5), size: 'normal', color: "orchid", iconName: 'auto',title:'Overflow title Overflow title',subtitle:'Overflow subtitle Overflow subtitle'},
+    {coordinates: getCoordinates(3, 0), size: 'small', color: "orchid", iconName: 'auto',title:'Overflow title Overflow title',subtitle:'Overflow subtitle Overflow subtitle'},
+    {coordinates: getCoordinates(3, -0.5), size: 'micro', color: "orchid", iconName: 'auto',title:'Overflow title Overflow title',subtitle:'Overflow subtitle Overflow subtitle'},
 ];
