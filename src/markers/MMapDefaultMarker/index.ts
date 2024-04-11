@@ -1,11 +1,13 @@
 import {MMapMarker, MMapMarkerProps} from '@mappable-world/mappable-types';
 import {IconColor, IconName, iconColors, icons} from '../../icons';
+
 import microPoiStrokeSVG from './backgrounds/micro-poi-stroke.svg';
 import microPoiSVG from './backgrounds/micro-poi.svg';
 import normalPinStrokeSVG from './backgrounds/normal-pin-stroke.svg';
 import normalPinSVG from './backgrounds/normal-pin.svg';
 import smallPoiStrokeSVG from './backgrounds/small-poi-stroke.svg';
 import smallPoiSVG from './backgrounds/small-poi.svg';
+
 import './index.css';
 
 const GLYPH_COLOR = '#FFFFFF';
@@ -43,7 +45,7 @@ export type MMapDefaultMarkerProps = MMapMarkerProps & {
 const defaultProps = Object.freeze({color: 'darkgray', size: 'small', staticHint: true});
 type DefaultProps = typeof defaultProps;
 
-type BackgroundAndIcon = {background: HTMLElement; stroke?: HTMLElement; icon?: HTMLElement};
+type BackgroundAndIcon = {background: HTMLElement; stroke: HTMLElement; icon: HTMLElement};
 
 export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMarkerProps, DefaultProps> {
     static defaultProps = defaultProps;
@@ -77,9 +79,7 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
 
         this._markerElement = document.createElement('mappable');
         this._markerElement.classList.add(MARKER_BASE_CLASS);
-        this._markerElement.classList.toggle(NORMAL_SIZE_MARKER_CLASS, size === 'normal');
-        this._markerElement.classList.toggle(SMALL_SIZE_MARKER_CLASS, size === 'small');
-        this._markerElement.classList.toggle(MICRO_SIZE_MARKER_CLASS, size === 'micro');
+        this._updateMarkerSize();
 
         switch (size) {
             case 'normal':
@@ -98,6 +98,7 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
                 const micro = this._createMicroPoi();
                 this._stroke = micro.stroke;
                 this._background = micro.background;
+                this._icon = micro.icon;
                 break;
         }
 
@@ -123,17 +124,22 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
     }
 
     protected _onUpdate(propsDiff: Partial<MMapDefaultMarkerProps>): void {
+        const {title, subtitle} = this._props;
         if (propsDiff.color !== undefined) {
             this._color = this._getColor();
             this._updateTheme();
         }
+        if (propsDiff.size !== undefined) {
+            this._updateMarkerSize();
+            this._updateSVG();
+        }
 
-        const {title, subtitle} = this._props;
         this._titleHint.textContent = title ?? '';
         this._subtitleHint.textContent = subtitle ?? '';
-        if (title || subtitle) {
+        const hintAttached = this._markerElement.contains(this._hintContainer);
+        if (!hintAttached && (title !== undefined || subtitle !== undefined)) {
             this._markerElement.appendChild(this._hintContainer);
-        } else {
+        } else if (hintAttached && title === undefined && subtitle === undefined) {
             this._markerElement.removeChild(this._hintContainer);
         }
 
@@ -190,6 +196,32 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
             case 'micro':
                 this._background.style.color = backgroundColor;
                 this._stroke.style.color = strokeColor;
+                break;
+        }
+    }
+
+    private _updateMarkerSize() {
+        const {size} = this._props;
+        this._markerElement.classList.toggle(NORMAL_SIZE_MARKER_CLASS, size === 'normal');
+        this._markerElement.classList.toggle(SMALL_SIZE_MARKER_CLASS, size === 'small');
+        this._markerElement.classList.toggle(MICRO_SIZE_MARKER_CLASS, size === 'micro');
+    }
+
+    private _updateSVG() {
+        const {size} = this._props;
+        this._icon.innerHTML = this._getIcon();
+        switch (size) {
+            case 'normal':
+                this._background.innerHTML = normalPinSVG;
+                this._stroke.innerHTML = normalPinStrokeSVG;
+                break;
+            case 'small':
+                this._background.innerHTML = smallPoiSVG;
+                this._stroke.innerHTML = smallPoiStrokeSVG;
+                break;
+            case 'micro':
+                this._background.innerHTML = microPoiSVG;
+                this._stroke.innerHTML = microPoiStrokeSVG;
                 break;
         }
     }
@@ -255,6 +287,7 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
     private _createMicroPoi(): BackgroundAndIcon {
         const microPoi = document.createElement('mappable');
         const microPoiStroke = document.createElement('mappable');
+        const microIcon = document.createElement('mappable');
 
         microPoi.classList.add(BACKGROUND_CLASS);
         microPoi.innerHTML = microPoiSVG;
@@ -262,6 +295,8 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
         microPoiStroke.classList.add(STROKE_CLASS);
         microPoiStroke.innerHTML = microPoiStrokeSVG;
 
-        return {background: microPoi, stroke: microPoiStroke};
+        microIcon.classList.add(ICON_CLASS);
+
+        return {background: microPoi, stroke: microPoiStroke, icon: microIcon};
     }
 }
