@@ -10,6 +10,21 @@ import './index.css';
 
 const GLYPH_COLOR = '#FFFFFF';
 
+const MARKER_BASE_CLASS = 'mappable--default-marker-point';
+const MARKER_BASE_DARK_CLASS = 'mappable--default-marker-point_dark';
+
+const NORMAL_SIZE_MARKER_CLASS = 'mappable--pin';
+const SMALL_SIZE_MARKER_CLASS = 'mappable--small-poi';
+const MICRO_SIZE_MARKER_CLASS = 'mappable--micro-poi';
+
+const BACKGROUND_CLASS = 'mappable--default-marker__background';
+const STROKE_CLASS = 'mappable--default-marker__stroke';
+const ICON_CLASS = 'mappable--default-marker__icon';
+
+const HINT_CLASS = 'mappable--hint';
+const HINT_TITLE_CLASS = 'mappable--hint-title';
+const HINT_SUBTITLE_CLASS = 'mappable--hint-subtitle';
+
 export type ThemesColor = {day: string; night: string};
 export type MarkerColorProps = IconColor | ThemesColor;
 export type MarkerSizeProps = 'normal' | 'small' | 'micro';
@@ -18,6 +33,8 @@ export type MMapDefaultMarkerProps = MMapMarkerProps & {
     iconName?: IconName;
     color?: MarkerColorProps;
     size?: MarkerSizeProps;
+    title?: string;
+    subtitle?: string;
 };
 
 const defaultProps = Object.freeze({color: 'darkgray', size: 'small'});
@@ -30,10 +47,16 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
 
     private _marker: MMapMarker;
     private _markerElement: HTMLElement;
+
     private _color: ThemesColor;
     private _background: HTMLElement;
     private _stroke?: HTMLElement;
     private _icon?: HTMLElement;
+
+    private _hintContainer: HTMLElement;
+    private _titleHint: HTMLElement;
+    private _subtitleHint: HTMLElement;
+
     private _unwatchThemeContext?: () => void;
 
     constructor(props: MMapDefaultMarkerProps) {
@@ -47,10 +70,15 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
     protected _onAttach(): void {
         this._color = this._getColor();
 
-        this._markerElement = document.createElement('mappable');
-        this._markerElement.classList.add('mappable--default-marker-point');
+        const {size, title, subtitle} = this._props;
 
-        switch (this._props.size) {
+        this._markerElement = document.createElement('mappable');
+        this._markerElement.classList.add(MARKER_BASE_CLASS);
+        this._markerElement.classList.toggle(NORMAL_SIZE_MARKER_CLASS, size === 'normal');
+        this._markerElement.classList.toggle(SMALL_SIZE_MARKER_CLASS, size === 'small');
+        this._markerElement.classList.toggle(MICRO_SIZE_MARKER_CLASS, size === 'micro');
+
+        switch (size) {
             case 'normal':
                 const normal = this._createNormalPin();
                 this._icon = normal.icon;
@@ -78,6 +106,11 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
             this._markerElement.appendChild(this._icon);
         }
 
+        this._hintContainer = this._createHintContainer();
+        if (title || subtitle) {
+            this._markerElement.appendChild(this._hintContainer);
+        }
+
         this._marker = new mappable.MMapMarker(this._props, this._markerElement);
         this.addChild(this._marker);
 
@@ -92,11 +125,38 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
             this._updateTheme();
         }
 
+        const {title, subtitle} = this._props;
+        this._titleHint.textContent = title ?? '';
+        this._subtitleHint.textContent = subtitle ?? '';
+        if (title || subtitle) {
+            this._markerElement.appendChild(this._hintContainer);
+        } else {
+            this._markerElement.removeChild(this._hintContainer);
+        }
+
         this._marker.update(this._props);
     }
 
     protected _onDetach(): void {
         this._unwatchThemeContext?.();
+    }
+
+    private _createHintContainer(): HTMLElement {
+        const {title, subtitle} = this._props;
+        const hintContainer = document.createElement('mappable');
+        this._titleHint = document.createElement('mappable');
+        this._subtitleHint = document.createElement('mappable');
+
+        hintContainer.classList.add(HINT_CLASS);
+        this._titleHint.classList.add(HINT_TITLE_CLASS);
+        this._subtitleHint.classList.add(HINT_SUBTITLE_CLASS);
+
+        this._titleHint.textContent = title ?? '';
+        this._subtitleHint.textContent = subtitle ?? '';
+
+        hintContainer.appendChild(this._titleHint);
+        hintContainer.appendChild(this._subtitleHint);
+        return hintContainer;
     }
 
     private _updateTheme() {
@@ -105,6 +165,7 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
 
         const strokeColor = GLYPH_COLOR;
         const backgroundColor = theme === 'light' ? this._color.day : this._color.night;
+        this._markerElement.classList.toggle(MARKER_BASE_DARK_CLASS, theme === 'dark');
 
         switch (this._props.size) {
             case 'normal':
@@ -129,10 +190,8 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
         if (size === 'micro' || this._props.iconName === undefined) {
             return '';
         }
-        if (size === 'normal') {
-            return icons[this._props.iconName];
-        }
-        return icons[this._props.iconName].replace(/<svg/, '$& style="transform:scale(calc(14/24)"');
+
+        return icons[this._props.iconName];
     }
 
     private _getColor(): ThemesColor {
@@ -155,13 +214,13 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
         const normalPinStroke = document.createElement('mappable');
         const normalIcon = document.createElement('mappable');
 
-        normalPin.classList.add('mappable--normal-pin');
+        normalPin.classList.add(BACKGROUND_CLASS);
         normalPin.innerHTML = normalPinSVG;
 
-        normalPinStroke.classList.add('mappable--normal-pin_stroke');
+        normalPinStroke.classList.add(STROKE_CLASS);
         normalPinStroke.innerHTML = normalPinStrokeSVG;
 
-        normalIcon.classList.add('mappable--normal-icon');
+        normalIcon.classList.add(ICON_CLASS);
         normalIcon.innerHTML = this._getIcon();
 
         return {background: normalPin, icon: normalIcon, stroke: normalPinStroke};
@@ -172,13 +231,13 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
         const smallPoiStroke = document.createElement('mappable');
         const smallIcon = document.createElement('mappable');
 
-        smallPoi.classList.add('mappable--small-poi');
+        smallPoi.classList.add(BACKGROUND_CLASS);
         smallPoi.innerHTML = smallPoiSVG;
 
-        smallPoiStroke.classList.add('mappable--small-poi_stroke');
+        smallPoiStroke.classList.add(STROKE_CLASS);
         smallPoiStroke.innerHTML = smallPoiStrokeSVG;
 
-        smallIcon.classList.add('mappable--small-icon');
+        smallIcon.classList.add(ICON_CLASS);
         smallIcon.innerHTML = this._getIcon();
 
         return {background: smallPoi, icon: smallIcon, stroke: smallPoiStroke};
@@ -188,10 +247,10 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
         const microPoi = document.createElement('mappable');
         const microPoiStroke = document.createElement('mappable');
 
-        microPoi.classList.add('mappable--micro-poi');
+        microPoi.classList.add(BACKGROUND_CLASS);
         microPoi.innerHTML = microPoiSVG;
 
-        microPoiStroke.classList.add('mappable--micro-poi_stroke');
+        microPoiStroke.classList.add(STROKE_CLASS);
         microPoiStroke.innerHTML = microPoiStrokeSVG;
 
         return {background: microPoi, stroke: microPoiStroke};
