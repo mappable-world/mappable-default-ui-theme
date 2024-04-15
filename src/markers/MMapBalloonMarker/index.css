@@ -1,19 +1,19 @@
-.mappable--tooltip-marker {
+.mappable--balloon-marker {
     --tail-height: 12px;
     --tail-width: 16px;
     --border-radius: 12px;
 
     --tail-height-and-offset: calc(var(--tail-height) + var(--offset));
 
-    --tooltip-tail-transform-top: translate(-50%, calc(-100% - var(--offset))) rotate(180deg);
-    --tooltip-tail-transform-bottom: translate(-50%, var(--offset));
+    --balloon-tail-transform-top: translate(-50%, calc(-100% - var(--offset))) rotate(180deg);
+    --balloon-tail-transform-bottom: translate(-50%, var(--offset));
 }
 
-.mappable--tooltip-marker svg {
+.mappable--balloon-marker svg {
     display: block;
 }
 
-.mappable--tooltip-marker_container {
+.mappable--balloon-marker_container {
     width: max-content;
     max-width: 500px;
     max-height: 600px;
@@ -33,18 +33,18 @@
     overflow: hidden;
     text-overflow: ellipsis;
 
-    &.mappable--tooltip__dark {
+    &.mappable--balloon__dark {
         background-color: #272729;
         color: #c8c9cc;
     }
 }
 
-.mappable--tooltip-marker_tail {
+.mappable--balloon-marker_tail {
     display: block;
     position: absolute;
     color: #fff;
 
-    &.mappable--tooltip__dark {
+    &.mappable--balloon__dark {
         color: #272729;
     }
 
@@ -55,85 +55,85 @@
 
 /* positions */
 .position-top {
-    .mappable--tooltip-marker_container {
+    .mappable--balloon-marker_container {
         transform: translate(-50%, calc(-100% - var(--tail-height-and-offset)));
     }
-    .mappable--tooltip-marker_tail {
-        transform: var(--tooltip-tail-transform-top);
+    .mappable--balloon-marker_tail {
+        transform: var(--balloon-tail-transform-top);
     }
     /* top left */
     &.position-left {
-        .mappable--tooltip-marker_container {
+        .mappable--balloon-marker_container {
             transform: translate(
                 calc(-100% + var(--border-radius) + var(--tail-width) / 2),
                 calc(-100% - var(--tail-height-and-offset))
             );
         }
-        .mappable--tooltip-marker_tail {
-            transform: var(--tooltip-tail-transform-top);
+        .mappable--balloon-marker_tail {
+            transform: var(--balloon-tail-transform-top);
         }
     }
     /* top right */
     &.position-right {
-        .mappable--tooltip-marker_container {
+        .mappable--balloon-marker_container {
             transform: translate(
                 calc(-1 * var(--border-radius) - var(--tail-width) / 2),
                 calc(-100% - var(--tail-height-and-offset))
             );
         }
-        .mappable--tooltip-marker_tail {
-            transform: var(--tooltip-tail-transform-top);
+        .mappable--balloon-marker_tail {
+            transform: var(--balloon-tail-transform-top);
         }
     }
 }
 
 .position-bottom {
-    .mappable--tooltip-marker_container {
+    .mappable--balloon-marker_container {
         transform: translate(-50%, var(--tail-height-and-offset));
     }
-    .mappable--tooltip-marker_tail {
-        transform: var(--tooltip-tail-transform-bottom);
+    .mappable--balloon-marker_tail {
+        transform: var(--balloon-tail-transform-bottom);
     }
     /* bottom left */
     &.position-left {
-        .mappable--tooltip-marker_container {
+        .mappable--balloon-marker_container {
             transform: translate(
                 calc(-100% + var(--border-radius) + var(--tail-width) / 2),
                 var(--tail-height-and-offset)
             );
         }
-        .mappable--tooltip-marker_tail {
-            transform: var(--tooltip-tail-transform-bottom);
+        .mappable--balloon-marker_tail {
+            transform: var(--balloon-tail-transform-bottom);
         }
     }
     /* bottom right */
     &.position-right {
-        .mappable--tooltip-marker_container {
+        .mappable--balloon-marker_container {
             transform: translate(
                 calc(-1 * var(--border-radius) - var(--tail-width) / 2),
                 var(--tail-height-and-offset)
             );
         }
-        .mappable--tooltip-marker_tail {
-            transform: var(--tooltip-tail-transform-bottom);
+        .mappable--balloon-marker_tail {
+            transform: var(--balloon-tail-transform-bottom);
         }
     }
 }
 
 .position-left {
-    .mappable--tooltip-marker_container {
+    .mappable--balloon-marker_container {
         transform: translate(calc(-100% - var(--tail-height-and-offset)), -50%);
     }
-    .mappable--tooltip-marker_tail {
+    .mappable--balloon-marker_tail {
         transform: translate(calc(-100% - var(--offset)), -50%) rotate(90deg);
     }
 }
 
 .position-right {
-    .mappable--tooltip-marker_container {
+    .mappable--balloon-marker_container {
         transform: translate(var(--tail-height-and-offset), -50%);
     }
-    .mappable--tooltip-marker_tail {
+    .mappable--balloon-marker_tail {
         transform: translate(var(--offset), -50%) rotate(-90deg);
     }
 }

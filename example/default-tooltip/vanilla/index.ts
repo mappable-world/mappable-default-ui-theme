@@ -26,6 +26,6 @@ async function main() {
         ])
     );
 
-    const tooltip = new MMapTooltipMarker({coordinates: CENTER, draggable: true, text: TOOLTIP_TEXT});
+    const tooltip = new MMapTooltipMarker({coordinates: CENTER, draggable: true, content: TOOLTIP_TEXT});
     map.addChild(tooltip);
 }

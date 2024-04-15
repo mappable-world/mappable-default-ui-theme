@@ -49,7 +49,7 @@ async function main() {
                     <MMapControlButton text="Right Bottom" onClick={positionRightBottom} />
                     <MMapControlButton text="Right" onClick={positionRight} />
                 </MMapControls>
-                <MMapTooltipMarker coordinates={CENTER} draggable text={TOOLTIP_TEXT} position={position} />
+                <MMapTooltipMarker coordinates={CENTER} draggable content={TOOLTIP_TEXT} position={position} />
             </MMap>
         );
     }
