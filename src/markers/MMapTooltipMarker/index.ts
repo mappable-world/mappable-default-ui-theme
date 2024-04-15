@@ -1,24 +1,29 @@
 import {MMapMarker, MMapMarkerProps} from '@mappable-world/mappable-types';
-import {MMapMarkerVuefyOptions} from './vue';
+import {MMapTooltipMarkerVuefyOptions} from './vue';
 
 import './index.css';
 import tailSVG from './tail.svg';
 
 type VerticalPosition = 'top' | 'bottom';
 type HorizontalPosition = 'left' | 'right';
-export type MMapTooltipPositionProps = VerticalPosition | HorizontalPosition;
+export type MMapTooltipPositionProps =
+    | VerticalPosition
+    | HorizontalPosition
+    | `${VerticalPosition} ${HorizontalPosition}`
+    | `${HorizontalPosition} ${VerticalPosition}`;
 
 export type MMapTooltipMarkerProps = MMapMarkerProps & {
     text: string;
     position?: MMapTooltipPositionProps;
+    offset?: number;
 };
 
-const defaultProps = Object.freeze({position: 'top'});
+const defaultProps = Object.freeze({position: 'top', offset: 0});
 type DefaultProps = typeof defaultProps;
 
 export class MMapTooltipMarker extends mappable.MMapComplexEntity<MMapTooltipMarkerProps, DefaultProps> {
     static defaultProps = defaultProps;
-    static [mappable.optionsKeyVuefy] = MMapMarkerVuefyOptions;
+    static [mappable.optionsKeyVuefy] = MMapTooltipMarkerVuefyOptions;
 
     private _markerElement: HTMLElement;
     private _tooltipContainer: HTMLElement;
@@ -41,7 +46,8 @@ export class MMapTooltipMarker extends mappable.MMapComplexEntity<MMapTooltipMar
         this._tooltipTail.classList.add('mappable--tooltip-marker_tail');
         this._tooltipTail.innerHTML = tailSVG;
 
-        this._updateElementPosition();
+        this._updatePosition();
+        this._updateOffset();
 
         this._markerElement.appendChild(this._tooltipContainer);
         this._markerElement.appendChild(this._tooltipTail);
@@ -52,7 +58,10 @@ export class MMapTooltipMarker extends mappable.MMapComplexEntity<MMapTooltipMar
 
     protected _onUpdate(propsDiff: Partial<MMapTooltipMarkerProps>): void {
         if (propsDiff.position !== undefined) {
-            this._updateElementPosition();
+            this._updatePosition();
+        }
+        if (propsDiff.offset !== undefined) {
+            this._updateOffset();
         }
 
         if (propsDiff.text !== undefined) {
@@ -62,19 +71,47 @@ export class MMapTooltipMarker extends mappable.MMapComplexEntity<MMapTooltipMar
         this._marker.update(this._props);
     }
 
-    private _updateElementPosition() {
+    private _updateOffset(): void {
+        this._markerElement.style.setProperty('--offset', `${this._props.offset}px`);
+    }
+
+    private _updatePosition(): void {
         const {position} = this._props;
+        let verticalPosition: VerticalPosition;
+        let horizontalPosition: HorizontalPosition;
+
+        const positionTypeHash: Record<HorizontalPosition | VerticalPosition, 'horizontal' | 'vertical'> = {
+            top: 'vertical',
+            left: 'horizontal',
+            bottom: 'vertical',
+            right: 'horizontal'
+        };
+
+        if (position === 'top' || position === 'bottom') {
+            verticalPosition = position;
+        } else if (position === 'left' || position === 'right') {
+            horizontalPosition = position;
+        } else {
+            const [first, second] = position.split(' ') as (HorizontalPosition | VerticalPosition)[];
+            if (positionTypeHash[first] === 'vertical' && positionTypeHash[second] === 'horizontal') {
+                verticalPosition = first as VerticalPosition;
+                horizontalPosition = second as HorizontalPosition;
+            } else if (positionTypeHash[first] === 'horizontal' && positionTypeHash[second] === 'vertical') {
+                verticalPosition = second as VerticalPosition;
+                horizontalPosition = first as HorizontalPosition;
+            }
+        }
 
         // check top position
-        this._markerElement.classList.toggle('position-top', position === 'top');
+        this._markerElement.classList.toggle('position-top', verticalPosition === 'top');
 
         // check bottom position
-        this._markerElement.classList.toggle('position-bottom', position === 'bottom');
+        this._markerElement.classList.toggle('position-bottom', verticalPosition === 'bottom');
 
         // check left position
-        this._markerElement.classList.toggle('position-left', position === 'left');
+        this._markerElement.classList.toggle('position-left', horizontalPosition === 'left');
 
         // check right position
-        this._markerElement.classList.toggle('position-right', position === 'right');
+        this._markerElement.classList.toggle('position-right', horizontalPosition === 'right');
     }
 }

@@ -29,8 +29,12 @@ async function main() {
             const position = Vue.ref<MMapTooltipMarkerProps['position']>(undefined);
 
             const positionLeft = () => (position.value = 'left');
+            const positionLeftTop = () => (position.value = 'left top');
+            const positionLeftBottom = () => (position.value = 'left bottom');
             const positionBottom = () => (position.value = 'bottom');
             const positionTop = () => (position.value = 'top');
+            const positionRightTop = () => (position.value = 'right top');
+            const positionRightBottom = () => (position.value = 'right bottom');
             const positionRight = () => (position.value = 'right');
 
             return {
@@ -40,8 +44,12 @@ async function main() {
                 position,
                 refMap,
                 positionLeft,
+                positionLeftTop,
+                positionLeftBottom,
                 positionBottom,
                 positionTop,
+                positionRightTop,
+                positionRightBottom,
                 positionRight
             };
         },
@@ -51,8 +59,12 @@ async function main() {
                 <MMapDefaultFeaturesLayer />
                 <MMapControls position="top right">
                     <MMapControlButton text="Left" :onClick="positionLeft" />
+                    <MMapControlButton text="Left Top" :onClick="positionLeftTop" />
+                    <MMapControlButton text="Left Bottom" :onClick="positionLeftBottom" />
                     <MMapControlButton text="Bottom" :onClick="positionBottom" />
                     <MMapControlButton text="Top" :onClick="positionTop" />
+                    <MMapControlButton text="Right Top" :onClick="positionRightTop" />
+                    <MMapControlButton text="Right Bottom" :onClick="positionRightBottom" />
                     <MMapControlButton text="Right" :onClick="positionRight" />
                 </MMapControls>
                 <MMapTooltipMarker :coordinates="CENTER" :draggable="true" :text="TOOLTIP_TEXT" :position="position" />

@@ -27,8 +27,12 @@ async function main() {
         const [position, setPosition] = useState<MMapTooltipMarkerProps['position']>(undefined);
 
         const positionLeft = useCallback(() => setPosition('left'), []);
+        const positionLeftTop = useCallback(() => setPosition('left top'), []);
+        const positionLeftBottom = useCallback(() => setPosition('left bottom'), []);
         const positionBottom = useCallback(() => setPosition('bottom'), []);
         const positionTop = useCallback(() => setPosition('top'), []);
+        const positionRightTop = useCallback(() => setPosition('right top'), []);
+        const positionRightBottom = useCallback(() => setPosition('right bottom'), []);
         const positionRight = useCallback(() => setPosition('right'), []);
 
         return (
@@ -37,8 +41,12 @@ async function main() {
                 <MMapDefaultFeaturesLayer />
                 <MMapControls position="top right">
                     <MMapControlButton text="Left" onClick={positionLeft} />
+                    <MMapControlButton text="Left Top" onClick={positionLeftTop} />
+                    <MMapControlButton text="Left Bottom" onClick={positionLeftBottom} />
                     <MMapControlButton text="Bottom" onClick={positionBottom} />
                     <MMapControlButton text="Top" onClick={positionTop} />
+                    <MMapControlButton text="Right Top" onClick={positionRightTop} />
+                    <MMapControlButton text="Right Bottom" onClick={positionRightBottom} />
                     <MMapControlButton text="Right" onClick={positionRight} />
                 </MMapControls>
                 <MMapTooltipMarker coordinates={CENTER} draggable text={TOOLTIP_TEXT} position={position} />
