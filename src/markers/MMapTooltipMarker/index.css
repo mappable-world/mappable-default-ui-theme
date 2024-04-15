@@ -1,0 +1,62 @@
+.mappable--tooltip-marker {
+    --tail-height: 12px;
+}
+.mappable--tooltip-marker svg {
+    display: block;
+}
+
+.mappable--tooltip-marker_container {
+    box-sizing: border-box;
+    display: block;
+    position: absolute;
+    padding: 8px 12px;
+    border-radius: 12px;
+    background-color: #fff;
+    color: #34374a;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
+    box-shadow: 0px 4px 12px 0px #5f69831a;
+}
+
+.mappable--tooltip-marker_tail {
+    display: block;
+    position: absolute;
+    color: #fff;
+    box-shadow: 0px 4px 24px 0px #5f69830a;
+}
+
+/* positions */
+.position-top {
+    .mappable--tooltip-marker_container {
+        transform: translate(-50%, calc(-100% - var(--tail-height)));
+    }
+    .mappable--tooltip-marker_tail {
+        transform: translate(-50%, -100%) rotate(180deg);
+    }
+}
+.position-bottom {
+    .mappable--tooltip-marker_container {
+        transform: translate(-50%, var(--tail-height));
+    }
+    .mappable--tooltip-marker_tail {
+        transform: translate(-50%, 0);
+    }
+}
+.position-left {
+    .mappable--tooltip-marker_container {
+        transform: translate(calc(-100% - var(--tail-height)), -50%);
+    }
+    .mappable--tooltip-marker_tail {
+        transform: translate(-100%, -50%) rotate(90deg);
+    }
+}
+.position-right {
+    .mappable--tooltip-marker_container {
+        transform: translate(var(--tail-height), -50%);
+    }
+    .mappable--tooltip-marker_tail {
+        transform: translate(0, -50%) rotate(-90deg);
+    }
+}
