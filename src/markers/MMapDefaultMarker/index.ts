@@ -1,5 +1,6 @@
 import {MMapMarker, MMapMarkerProps} from '@mappable-world/mappable-types';
 import {IconColor, IconName, iconColors, icons} from '../../icons';
+import {MMapDefaultMarkerVuefyOptions} from './vue';
 
 import microPoiStrokeSVG from './backgrounds/micro-poi-stroke.svg';
 import microPoiSVG from './backgrounds/micro-poi.svg';
@@ -49,6 +50,7 @@ type BackgroundAndIcon = {background: HTMLElement; stroke: HTMLElement; icon: HT
 
 export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMarkerProps, DefaultProps> {
     static defaultProps = defaultProps;
+    static [mappable.optionsKeyVuefy] = MMapDefaultMarkerVuefyOptions;
 
     private _marker: MMapMarker;
     private _markerElement: HTMLElement;
