@@ -32,12 +32,21 @@
         0px 4px 24px 0px #5f69830a;
     overflow: hidden;
     text-overflow: ellipsis;
+
+    &.mappable--tooltip__dark {
+        background-color: #272729;
+        color: #c8c9cc;
+    }
 }
 
 .mappable--tooltip-marker_tail {
     display: block;
     position: absolute;
     color: #fff;
+
+    &.mappable--tooltip__dark {
+        color: #272729;
+    }
 
     svg {
         filter: drop-shadow(0px 4px 24px rgba(95, 105, 131, 0.04)) drop-shadow(0px 4px 12px rgba(95, 105, 131, 0.1));

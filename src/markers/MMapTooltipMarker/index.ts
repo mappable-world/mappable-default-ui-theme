@@ -30,6 +30,8 @@ export class MMapTooltipMarker extends mappable.MMapComplexEntity<MMapTooltipMar
     private _tooltipTail: HTMLElement;
     private _marker: MMapMarker;
 
+    private _unwatchThemeContext?: () => void;
+
     protected __implGetDefaultProps(): DefaultProps {
         return MMapTooltipMarker.defaultProps;
     }
@@ -54,6 +56,10 @@ export class MMapTooltipMarker extends mappable.MMapComplexEntity<MMapTooltipMar
 
         this._marker = new mappable.MMapMarker(this._props, this._markerElement);
         this.addChild(this._marker);
+
+        this._unwatchThemeContext = this._watchContext(mappable.ThemeContext, () => this._updateTheme(), {
+            immediate: true
+        });
     }
 
     protected _onUpdate(propsDiff: Partial<MMapTooltipMarkerProps>): void {
@@ -69,6 +75,18 @@ export class MMapTooltipMarker extends mappable.MMapComplexEntity<MMapTooltipMar
         }
 
         this._marker.update(this._props);
+    }
+
+    protected _onDetach(): void {
+        this._unwatchThemeContext?.();
+        this._unwatchThemeContext = undefined;
+    }
+
+    private _updateTheme() {
+        const themeCtx = this._consumeContext(mappable.ThemeContext);
+        const {theme} = themeCtx;
+        this._tooltipContainer.classList.toggle('mappable--tooltip__dark', theme === 'dark');
+        this._tooltipTail.classList.toggle('mappable--tooltip__dark', theme === 'dark');
     }
 
     private _updateOffset(): void {
