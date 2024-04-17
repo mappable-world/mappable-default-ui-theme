@@ -1,7 +1,7 @@
 import {MMapFeatureProps, MMapMarkerEventHandler} from '@mappable-world/mappable-types';
 import {CustomVuefyOptions} from '@mappable-world/mappable-types/modules/vuefy';
 import type TVue from '@vue/runtime-core';
-import {MMapBalloonMarker, MMapBalloonPositionProps} from '../';
+import {MMapBalloonContentProps, MMapBalloonMarker, MMapBalloonMarkerProps, MMapBalloonPositionProps} from '../';
 
 export const MMapBalloonMarkerVuefyOptions: CustomVuefyOptions<MMapBalloonMarker> = {
     props: {
@@ -22,9 +22,11 @@ export const MMapBalloonMarkerVuefyOptions: CustomVuefyOptions<MMapBalloonMarker
         onDoubleClick: Function as TVue.PropType<MMapFeatureProps['onDoubleClick']>,
         onClick: Function as TVue.PropType<MMapFeatureProps['onClick']>,
         onFastClick: Function as TVue.PropType<MMapFeatureProps['onFastClick']>,
-        // TODO: content props as string or function
-        content: {type: String, required: true},
+        content: {type: Function as TVue.PropType<MMapBalloonContentProps>, required: true},
         position: {type: String as TVue.PropType<MMapBalloonPositionProps>},
-        offset: {type: Number, default: 0}
+        offset: {type: Number, default: 0},
+        show: {type: Boolean, default: true},
+        onClose: {type: Function as TVue.PropType<MMapBalloonMarkerProps['onClose']>},
+        onOpen: {type: Function as TVue.PropType<MMapBalloonMarkerProps['onOpen']>}
     }
 };

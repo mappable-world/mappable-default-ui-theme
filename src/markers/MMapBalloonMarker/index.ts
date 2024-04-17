@@ -12,26 +12,74 @@ export type MMapBalloonPositionProps =
     | `${VerticalPosition} ${HorizontalPosition}`
     | `${HorizontalPosition} ${VerticalPosition}`;
 
+export type MMapBalloonContentProps = (close: () => void) => HTMLElement;
+
 export type MMapBalloonMarkerProps = MMapMarkerProps & {
-    // TODO: content props as string or function
-    content: string;
+    /**
+     * The function of creating balloon content
+     * @param close - A function for hiding balloon content. The `MMapBalloonMarker` is not deleted.
+     * @returns Balloon content as `HTMLElement`
+     */
+    content: MMapBalloonContentProps;
+    /** The position of the balloon in relation to the point it is pointing to */
     position?: MMapBalloonPositionProps;
+    /** The offset in pixels between the balloon pointer and the point it is pointing to. */
     offset?: number;
+    /** Hide or show balloon on map */
+    show?: boolean;
+    /** Balloon closing callback */
+    onClose?: () => void;
+    /** Balloon opening callback */
+    onOpen?: () => void;
 };
 
-const defaultProps = Object.freeze({position: 'top', offset: 0});
+const defaultProps = Object.freeze({position: 'top', offset: 0, show: true});
 type DefaultProps = typeof defaultProps;
 
+/**
+ * `MMapBalloonMarker` is a balloon (popup) with customized content.
+ * @example
+ * ```js
+ * const balloon = new MMapBalloonMarker({
+ *  content: (close) => createPopupContentHTMLElement(close),
+ *  position: 'top',
+ *  onOpen:() => console.log('open'),
+ *  onClose:() => console.log('close'),
+ *  // support MMapMarker props
+ *  coordinates: BALLOON_COORD,
+ *  draggable: true,
+ * });
+ * map.addChild(balloon);
+ * ```
+ */
 export class MMapBalloonMarker extends mappable.MMapComplexEntity<MMapBalloonMarkerProps, DefaultProps> {
     static defaultProps = defaultProps;
     static [mappable.optionsKeyVuefy] = MMapBalloonMarkerVuefyOptions;
 
+    public get isOpen() {
+        return this._props.show;
+    }
     private _markerElement: HTMLElement;
     private _balloonContainer: HTMLElement;
     private _balloonTail: HTMLElement;
     private _marker: MMapMarker;
 
-    private _unwatchThemeContext?: () => void;
+    private _togglePopup(forceShowBalloon?: boolean): void {
+        let openBalloon = !this._props.show;
+        if (forceShowBalloon !== undefined) {
+            openBalloon = forceShowBalloon;
+        }
+
+        this._markerElement.classList.toggle('hide', !openBalloon);
+
+        if (openBalloon) {
+            this._props.onOpen?.();
+        } else {
+            this._props.onClose?.();
+        }
+
+        this._props.show = openBalloon;
+    }
 
     protected __implGetDefaultProps(): DefaultProps {
         return MMapBalloonMarker.defaultProps;
@@ -43,12 +91,13 @@ export class MMapBalloonMarker extends mappable.MMapComplexEntity<MMapBalloonMar
 
         this._balloonContainer = document.createElement('mappable');
         this._balloonContainer.classList.add('mappable--balloon-marker_container');
-        this._balloonContainer.textContent = this._props.content;
+        this._balloonContainer.appendChild(this._props.content(this.__closePopup));
 
         this._balloonTail = document.createElement('mappable');
         this._balloonTail.classList.add('mappable--balloon-marker_tail');
         this._balloonTail.innerHTML = tailSVG;
 
+        this._togglePopup(this._props.show);
         this._updatePosition();
         this._updateOffset();
 
@@ -58,7 +107,7 @@ export class MMapBalloonMarker extends mappable.MMapComplexEntity<MMapBalloonMar
         this._marker = new mappable.MMapMarker(this._props, this._markerElement);
         this.addChild(this._marker);
 
-        this._unwatchThemeContext = this._watchContext(mappable.ThemeContext, () => this._updateTheme(), {
+        this._watchContext(mappable.ThemeContext, () => this._updateTheme(), {
             immediate: true
         });
     }
@@ -72,15 +121,15 @@ export class MMapBalloonMarker extends mappable.MMapComplexEntity<MMapBalloonMar
         }
 
         if (propsDiff.content !== undefined) {
-            this._balloonContainer.textContent = this._props.content;
+            this._balloonContainer.innerHTML = '';
+            this._balloonContainer.appendChild(this._props.content(this.__closePopup));
+        }
+
+        if (propsDiff.show !== undefined) {
+            this._togglePopup(propsDiff.show);
         }
 
         this._marker.update(this._props);
-    }
-
-    protected _onDetach(): void {
-        this._unwatchThemeContext?.();
-        this._unwatchThemeContext = undefined;
     }
 
     private _updateTheme() {
@@ -133,4 +182,8 @@ export class MMapBalloonMarker extends mappable.MMapComplexEntity<MMapBalloonMar
         // check right position
         this._markerElement.classList.toggle('position-right', horizontalPosition === 'right');
     }
+
+    private __closePopup = () => {
+        this._togglePopup(false);
+    };
 }

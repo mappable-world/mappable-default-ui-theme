@@ -1,0 +1,7 @@
+.mappable--default-tooltip {
+    display: block;
+    max-width: inherit;
+    max-height: inherit;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

@@ -7,6 +7,10 @@
 
     --balloon-tail-transform-top: translate(-50%, calc(-100% - var(--offset))) rotate(180deg);
     --balloon-tail-transform-bottom: translate(-50%, var(--offset));
+
+    &.hide {
+        display: none;
+    }
 }
 
 .mappable--balloon-marker svg {
