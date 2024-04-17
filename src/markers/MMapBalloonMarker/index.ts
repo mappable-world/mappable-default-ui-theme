@@ -12,7 +12,7 @@ export type MMapBalloonPositionProps =
     | `${VerticalPosition} ${HorizontalPosition}`
     | `${HorizontalPosition} ${VerticalPosition}`;
 
-export type MMapBalloonContentProps = (close: () => void) => HTMLElement;
+export type MMapBalloonContentProps = () => HTMLElement;
 
 export type MMapBalloonMarkerProps = MMapMarkerProps & {
     /**
@@ -91,7 +91,7 @@ export class MMapBalloonMarker extends mappable.MMapComplexEntity<MMapBalloonMar
 
         this._balloonContainer = document.createElement('mappable');
         this._balloonContainer.classList.add('mappable--balloon-marker_container');
-        this._balloonContainer.appendChild(this._props.content(this.__closePopup));
+        this._balloonContainer.appendChild(this._props.content());
 
         this._balloonTail = document.createElement('mappable');
         this._balloonTail.classList.add('mappable--balloon-marker_tail');
@@ -122,7 +122,7 @@ export class MMapBalloonMarker extends mappable.MMapComplexEntity<MMapBalloonMar
 
         if (propsDiff.content !== undefined) {
             this._balloonContainer.innerHTML = '';
-            this._balloonContainer.appendChild(this._props.content(this.__closePopup));
+            this._balloonContainer.appendChild(this._props.content());
         }
 
         if (propsDiff.show !== undefined) {
@@ -182,8 +182,4 @@ export class MMapBalloonMarker extends mappable.MMapComplexEntity<MMapBalloonMar
         // check right position
         this._markerElement.classList.toggle('position-right', horizontalPosition === 'right');
     }
-
-    private __closePopup = () => {
-        this._togglePopup(false);
-    };
 }

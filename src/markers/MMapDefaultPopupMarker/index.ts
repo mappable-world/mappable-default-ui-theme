@@ -65,7 +65,7 @@ export class MMapDefaultPopupMarker extends mappable.MMapComplexEntity<MMapDefau
         const isActionChange = oldProps.action !== action;
 
         if (isTitleChange || isDescriptionChange || isActionChange) {
-            this._balloon.update({content: (close) => this.__createDefaultPopup(close)});
+            this._balloon.update({content: () => this.__createDefaultPopup()});
         }
 
         this._balloon.update(this._props);
@@ -76,7 +76,7 @@ export class MMapDefaultPopupMarker extends mappable.MMapComplexEntity<MMapDefau
         this._element.classList.toggle('mappable--default-popup__dark', themeCtx.theme === 'dark');
     }
 
-    private __createDefaultPopup: MMapBalloonContentProps = (close) => {
+    private __createDefaultPopup: MMapBalloonContentProps = () => {
         const {title, description, action} = this._props;
         this._element = document.createElement('mappable');
         this._element.classList.add('mappable--default-popup');
@@ -95,7 +95,7 @@ export class MMapDefaultPopupMarker extends mappable.MMapComplexEntity<MMapDefau
         const closeButton = document.createElement('button');
         closeButton.classList.add('mappable--default-popup_header_close');
         closeButton.innerHTML = closeSVG;
-        closeButton.addEventListener('click', () => close());
+        closeButton.addEventListener('click', () => this._balloon.update({show: false}));
         popupHeaderElement.appendChild(closeButton);
 
         if (description) {
