@@ -1,6 +1,6 @@
 import {Api as FigmaApi, isNodeType, Node} from 'figma-api';
 import {GetImageResult} from 'figma-api/lib/api-types';
-import {makeChunks} from '../utils/make-chunks';
+import lodashChunk from 'lodash/chunk';
 
 export type IconDescription = {
     componentId: string;
@@ -115,7 +115,7 @@ const getImageLinks = async (
     fileId: string,
     api: FigmaApi
 ): Promise<IconDescriptionWithLink[]> => {
-    const chunks = makeChunks(descriptions, ICONS_PER_CHUNK);
+    const chunks = lodashChunk(descriptions, ICONS_PER_CHUNK);
     const linkChunks = await Promise.all(
         chunks.map((chunk) =>
             api.getImage(fileId, {
