@@ -1,0 +1,18 @@
+.custom-popup {
+    display: grid;
+    max-width: inherit;
+    grid-template-columns: 120px 64px;
+    grid-template-rows: repeat(2, 1fr);
+    gap: 10px;
+
+    & .title {
+        font-weight: bold;
+        font-size: 18px;
+    }
+
+    & .content {
+        width: 100%;
+        font-size: 16px;
+        grid-column: 1 / 3;
+    }
+}
