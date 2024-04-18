@@ -1,6 +1,8 @@
-import {MMapBalloonMarker, MMapBalloonMarkerProps, MMapBalloonContentProps} from '../MMapBalloonMarker';
-import './index.css';
+import {MMapBalloonContentProps, MMapBalloonMarker, MMapBalloonMarkerProps} from '../MMapBalloonMarker';
+import {MMapDefaultPopupMarkerVuefyOptions} from './vue';
+
 import closeSVG from './close.svg';
+import './index.css';
 
 export type MMapDefaultPopupMarkerProps = Omit<MMapBalloonMarkerProps, 'content'> & {
     /** Displayed title in popup header */
@@ -30,6 +32,7 @@ export type MMapDefaultPopupMarkerProps = Omit<MMapBalloonMarkerProps, 'content'
  * ```
  */
 export class MMapDefaultPopupMarker extends mappable.MMapComplexEntity<MMapDefaultPopupMarkerProps> {
+    static [mappable.optionsKeyVuefy] = MMapDefaultPopupMarkerVuefyOptions;
     private _balloon: MMapBalloonMarker;
     private _element: HTMLElement;
 
@@ -49,8 +52,14 @@ export class MMapDefaultPopupMarker extends mappable.MMapComplexEntity<MMapDefau
         this._balloon = new MMapBalloonMarker({
             ...this._props,
             content: this.__createDefaultPopup,
-            onClose: () => (this._props.show = false),
-            onOpen: () => (this._props.show = true)
+            onClose: () => {
+                this._props.show = false;
+                this._props.onClose?.();
+            },
+            onOpen: () => {
+                this._props.show = true;
+                this._props.onOpen?.();
+            }
         });
         this.addChild(this._balloon);
 

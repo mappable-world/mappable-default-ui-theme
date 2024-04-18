@@ -1,5 +1,6 @@
 import {MMapMarker, MMapMarkerProps} from '@mappable-world/mappable-types';
-import {MMapBalloonMarkerVuefyOptions} from './vue';
+import {MMapBalloonMarkerReactifyOverride} from './react';
+import {MMapBalloonMarkerVuefyOptions, MMapBalloonMarkerVuefyOverride} from './vue';
 
 import './index.css';
 import tailSVG from './tail.svg';
@@ -15,11 +16,7 @@ export type MMapBalloonPositionProps =
 export type MMapBalloonContentProps = () => HTMLElement;
 
 export type MMapBalloonMarkerProps = MMapMarkerProps & {
-    /**
-     * The function of creating balloon content
-     * @param close - A function for hiding balloon content. The `MMapBalloonMarker` is not deleted.
-     * @returns Balloon content as `HTMLElement`
-     */
+    /** The function of creating balloon content */
     content: MMapBalloonContentProps;
     /** The position of the balloon in relation to the point it is pointing to */
     position?: MMapBalloonPositionProps;
@@ -54,6 +51,8 @@ type DefaultProps = typeof defaultProps;
  */
 export class MMapBalloonMarker extends mappable.MMapComplexEntity<MMapBalloonMarkerProps, DefaultProps> {
     static defaultProps = defaultProps;
+    static [mappable.overrideKeyReactify] = MMapBalloonMarkerReactifyOverride;
+    static [mappable.overrideKeyVuefy] = MMapBalloonMarkerVuefyOverride;
     static [mappable.optionsKeyVuefy] = MMapBalloonMarkerVuefyOptions;
 
     public get isOpen() {

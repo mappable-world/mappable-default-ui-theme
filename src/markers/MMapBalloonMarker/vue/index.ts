@@ -1,5 +1,5 @@
 import {MMapFeatureProps, MMapMarkerEventHandler} from '@mappable-world/mappable-types';
-import {CustomVuefyOptions} from '@mappable-world/mappable-types/modules/vuefy';
+import {CustomVuefyFn, CustomVuefyOptions} from '@mappable-world/mappable-types/modules/vuefy';
 import type TVue from '@vue/runtime-core';
 import {MMapBalloonContentProps, MMapBalloonMarker, MMapBalloonMarkerProps, MMapBalloonPositionProps} from '../';
 
@@ -29,4 +29,45 @@ export const MMapBalloonMarkerVuefyOptions: CustomVuefyOptions<MMapBalloonMarker
         onClose: {type: Function as TVue.PropType<MMapBalloonMarkerProps['onClose']>},
         onOpen: {type: Function as TVue.PropType<MMapBalloonMarkerProps['onOpen']>}
     }
+};
+
+type MMapBalloonMarkerSlots = {
+    content: void;
+};
+
+export const MMapBalloonMarkerVuefyOverride: CustomVuefyFn<MMapBalloonMarker> = (
+    MMapBalloonMarkerI,
+    props,
+    {vuefy, Vue}
+) => {
+    const MMapBalloonMarkerV = vuefy.entity(MMapBalloonMarkerI);
+    const {content, ...overridedProps} = props;
+    return Vue.defineComponent({
+        name: 'MMapBalloonMarker',
+        props: overridedProps,
+        slots: Object as TVue.SlotsType<MMapBalloonMarkerSlots>,
+        setup(props, {slots, expose}) {
+            const content: TVue.Ref<TVue.VNodeChild | null> = Vue.ref(null);
+            const popupHTMLElement = document.createElement('mappable');
+
+            const markerRef = Vue.ref<{entity: MMapBalloonMarker} | null>(null);
+            const markerEntity = Vue.computed(() => markerRef.value?.entity);
+
+            const balloon = Vue.computed<MMapBalloonMarkerProps['content']>(() => {
+                content.value = slots.content?.();
+                return () => popupHTMLElement;
+            });
+            expose({entity: markerEntity});
+            return () =>
+                Vue.h(
+                    MMapBalloonMarkerV,
+                    {
+                        ...props,
+                        content: balloon.value,
+                        ref: markerRef
+                    },
+                    () => Vue.h(Vue.Teleport, {to: popupHTMLElement}, [content.value])
+                );
+        }
+    });
 };
