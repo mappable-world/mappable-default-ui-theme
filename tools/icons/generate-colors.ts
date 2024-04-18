@@ -19,5 +19,5 @@ export const generateColorsFile = async (fetchedColors: FetchedColors) => {
     export type IconColor = keyof typeof iconColors`;
 
     const formattedContent = await prettierFormat(content, 'typescript');
-    await fs.writeFile(path.join(SRC_ICONS_PATH, 'icon-colors.ts'), formattedContent);
+    await fs.writeFile(path.join(SRC_ICONS_PATH, 'icon-colors.generated.ts'), formattedContent);
 };

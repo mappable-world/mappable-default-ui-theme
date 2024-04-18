@@ -10,5 +10,5 @@ export const generateIconsTypes = async (iconNames: string[]) => {
 export type ${type} =${iconNames.map((name) => `| '${name}'`).join('\n')};
 `;
     const formattedContent = await prettierFormat(content, 'typescript');
-    await fs.writeFile(path.join(SRC_ICONS_PATH, 'icon-name.ts'), formattedContent);
+    await fs.writeFile(path.join(SRC_ICONS_PATH, 'icon-name.generated.ts'), formattedContent);
 };
