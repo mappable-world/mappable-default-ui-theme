@@ -1,4 +1,4 @@
-@keyframes hint-hover {
+@keyframes mappable--default-marker-hint-hover {
     from {
         margin-left: -10px;
         opacity: 0;
@@ -37,7 +37,7 @@
 }
 .mappable--default-marker-point:hover .mappable--hint__hovered {
     display: inline-flex;
-    animation: hint-hover 200ms ease-out;
+    animation: mappable--default-marker-hint-hover 200ms ease-out;
 }
 .mappable--hint-title {
     display: block;

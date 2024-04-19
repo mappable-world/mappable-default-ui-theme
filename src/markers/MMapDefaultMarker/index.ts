@@ -64,8 +64,6 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
     private _titleHint: HTMLElement;
     private _subtitleHint: HTMLElement;
 
-    private _unwatchThemeContext?: () => void;
-
     constructor(props: MMapDefaultMarkerProps) {
         super(props);
     }
@@ -120,7 +118,7 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
         this._marker = new mappable.MMapMarker(this._props, this._markerElement);
         this.addChild(this._marker);
 
-        this._unwatchThemeContext = this._watchContext(mappable.ThemeContext, () => this._updateTheme(), {
+        this._watchContext(mappable.ThemeContext, () => this._updateTheme(), {
             immediate: true
         });
     }
@@ -151,10 +149,6 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
         }
 
         this._marker.update(this._props);
-    }
-
-    protected _onDetach(): void {
-        this._unwatchThemeContext?.();
     }
 
     private _createHintContainer(): HTMLElement {

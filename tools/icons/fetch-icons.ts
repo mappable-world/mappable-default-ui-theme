@@ -21,7 +21,7 @@ const REGION_CODE_REGEXP = /_([a-z]{2})_/;
 export const SIZE_REGEXP = /_([0-9]{2})/;
 /** RegExp to discard rubrics fallbacks */
 const RUBRIC_FALLBACK_REGEXP = /fallback_.+\d{2}$/;
-const INTL_REGION_CODES = new Intl.DisplayNames(['en', 'ru'], {type: 'region'});
+const INTL_REGION_CODES = new Intl.DisplayNames(['en'], {type: 'region'});
 /** A number between 0.01 and 4, the image scaling factor */
 const IMAGE_SCALE = 1;
 const ICONS_PER_CHUNK = 100;
