@@ -100,6 +100,10 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
                 this._background = micro.background;
                 this._icon = micro.icon;
                 break;
+            default:
+                throw new Error(
+                    'Unknown size has been specified. The following sizes are available: normal, small and micro.'
+                );
         }
 
         this._markerElement.appendChild(this._background);
