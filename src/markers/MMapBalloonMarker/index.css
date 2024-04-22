@@ -1,3 +1,47 @@
+@keyframes mappable--balloon-marker-show-top {
+    from {
+        transform: translateY(12px);
+        opacity: 0;
+    }
+    to {
+        transform: none;
+        opacity: 1;
+    }
+}
+
+@keyframes mappable--balloon-marker-show-bottom {
+    from {
+        transform: translateY(-12px);
+        opacity: 0;
+    }
+    to {
+        transform: none;
+        opacity: 1;
+    }
+}
+
+@keyframes mappable--balloon-marker-show-left {
+    from {
+        transform: translateX(12px);
+        opacity: 0;
+    }
+    to {
+        transform: none;
+        opacity: 1;
+    }
+}
+
+@keyframes mappable--balloon-marker-show-right {
+    from {
+        transform: translateX(-12px);
+        opacity: 0;
+    }
+    to {
+        transform: none;
+        opacity: 1;
+    }
+}
+
 .mappable--balloon-marker {
     --mappable-default-tail-height: 12px;
     --mappable-default-tail-width: 16px;
@@ -10,6 +54,8 @@
     --mappable-default-balloon-tail-transform-top: translate(-50%, calc(-100% - var(--mappable-default-offset)))
         rotate(180deg);
     --mappable-default-balloon-tail-transform-bottom: translate(-50%, var(--mappable-default-offset));
+
+    position: absolute;
 
     &.mappable--balloon-marker__hide {
         display: none;
@@ -62,6 +108,8 @@
 
 /* positions */
 .mappable--balloon-marker__position-top {
+    animation: mappable--balloon-marker-show-top 200ms ease-out !important;
+
     .mappable--balloon-marker_container {
         transform: translate(-50%, calc(-100% - var(--mappable-default-tail-height-and-offset)));
     }
@@ -95,6 +143,8 @@
 }
 
 .mappable--balloon-marker__position-bottom {
+    animation: mappable--balloon-marker-show-bottom 200ms ease-out !important;
+
     .mappable--balloon-marker_container {
         transform: translate(-50%, var(--mappable-default-tail-height-and-offset));
     }
@@ -128,6 +178,8 @@
 }
 
 .mappable--balloon-marker__position-left {
+    animation: mappable--balloon-marker-show-left 200ms ease-out;
+
     .mappable--balloon-marker_container {
         transform: translate(calc(-100% - var(--mappable-default-tail-height-and-offset)), -50%);
     }
@@ -137,6 +189,8 @@
 }
 
 .mappable--balloon-marker__position-right {
+    animation: mappable--balloon-marker-show-right 200ms ease-out;
+
     .mappable--balloon-marker_container {
         transform: translate(var(--mappable-default-tail-height-and-offset), -50%);
     }
