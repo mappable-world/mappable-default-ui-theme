@@ -1,14 +1,17 @@
 .mappable--balloon-marker {
-    --tail-height: 12px;
-    --tail-width: 16px;
-    --border-radius: 12px;
+    --mappable-default-tail-height: 12px;
+    --mappable-default-tail-width: 16px;
+    --mappable-default-border-radius: 12px;
 
-    --tail-height-and-offset: calc(var(--tail-height) + var(--offset));
+    --mappable-default-tail-height-and-offset: calc(
+        var(--mappable-default-tail-height) + var(--mappable-default-offset)
+    );
 
-    --balloon-tail-transform-top: translate(-50%, calc(-100% - var(--offset))) rotate(180deg);
-    --balloon-tail-transform-bottom: translate(-50%, var(--offset));
+    --mappable-default-balloon-tail-transform-top: translate(-50%, calc(-100% - var(--mappable-default-offset)))
+        rotate(180deg);
+    --mappable-default-balloon-tail-transform-bottom: translate(-50%, var(--mappable-default-offset));
 
-    &.hide {
+    &.mappable--balloon-marker__hide {
         display: none;
     }
 }
@@ -24,7 +27,7 @@
     display: block;
     position: absolute;
     padding: 8px 12px;
-    border-radius: var(--border-radius);
+    border-radius: var(--mappable-default-border-radius);
     background-color: #fff;
     color: #34374a;
     font-size: 14px;
@@ -37,7 +40,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
 
-    &.mappable--balloon__dark {
+    &.mappable--balloon-marker__dark {
         background-color: #272729;
         color: #c8c9cc;
     }
@@ -48,7 +51,7 @@
     position: absolute;
     color: #fff;
 
-    &.mappable--balloon__dark {
+    &.mappable--balloon-marker__dark {
         color: #272729;
     }
 
@@ -58,86 +61,86 @@
 }
 
 /* positions */
-.position-top {
+.mappable--balloon-marker__position-top {
     .mappable--balloon-marker_container {
-        transform: translate(-50%, calc(-100% - var(--tail-height-and-offset)));
+        transform: translate(-50%, calc(-100% - var(--mappable-default-tail-height-and-offset)));
     }
     .mappable--balloon-marker_tail {
-        transform: var(--balloon-tail-transform-top);
+        transform: var(--mappable-default-balloon-tail-transform-top);
     }
     /* top left */
-    &.position-left {
+    &.mappable--balloon-marker__position-left {
         .mappable--balloon-marker_container {
             transform: translate(
-                calc(-100% + var(--border-radius) + var(--tail-width) / 2),
-                calc(-100% - var(--tail-height-and-offset))
+                calc(-100% + var(--mappable-default-border-radius) + var(--mappable-default-tail-width) / 2),
+                calc(-100% - var(--mappable-default-tail-height-and-offset))
             );
         }
         .mappable--balloon-marker_tail {
-            transform: var(--balloon-tail-transform-top);
+            transform: var(--mappable-default-balloon-tail-transform-top);
         }
     }
     /* top right */
-    &.position-right {
+    &.mappable--balloon-marker__position-right {
         .mappable--balloon-marker_container {
             transform: translate(
-                calc(-1 * var(--border-radius) - var(--tail-width) / 2),
-                calc(-100% - var(--tail-height-and-offset))
+                calc(-1 * var(--mappable-default-border-radius) - var(--mappable-default-tail-width) / 2),
+                calc(-100% - var(--mappable-default-tail-height-and-offset))
             );
         }
         .mappable--balloon-marker_tail {
-            transform: var(--balloon-tail-transform-top);
+            transform: var(--mappable-default-balloon-tail-transform-top);
         }
     }
 }
 
-.position-bottom {
+.mappable--balloon-marker__position-bottom {
     .mappable--balloon-marker_container {
-        transform: translate(-50%, var(--tail-height-and-offset));
+        transform: translate(-50%, var(--mappable-default-tail-height-and-offset));
     }
     .mappable--balloon-marker_tail {
-        transform: var(--balloon-tail-transform-bottom);
+        transform: var(--mappable-default-balloon-tail-transform-bottom);
     }
     /* bottom left */
-    &.position-left {
+    &.mappable--balloon-marker__position-left {
         .mappable--balloon-marker_container {
             transform: translate(
-                calc(-100% + var(--border-radius) + var(--tail-width) / 2),
-                var(--tail-height-and-offset)
+                calc(-100% + var(--mappable-default-border-radius) + var(--mappable-default-tail-width) / 2),
+                var(--mappable-default-tail-height-and-offset)
             );
         }
         .mappable--balloon-marker_tail {
-            transform: var(--balloon-tail-transform-bottom);
+            transform: var(--mappable-default-balloon-tail-transform-bottom);
         }
     }
     /* bottom right */
-    &.position-right {
+    &.mappable--balloon-marker__position-right {
         .mappable--balloon-marker_container {
             transform: translate(
-                calc(-1 * var(--border-radius) - var(--tail-width) / 2),
-                var(--tail-height-and-offset)
+                calc(-1 * var(--mappable-default-border-radius) - var(--mappable-default-tail-width) / 2),
+                var(--mappable-default-tail-height-and-offset)
             );
         }
         .mappable--balloon-marker_tail {
-            transform: var(--balloon-tail-transform-bottom);
+            transform: var(--mappable-default-balloon-tail-transform-bottom);
         }
     }
 }
 
-.position-left {
+.mappable--balloon-marker__position-left {
     .mappable--balloon-marker_container {
-        transform: translate(calc(-100% - var(--tail-height-and-offset)), -50%);
+        transform: translate(calc(-100% - var(--mappable-default-tail-height-and-offset)), -50%);
     }
     .mappable--balloon-marker_tail {
-        transform: translate(calc(-100% - var(--offset)), -50%) rotate(90deg);
+        transform: translate(calc(-100% - var(--mappable-default-offset)), -50%) rotate(90deg);
     }
 }
 
-.position-right {
+.mappable--balloon-marker__position-right {
     .mappable--balloon-marker_container {
-        transform: translate(var(--tail-height-and-offset), -50%);
+        transform: translate(var(--mappable-default-tail-height-and-offset), -50%);
     }
     .mappable--balloon-marker_tail {
-        transform: translate(var(--offset), -50%) rotate(-90deg);
+        transform: translate(var(--mappable-default-offset), -50%) rotate(-90deg);
     }
 }

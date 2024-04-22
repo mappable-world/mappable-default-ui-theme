@@ -32,15 +32,15 @@ describe('MMapBalloonMarker', () => {
         expect(popupMarkerElement).not.toBeNull();
 
         expect(balloon.isOpen).toBe(true);
-        expect(document.querySelector('.mappable--balloon-marker.hide')).toBeNull();
+        expect(document.querySelector('.mappable--balloon-marker.mappable--balloon-marker__hide')).toBeNull();
 
         balloon.update({show: false});
         expect(balloon.isOpen).toBe(false);
-        expect(document.querySelector('.mappable--balloon-marker.hide')).not.toBeNull();
+        expect(document.querySelector('.mappable--balloon-marker.mappable--balloon-marker__hide')).not.toBeNull();
 
         balloon.update({show: true});
         expect(balloon.isOpen).toBe(true);
-        expect(document.querySelector('.mappable--balloon-marker.hide')).toBeNull();
+        expect(document.querySelector('.mappable--balloon-marker.mappable--balloon-marker__hide')).toBeNull();
     });
 
     it('offset props', () => {
@@ -48,10 +48,10 @@ describe('MMapBalloonMarker', () => {
         map.addChild(balloon);
 
         const popupMarkerElement = document.querySelector<HTMLElement>('.mappable--balloon-marker');
-        expect(popupMarkerElement.style.getPropertyValue('--offset')).toBe('12px');
+        expect(popupMarkerElement.style.getPropertyValue('--mappable-default-offset')).toBe('12px');
 
         balloon.update({offset: 24});
-        expect(popupMarkerElement.style.getPropertyValue('--offset')).toBe('24px');
+        expect(popupMarkerElement.style.getPropertyValue('--mappable-default-offset')).toBe('24px');
     });
 
     describe('callback for closing and opening', () => {
@@ -89,43 +89,71 @@ describe('MMapBalloonMarker', () => {
             const balloon = new MMapBalloonMarker({coordinates: CENTER, content: createPopupContent});
             map.addChild(balloon);
 
-            expect(document.querySelector('.mappable--balloon-marker.position-top')).not.toBeNull();
+            expect(
+                document.querySelector('.mappable--balloon-marker.mappable--balloon-marker__position-top')
+            ).not.toBeNull();
         });
         it('initial position', () => {
             const balloon = new MMapBalloonMarker({position: 'left', coordinates: CENTER, content: createPopupContent});
             map.addChild(balloon);
 
-            expect(document.querySelector('.mappable--balloon-marker.position-left')).not.toBeNull();
+            expect(
+                document.querySelector('.mappable--balloon-marker.mappable--balloon-marker__position-left')
+            ).not.toBeNull();
         });
         it('change position props', () => {
             const balloon = new MMapBalloonMarker({coordinates: CENTER, content: createPopupContent});
             map.addChild(balloon);
 
             balloon.update({position: 'top'});
-            expect(document.querySelector('.mappable--balloon-marker.position-top')).not.toBeNull();
+            expect(
+                document.querySelector('.mappable--balloon-marker.mappable--balloon-marker__position-top')
+            ).not.toBeNull();
 
             balloon.update({position: 'bottom'});
-            expect(document.querySelector('.mappable--balloon-marker.position-bottom')).not.toBeNull();
+            expect(
+                document.querySelector('.mappable--balloon-marker.mappable--balloon-marker__position-bottom')
+            ).not.toBeNull();
 
             balloon.update({position: 'left'});
-            expect(document.querySelector('.mappable--balloon-marker.position-left')).not.toBeNull();
+            expect(
+                document.querySelector('.mappable--balloon-marker.mappable--balloon-marker__position-left')
+            ).not.toBeNull();
 
             balloon.update({position: 'right'});
-            expect(document.querySelector('.mappable--balloon-marker.position-right')).not.toBeNull();
+            expect(
+                document.querySelector('.mappable--balloon-marker.mappable--balloon-marker__position-right')
+            ).not.toBeNull();
         });
         it('change combined position props', () => {
             const balloon = new MMapBalloonMarker({coordinates: CENTER, content: createPopupContent});
             map.addChild(balloon);
 
             balloon.update({position: 'top left'});
-            expect(document.querySelector('.mappable--balloon-marker.position-top.position-left')).not.toBeNull();
+            expect(
+                document.querySelector(
+                    '.mappable--balloon-marker.mappable--balloon-marker__position-top.mappable--balloon-marker__position-left'
+                )
+            ).not.toBeNull();
             balloon.update({position: 'top right'});
-            expect(document.querySelector('.mappable--balloon-marker.position-top.position-right')).not.toBeNull();
+            expect(
+                document.querySelector(
+                    '.mappable--balloon-marker.mappable--balloon-marker__position-top.mappable--balloon-marker__position-right'
+                )
+            ).not.toBeNull();
 
             balloon.update({position: 'bottom left'});
-            expect(document.querySelector('.mappable--balloon-marker.position-bottom.position-left')).not.toBeNull();
+            expect(
+                document.querySelector(
+                    '.mappable--balloon-marker.mappable--balloon-marker__position-bottom.mappable--balloon-marker__position-left'
+                )
+            ).not.toBeNull();
             balloon.update({position: 'bottom right'});
-            expect(document.querySelector('.mappable--balloon-marker.position-bottom.position-right')).not.toBeNull();
+            expect(
+                document.querySelector(
+                    '.mappable--balloon-marker.mappable--balloon-marker__position-bottom.mappable--balloon-marker__position-right'
+                )
+            ).not.toBeNull();
         });
     });
 });

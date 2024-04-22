@@ -69,7 +69,7 @@ export class MMapBalloonMarker extends mappable.MMapComplexEntity<MMapBalloonMar
             openBalloon = forceShowBalloon;
         }
 
-        this._markerElement.classList.toggle('hide', !openBalloon);
+        this._markerElement.classList.toggle('mappable--balloon-marker__hide', !openBalloon);
 
         if (openBalloon) {
             this._props.onOpen?.();
@@ -134,12 +134,12 @@ export class MMapBalloonMarker extends mappable.MMapComplexEntity<MMapBalloonMar
     private _updateTheme() {
         const themeCtx = this._consumeContext(mappable.ThemeContext);
         const {theme} = themeCtx;
-        this._balloonContainer.classList.toggle('mappable--balloon__dark', theme === 'dark');
-        this._balloonTail.classList.toggle('mappable--balloon__dark', theme === 'dark');
+        this._balloonContainer.classList.toggle('mappable--balloon-marker__dark', theme === 'dark');
+        this._balloonTail.classList.toggle('mappable--balloon-marker__dark', theme === 'dark');
     }
 
     private _updateOffset(): void {
-        this._markerElement.style.setProperty('--offset', `${this._props.offset}px`);
+        this._markerElement.style.setProperty('--mappable-default-offset', `${this._props.offset}px`);
     }
 
     private _updatePosition(): void {
@@ -170,15 +170,21 @@ export class MMapBalloonMarker extends mappable.MMapComplexEntity<MMapBalloonMar
         }
 
         // check top position
-        this._markerElement.classList.toggle('position-top', verticalPosition === 'top');
+        this._markerElement.classList.toggle('mappable--balloon-marker__position-top', verticalPosition === 'top');
 
         // check bottom position
-        this._markerElement.classList.toggle('position-bottom', verticalPosition === 'bottom');
+        this._markerElement.classList.toggle(
+            'mappable--balloon-marker__position-bottom',
+            verticalPosition === 'bottom'
+        );
 
         // check left position
-        this._markerElement.classList.toggle('position-left', horizontalPosition === 'left');
+        this._markerElement.classList.toggle('mappable--balloon-marker__position-left', horizontalPosition === 'left');
 
         // check right position
-        this._markerElement.classList.toggle('position-right', horizontalPosition === 'right');
+        this._markerElement.classList.toggle(
+            'mappable--balloon-marker__position-right',
+            horizontalPosition === 'right'
+        );
     }
 }

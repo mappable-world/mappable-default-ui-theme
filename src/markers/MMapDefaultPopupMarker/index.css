@@ -62,10 +62,10 @@
 }
 
 .mappable--default-popup__dark {
-    .header_title {
+    .mappable--default-popup_header_title {
         color: #f2f5fa;
     }
-    .header_close {
+    .mappable--default-popup_header_close {
         color: #46464d;
     }
     .mappable--default-popup_description {
