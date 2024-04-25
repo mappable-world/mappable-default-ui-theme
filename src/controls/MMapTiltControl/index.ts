@@ -1,6 +1,6 @@
 import type {EasingFunctionDescription, MMapControl, MMapListener} from '@mappable-world/mappable-types';
 import {MMapCameraRequest} from '@mappable-world/mappable-types/imperative/MMap';
-import {CLICK_TOLERANCE_PX, Position, degToRad, radToDeg, toggleTilt} from '../utils/angle-utils';
+import {CLICK_TOLERANCE_PX, Position, radToDeg, toggleTilt} from '../utils/angle-utils';
 import {MMapTiltControlVuefyOptions} from './vue';
 
 import './index.css';
@@ -37,10 +37,6 @@ export class MMapTiltControl extends mappable.MMapComplexEntity<MMapTiltControlP
 
     constructor(props: MMapTiltControlProps) {
         super(props);
-    }
-
-    protected __implGetDefaultProps() {
-        return MMapTiltControl.defaultProps;
     }
 
     protected _onAttach(): void {
@@ -123,8 +119,8 @@ class InternalTiltControl extends mappable.MMapComplexEntity<MMapTiltControlProp
             tilt,
             tiltRange: {min, max}
         } = this.root;
-        const targetTiltDeg = toggleTilt(radToDeg(tilt), min, max);
-        this.root.setCamera({tilt: degToRad(targetTiltDeg), duration, easing});
+        const targetTiltDeg = toggleTilt(tilt, min, max);
+        this.root.setCamera({tilt: targetTiltDeg, duration, easing});
     };
 
     private _onTiltStart = (event: MouseEvent) => {
