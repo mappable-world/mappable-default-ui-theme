@@ -35,10 +35,6 @@ export class MMapRotateControl extends mappable.MMapComplexEntity<MMapRotateCont
     private _control!: MMapControl;
     private _rotateControl!: InternalRotateControl;
 
-    protected __implGetDefaultProps() {
-        return MMapRotateControl.defaultProps;
-    }
-
     constructor(props: MMapRotateControlProps) {
         super(props);
     }

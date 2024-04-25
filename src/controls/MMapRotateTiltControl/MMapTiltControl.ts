@@ -1,7 +1,7 @@
 import type {MMapListener} from '@mappable-world/mappable-types';
 import {MMapCameraRequest} from '@mappable-world/mappable-types/imperative/MMap';
 import type {MMapRotateTiltControlProps} from '.';
-import {CLICK_TOLERANCE_PX, Position, degToRad, radToDeg, toggleTilt} from '../utils/angle-utils';
+import {CLICK_TOLERANCE_PX, Position, radToDeg, toggleTilt} from '../utils/angle-utils';
 import './MMapTiltControl.css';
 
 const TILT_CONTROL_CLASS = 'mappable--rotate-tilt_tilt';
@@ -54,8 +54,8 @@ export class MMapTiltControl extends mappable.MMapComplexEntity<MMapRotateTiltCo
             tilt,
             tiltRange: {max, min}
         } = this.root;
-        const targetTiltDeg = toggleTilt(radToDeg(tilt), min, max);
-        this.root.setCamera({tilt: degToRad(targetTiltDeg), duration, easing});
+        const targetTiltDeg = toggleTilt(tilt, min, max);
+        this.root.setCamera({tilt: targetTiltDeg, duration, easing});
     };
 
     private _onTiltStart = (event: MouseEvent) => {

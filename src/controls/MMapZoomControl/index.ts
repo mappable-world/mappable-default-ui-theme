@@ -173,17 +173,13 @@ class MMapZoomCommonControl extends mappable.MMapGroupEntity<MMapZoomControlProp
  * map.addChild(controls);
  * ```
  */
-class MMapZoomControl extends mappable.MMapComplexEntity<MMapZoomControlProps> {
+class MMapZoomControl extends mappable.MMapComplexEntity<MMapZoomControlProps, DefaultProps> {
     static [mappable.optionsKeyVuefy] = MMapZoomControlVuefyOptions;
 
     static defaultProps = defaultProps;
 
     private _control!: MMapControl;
     private _zoom!: MMapZoomCommonControl;
-
-    protected __implGetDefaultProps(): DefaultProps {
-        return MMapZoomControl.defaultProps;
-    }
 
     protected override _onAttach(): void {
         this._zoom = new MMapZoomCommonControl(this._props);
