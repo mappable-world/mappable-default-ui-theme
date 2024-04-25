@@ -80,10 +80,6 @@ export class MMapBalloonMarker extends mappable.MMapComplexEntity<MMapBalloonMar
         this._props.show = openBalloon;
     }
 
-    protected __implGetDefaultProps(): DefaultProps {
-        return MMapBalloonMarker.defaultProps;
-    }
-
     protected _onAttach(): void {
         this._markerElement = document.createElement('mappable');
         this._markerElement.classList.add('mappable--balloon-marker');
