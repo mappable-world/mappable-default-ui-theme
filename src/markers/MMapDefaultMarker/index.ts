@@ -68,10 +68,6 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
         super(props);
     }
 
-    protected __implGetDefaultProps(): DefaultProps {
-        return MMapDefaultMarker.defaultProps;
-    }
-
     protected _onAttach(): void {
         this._color = this._getColor();
 
