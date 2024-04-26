@@ -29,7 +29,6 @@ type MMapSuggestProps = {
 class MMapSuggest extends mappable.MMapComplexEntity<MMapSuggestProps> {
     private _detachDom?: DomDetach;
     private _rootElement?: HTMLElement;
-    private _unwatchSearchContext?: () => void;
     private _unwatchThemeContext?: () => void;
 
     private _updateSuggest(props: MMapSuggestProps) {
@@ -154,8 +153,6 @@ class MMapSuggest extends mappable.MMapComplexEntity<MMapSuggestProps> {
         this._detachDom?.();
         this._detachDom = undefined;
 
-        this._unwatchSearchContext?.();
-        this._unwatchSearchContext = undefined;
         this._unwatchThemeContext?.();
         this._unwatchThemeContext = undefined;
 
