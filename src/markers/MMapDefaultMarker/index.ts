@@ -1,6 +1,7 @@
 import {MMapMarker, MMapMarkerProps} from '@mappable-world/mappable-types';
 import {IconColor, IconName, iconColors, icons} from '../../icons';
 import {MMapDefaultMarkerVuefyOptions} from './vue';
+import {MMapDefaultPopupMarker} from '../';
 
 import microPoiStrokeSVG from './backgrounds/micro-poi-stroke.svg';
 import microPoiSVG from './backgrounds/micro-poi.svg';
@@ -30,9 +31,21 @@ const HINT_SUBTITLE_CLASS = 'mappable--hint-subtitle';
 const HINT_STABLE = 'mappable--hint__stable';
 const HINT_HOVERED = 'mappable--hint__hovered';
 
+const DISTANCE_BETWEEN_POPUP_AND_MARKER = 8;
+
 export type ThemesColor = {day: string; night: string};
 export type MarkerColorProps = IconColor | ThemesColor;
 export type MarkerSizeProps = 'normal' | 'small' | 'micro';
+export type MarkerPopupProps = {
+    /** Displayed title in popup header */
+    title?: string;
+    /** Displayed description */
+    description?: string;
+    /** The inscription on the action button */
+    action?: string;
+    /** Callback of click the action button */
+    onAction?: () => void;
+};
 
 export type MMapDefaultMarkerProps = MMapMarkerProps & {
     iconName?: IconName;
@@ -41,6 +54,7 @@ export type MMapDefaultMarkerProps = MMapMarkerProps & {
     title?: string;
     subtitle?: string;
     staticHint?: boolean;
+    popup?: MarkerPopupProps;
 };
 
 const defaultProps = Object.freeze({color: 'darkgray', size: 'small', staticHint: true});
@@ -63,6 +77,8 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
     private _hintContainer: HTMLElement;
     private _titleHint: HTMLElement;
     private _subtitleHint: HTMLElement;
+
+    private _popup: MMapDefaultPopupMarker;
 
     constructor(props: MMapDefaultMarkerProps) {
         super(props);
@@ -115,8 +131,23 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
             this._markerElement.appendChild(this._hintContainer);
         }
 
-        this._marker = new mappable.MMapMarker(this._props, this._markerElement);
+        this._marker = new mappable.MMapMarker(
+            {
+                ...this._props,
+                onClick: this._onMarkerClick
+            },
+            this._markerElement
+        );
         this.addChild(this._marker);
+
+        this._popup = new MMapDefaultPopupMarker({
+            ...this._props,
+            ...this._props.popup,
+            show: false,
+            zIndex: 1000
+        });
+        this._updatePopupOffset();
+        this.addChild(this._popup);
 
         this._watchContext(mappable.ThemeContext, () => this._updateTheme(), {
             immediate: true
@@ -132,6 +163,11 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
         if (propsDiff.size !== undefined) {
             this._updateMarkerSize();
             this._updateSVG();
+            this._updatePopupOffset();
+        }
+
+        if (propsDiff.popup !== undefined) {
+            this._popup.update(this._props.popup);
         }
 
         this._titleHint.textContent = title ?? '';
@@ -148,7 +184,7 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
             this._hintContainer.classList.toggle(HINT_HOVERED, !this._props.staticHint);
         }
 
-        this._marker.update(this._props);
+        this._marker.update({...this._props, onClick: this._onMarkerClick});
     }
 
     private _createHintContainer(): HTMLElement {
@@ -169,6 +205,11 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
         hintContainer.appendChild(this._subtitleHint);
         return hintContainer;
     }
+
+    private _onMarkerClick = (event: MouseEvent) => {
+        this._popup.update({show: !this._popup.isOpen});
+        this._props.onClick?.(event);
+    };
 
     private _updateTheme() {
         const themeCtx = this._consumeContext(mappable.ThemeContext);
@@ -220,6 +261,23 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
                 this._stroke.innerHTML = microPoiStrokeSVG;
                 break;
         }
+    }
+
+    private _updatePopupOffset() {
+        const {size} = this._props;
+        let offset: number;
+        switch (size) {
+            case 'normal':
+                offset = 59 + DISTANCE_BETWEEN_POPUP_AND_MARKER;
+                break;
+            case 'small':
+                offset = 24 / 2 + DISTANCE_BETWEEN_POPUP_AND_MARKER;
+                break;
+            case 'micro':
+                offset = 14 / 2 + DISTANCE_BETWEEN_POPUP_AND_MARKER;
+                break;
+        }
+        this._popup.update({offset});
     }
 
     private _getIcon(): string {
