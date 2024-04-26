@@ -9,9 +9,7 @@ async function main() {
 
     const {MMap, MMapDefaultSchemeLayer, MMapDefaultFeaturesLayer, MMapControls} = vuefy.module(mappable);
 
-    const {MMapSearchControl, MMapSuggestControl} = vuefy.module(
-        await mappable.import('@mappable-world/mappable-default-ui-theme')
-    );
+    const {MMapSearchControl} = vuefy.module(await mappable.import('@mappable-world/mappable-default-ui-theme'));
 
     const app = Vue.createApp({
         components: {
@@ -19,8 +17,7 @@ async function main() {
             MMapDefaultSchemeLayer,
             MMapDefaultFeaturesLayer,
             MMapControls,
-            MMapSearchControl,
-            MMapSuggestControl
+            MMapSearchControl
         },
         setup() {
             const refMap = (ref: any) => {
@@ -34,9 +31,7 @@ async function main() {
                 <MMapDefaultSchemeLayer />
                 <MMapDefaultFeaturesLayer />
                 <MMapControls position="top">
-                    <MMapSearchControl>
-                        <MMapSuggestControl />
-                    </MMapSearchControl>
+                    <MMapSearchControl />
                 </MMapControls>
             </MMap>`
     });

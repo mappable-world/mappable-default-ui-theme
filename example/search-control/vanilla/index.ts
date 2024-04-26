@@ -10,14 +10,12 @@ async function main() {
         .getDefaultConfig()
         // @ts-ignore
         .setApikeys({search: 'pk_ZAROIlpukeMufiKGZFwyulaUQEXIjDySkgduDDiovkifzqXLsJweeFmxeoRwZNNc'});
-    const {MMapSearchControl, MMapSuggestControl} = await mappable.import('@mappable-world/mappable-default-ui-theme');
+    const {MMapSearchControl} = await mappable.import('@mappable-world/mappable-default-ui-theme');
 
     map = new MMap(document.getElementById('app'), {location: LOCATION});
 
     map.addChild(new MMapDefaultSchemeLayer({}));
     map.addChild(new MMapDefaultFeaturesLayer({}));
 
-    map.addChild(
-        new MMapControls({position: 'top'}).addChild(new MMapSearchControl({}).addChild(new MMapSuggestControl({})))
-    );
+    map.addChild(new MMapControls({position: 'top'}).addChild(new MMapSearchControl({})));
 }

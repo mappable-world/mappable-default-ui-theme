@@ -11,9 +11,7 @@ async function main() {
 
     const {useState} = React;
 
-    const {MMapSearchControl, MMapSuggestControl} = reactify.module(
-        await mappable.import('@mappable-world/mappable-default-ui-theme')
-    );
+    const {MMapSearchControl} = reactify.module(await mappable.import('@mappable-world/mappable-default-ui-theme'));
 
     ReactDOM.render(
         <React.StrictMode>
@@ -30,9 +28,7 @@ async function main() {
                 <MMapDefaultSchemeLayer />
                 <MMapDefaultFeaturesLayer />
                 <MMapControls position="top">
-                    <MMapSearchControl>
-                        <MMapSuggestControl />
-                    </MMapSearchControl>
+                    <MMapSearchControl />
                 </MMapControls>
             </MMap>
         );

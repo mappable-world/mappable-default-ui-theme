@@ -1,6 +1,7 @@
 import type {DomDetach} from '@mappable-world/mappable-types/imperative/DomContext';
+import type {MMapControl} from '@mappable-world/mappable-types/imperative/MMapControl';
 import {debounce} from 'lodash';
-import {MMapSuggestControl} from './MMapSuggestControl';
+import {MMapSuggest} from './MMapSuggest';
 
 import './index.css';
 
@@ -10,27 +11,13 @@ const SEARCH_CONTROL_CLEAR_CLASS = 'mappable--search-control__clear';
 const SEARCH_CONTROL_FORM_CLASS = 'mappable--search-control__form';
 const HIDE_CLASS = '_hide';
 
-export type SuggestListContext = {
-    value: string;
-    onSuggestClick: (text: string) => void;
-    isInputBlur?: boolean;
-};
-
-export type ActiveSuggestContext = {
-    isNext: boolean;
-    setInputValue: (text: string) => void;
-};
-
-export type MMapSearchContext = SuggestListContext | ActiveSuggestContext | {};
-
-export const SearchContext = new mappable.MMapContext<MMapSearchContext>('SearchContext');
-
-class MMapSearchControl extends mappable.MMapGroupEntity<{}> {
+class MMapSearchCommonControl extends mappable.MMapComplexEntity<{}> {
     private _detachDom?: DomDetach;
     private _rootElement?: HTMLElement;
     private _clearButton?: HTMLButtonElement;
     private _searchInput?: HTMLInputElement;
     private _unwatchThemeContext?: () => void;
+    private _suggest?: MMapSuggest;
 
     private async _search(text: string) {
         const res = await mappable.search({text});
@@ -43,11 +30,13 @@ class MMapSearchControl extends mappable.MMapGroupEntity<{}> {
     };
 
     private _onChangeSearchInputDebounced = debounce(() => {
-        this._provideContext(SearchContext, {
-            value: this._searchInput.value,
-            onSuggestClick: (text: string) => {
-                this._search(text);
-                this._resetInput();
+        this._suggest.update({
+            updateSuggestList: {
+                value: this._searchInput.value,
+                onSuggestClick: (text: string) => {
+                    this._search(text);
+                    this._resetInput();
+                }
             }
         });
     }, 200);
@@ -59,13 +48,15 @@ class MMapSearchControl extends mappable.MMapGroupEntity<{}> {
     };
 
     private _onFocusBlurSearchInput = (event: FocusEvent) => {
-        this._provideContext(SearchContext, {
-            value: this._searchInput.value,
-            onSuggestClick: (text: string) => {
-                this._search(text);
-                this._resetInput();
-            },
-            isInputBlur: event.type === 'blur'
+        this._suggest.update({
+            updateSuggestList: {
+                value: this._searchInput.value,
+                onSuggestClick: (text: string) => {
+                    this._search(text);
+                    this._resetInput();
+                },
+                isInputBlur: event.type === 'blur'
+            }
         });
     };
 
@@ -85,9 +76,11 @@ class MMapSearchControl extends mappable.MMapGroupEntity<{}> {
             case 'ArrowUp': {
                 event.preventDefault();
 
-                this._provideContext(SearchContext, {
-                    isNext: false,
-                    setInputValue: (text) => (this._searchInput.value = text)
+                this._suggest.update({
+                    updateActiveSuggest: {
+                        isNext: false,
+                        setInputValue: (text) => (this._searchInput.value = text)
+                    }
                 });
 
                 break;
@@ -95,9 +88,11 @@ class MMapSearchControl extends mappable.MMapGroupEntity<{}> {
             case 'ArrowDown': {
                 event.preventDefault();
 
-                this._provideContext(SearchContext, {
-                    isNext: true,
-                    setInputValue: (text) => (this._searchInput.value = text)
+                this._suggest.update({
+                    updateActiveSuggest: {
+                        isNext: true,
+                        setInputValue: (text) => (this._searchInput.value = text)
+                    }
                 });
 
                 break;
@@ -141,7 +136,6 @@ class MMapSearchControl extends mappable.MMapGroupEntity<{}> {
         this._searchInput.addEventListener('focus', this._onFocusBlurSearchInput);
         this._searchInput.addEventListener('blur', this._onFocusBlurSearchInput);
         this._searchInput.addEventListener('keydown', this._onKeyDownSearchInput);
-        this._provideContext(SearchContext, {});
 
         this._clearButton = document.createElement('button');
         this._clearButton.classList.add(SEARCH_CONTROL_CLEAR_CLASS, HIDE_CLASS);
@@ -153,6 +147,9 @@ class MMapSearchControl extends mappable.MMapGroupEntity<{}> {
         searchForm.appendChild(this._clearButton);
         this._rootElement.appendChild(searchForm);
 
+        this._suggest = new MMapSuggest({});
+        this.addChild(this._suggest);
+
         this._unwatchThemeContext = this._watchContext(
             mappable.ThemeContext,
             () => this._updateTheme(this._searchInput),
@@ -163,6 +160,9 @@ class MMapSearchControl extends mappable.MMapGroupEntity<{}> {
     }
 
     protected override _onDetach(): void {
+        this.removeChild(this._suggest);
+        this._suggest = undefined;
+
         this._detachDom?.();
         this._detachDom = undefined;
 
@@ -182,4 +182,19 @@ class MMapSearchControl extends mappable.MMapGroupEntity<{}> {
     }
 }
 
-export {MMapSearchControl, MMapSuggestControl};
+class MMapSearchControl extends mappable.MMapComplexEntity<{}> {
+    private _control!: MMapControl;
+    private _search!: MMapSearchCommonControl;
+
+    protected override _onAttach(): void {
+        this._search = new MMapSearchCommonControl({});
+        this._control = new mappable.MMapControl({transparent: true}).addChild(this._search);
+        this.addChild(this._control);
+    }
+
+    protected override _onDetach(): void {
+        this.removeChild(this._control);
+    }
+}
+
+export {MMapSearchControl};
