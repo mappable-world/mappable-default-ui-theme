@@ -4,7 +4,10 @@
 
 | Name                  | Normal Size                                                            |
 | --------------------- | ---------------------------------------------------------------------- |
+| airfield              | ![airfield](../static/icons/airfield_24.svg)                           |
 | airport               | ![airport](../static/icons/airport_24.svg)                             |
+| animation             | ![animation](../static/icons/animation_24.svg)                         |
+| armenian_church       | ![armenian_church](../static/icons/armenian_church_24.svg)             |
 | attraction            | ![attraction](../static/icons/attraction_24.svg)                       |
 | auto                  | ![auto](../static/icons/auto_24.svg)                                   |
 | aviary                | ![aviary](../static/icons/aviary_24.svg)                               |
@@ -39,6 +42,7 @@
 | equestrian            | ![equestrian](../static/icons/equestrian_24.svg)                       |
 | fallback              | ![fallback](../static/icons/fallback_24.svg)                           |
 | fast_food             | ![fast_food](../static/icons/fast_food_24.svg)                         |
+| festival              | ![festival](../static/icons/festival_24.svg)                           |
 | film_studio           | ![film_studio](../static/icons/film_studio_24.svg)                     |
 | fire_station          | ![fire_station](../static/icons/fire_station_24.svg)                   |
 | fitness               | ![fitness](../static/icons/fitness_24.svg)                             |
@@ -78,6 +82,7 @@
 | mosque                | ![mosque](../static/icons/mosque_24.svg)                               |
 | mountain              | ![mountain](../static/icons/mountain_24.svg)                           |
 | museum                | ![museum](../static/icons/museum_24.svg)                               |
+| nail_studio           | ![nail_studio](../static/icons/nail_studio_24.svg)                     |
 | office                | ![office](../static/icons/office_24.svg)                               |
 | office_service        | ![office_service](../static/icons/office_service_24.svg)               |
 | orthodox_church       | ![orthodox_church](../static/icons/orthodox_church_24.svg)             |
@@ -109,6 +114,8 @@
 | sportcenter           | ![sportcenter](../static/icons/sportcenter_24.svg)                     |
 | spring                | ![spring](../static/icons/spring_24.svg)                               |
 | stadium               | ![stadium](../static/icons/stadium_24.svg)                             |
+| stage                 | ![stage](../static/icons/stage_24.svg)                                 |
+| stenograffia          | ![stenograffia](../static/icons/stenograffia_24.svg)                   |
 | supermarket           | ![supermarket](../static/icons/supermarket_24.svg)                     |
 | sushi                 | ![sushi](../static/icons/sushi_24.svg)                                 |
 | swimming_pool         | ![swimming_pool](../static/icons/swimming_pool_24.svg)                 |
@@ -123,5 +130,6 @@
 | travel_agency         | ![travel_agency](../static/icons/travel_agency_24.svg)                 |
 | viewpoint             | ![viewpoint](../static/icons/viewpoint_24.svg)                         |
 | waterfall             | ![waterfall](../static/icons/waterfall_24.svg)                         |
+| waterpark             | ![waterpark](../static/icons/waterpark_24.svg)                         |
 | wc                    | ![wc](../static/icons/wc_24.svg)                                       |
 | zoo                   | ![zoo](../static/icons/zoo_24.svg)                                     |
