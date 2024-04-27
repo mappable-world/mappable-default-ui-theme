@@ -67,7 +67,10 @@ class MMapSuggest extends mappable.MMapComplexEntity<MMapSuggestProps> {
         if (updateActiveSuggest.isNext) {
             activeIndex = (activeIndex + 1) % suggestElements.length; // cyclic movement
         } else {
-            activeIndex = (activeIndex - 1 + suggestElements.length) % suggestElements.length;
+            activeIndex =
+                activeIndex === -1
+                    ? suggestElements.length - 1
+                    : (activeIndex - 1 + suggestElements.length) % suggestElements.length;
         }
 
         suggestElements.forEach((element, index) => {
@@ -109,6 +112,13 @@ class MMapSuggest extends mappable.MMapComplexEntity<MMapSuggestProps> {
         suggestElements.forEach((element) => element.classList.toggle(ACTIVE_CLASS, element === hoveredElement));
     };
 
+    private _onMouseOutHandler = (event: MouseEvent) => {
+        if (!this._rootElement.contains(event.relatedTarget as Node)) {
+            const suggestElements = this._getSuggestElements();
+            suggestElements.forEach((element) => element.classList.remove(ACTIVE_CLASS));
+        }
+    };
+
     private _getSuggestElements = () =>
         (this.children.filter((child) => child instanceof MMapSuggestItem) as MMapSuggestItem[]).map(
             (child) => child.element
@@ -143,6 +153,7 @@ class MMapSuggest extends mappable.MMapComplexEntity<MMapSuggestProps> {
         this._rootElement = document.createElement('mappable');
         this._rootElement.classList.add(SUGGEST_CLASS, HIDE_CLASS);
         this._rootElement.addEventListener('mouseover', this._onMouseOverHandler);
+        this._rootElement.addEventListener('mouseout', this._onMouseOutHandler);
 
         this._detachDom = mappable.useDomContext(this, this._rootElement, this._rootElement);
 
@@ -177,6 +188,7 @@ class MMapSuggest extends mappable.MMapComplexEntity<MMapSuggestProps> {
         this._unwatchControlContext = undefined;
 
         this._rootElement.removeEventListener('mouseover', this._onMouseOverHandler);
+        this._rootElement.removeEventListener('mouseout', this._onMouseOutHandler);
         this._rootElement = undefined;
     }
 }
