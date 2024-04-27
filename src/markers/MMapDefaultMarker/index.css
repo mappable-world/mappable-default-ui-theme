@@ -1,0 +1,133 @@
+@keyframes mappable--default-marker-hint-hover {
+    from {
+        margin-left: -10px;
+        opacity: 0;
+    }
+    to {
+        margin-left: 0px;
+        opacity: 1;
+    }
+}
+
+.mappable--default-marker-point {
+    position: absolute;
+    cursor: pointer;
+}
+.mappable--default-marker-point svg {
+    display: block;
+}
+
+.mappable--hint {
+    box-sizing: border-box;
+    position: absolute;
+    max-width: 190px;
+    padding: 4px 8px;
+    flex-direction: column;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.84);
+    line-height: 16px;
+    white-space: nowrap;
+    z-index: -2;
+}
+.mappable--hint__stable {
+    display: inline-flex;
+}
+.mappable--hint__hovered {
+    display: none;
+}
+.mappable--default-marker-point:hover .mappable--hint__hovered {
+    display: inline-flex;
+    animation: mappable--default-marker-hint-hover 200ms ease-out;
+}
+.mappable--hint-title {
+    display: block;
+    width: 100%;
+    color: #050d33;
+    font-size: 14px;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.mappable--hint-subtitle {
+    display: block;
+    width: 100%;
+    color: #7b7d85;
+    font-size: 12px;
+    font-weight: 400;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* normal size */
+.mappable--pin .mappable--default-marker__background {
+    position: absolute;
+    transform: translate(-50%, calc(-100% + 2px)); /* 2px - point radius */
+    filter: drop-shadow(0px 2px 6px rgba(24, 27, 34, 0.4));
+}
+.mappable--pin .mappable--default-marker__stroke {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    z-index: -1;
+}
+.mappable--pin .mappable--default-marker__icon {
+    position: absolute;
+    transform: translate(-50%, calc(-59px + 2px + 10px)); /* 59px - pin height, 2px - point radius, 10px - offset */
+    z-index: 1;
+}
+.mappable--pin .mappable--hint {
+    transform: translate(
+        calc(44px / 2 + 5px),
+        calc(-59px + 2px + 10px)
+    ); /* 44px, 59px - pin width, height, 2px - point radius, 5px, 10px - offsets */
+}
+
+/* small size */
+.mappable--small-poi .mappable--default-marker__background {
+    position: absolute;
+    transform: translate(-50%, -50%);
+}
+.mappable--small-poi .mappable--default-marker__stroke {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    z-index: -1;
+    -webkit-filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.1));
+    filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.1));
+}
+.mappable--small-poi .mappable--default-marker__icon {
+    position: absolute;
+    z-index: 1;
+    transform: translate(-50%, -50%);
+}
+.mappable--small-poi .mappable--default-marker__icon svg {
+    transform: scale(calc(14 / 24));
+}
+.mappable--small-poi .mappable--hint {
+    transform: translate(calc(24px / 2 + 4px), calc(-24px / 2)); /* 24px - poi size, 4px offset */
+}
+
+/* micro size */
+.mappable--micro-poi .mappable--default-marker__background {
+    position: absolute;
+    transform: translate(-50%, -50%);
+}
+.mappable--micro-poi .mappable--default-marker__stroke {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    z-index: -1;
+    -webkit-filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.1));
+    filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.1));
+}
+.mappable--micro-poi .mappable--hint {
+    transform: translate(calc(14px / 2 + 8px), calc(-14px / 2 - 4px));
+}
+
+/* dark theme */
+.mappable--default-marker-point_dark .mappable--hint {
+    background: rgba(29, 30, 31, 0.84);
+}
+.mappable--default-marker-point_dark .mappable--hint-title {
+    color: #f2f5fa;
+}
+.mappable--default-marker-point_dark .mappable--hint-subtitle {
+    color: #7b7d85;
+}
