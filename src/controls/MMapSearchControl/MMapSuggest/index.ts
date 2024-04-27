@@ -30,6 +30,7 @@ class MMapSuggest extends mappable.MMapComplexEntity<MMapSuggestProps> {
     private _detachDom?: DomDetach;
     private _rootElement?: HTMLElement;
     private _unwatchThemeContext?: () => void;
+    private _unwatchControlContext?: () => void;
 
     private _updateSuggest(props: MMapSuggestProps) {
         if (props.updateSuggestList) {
@@ -127,6 +128,17 @@ class MMapSuggest extends mappable.MMapComplexEntity<MMapSuggestProps> {
         }
     }
 
+    private _updateVerticalOrder(container: HTMLElement): void {
+        const controlCtx = this._consumeContext(mappable.ControlContext);
+        if (!controlCtx) {
+            return;
+        }
+
+        const verticalPosition = controlCtx.position[0];
+        const bottomOrderClassName = '_bottom';
+        container.classList.toggle(bottomOrderClassName, verticalPosition === 'bottom');
+    }
+
     protected override _onAttach(): void {
         this._rootElement = document.createElement('mappable');
         this._rootElement.classList.add(SUGGEST_CLASS, HIDE_CLASS);
@@ -143,6 +155,12 @@ class MMapSuggest extends mappable.MMapComplexEntity<MMapSuggestProps> {
                 immediate: true
             }
         );
+
+        this._unwatchControlContext = this._watchContext(
+            mappable.ControlContext,
+            () => this._updateVerticalOrder(this._rootElement),
+            {immediate: true}
+        );
     }
 
     protected _onUpdate(props: Partial<MMapSuggestProps>): void {
@@ -155,6 +173,8 @@ class MMapSuggest extends mappable.MMapComplexEntity<MMapSuggestProps> {
 
         this._unwatchThemeContext?.();
         this._unwatchThemeContext = undefined;
+        this._unwatchControlContext?.();
+        this._unwatchControlContext = undefined;
 
         this._rootElement.removeEventListener('mouseover', this._onMouseOverHandler);
         this._rootElement = undefined;

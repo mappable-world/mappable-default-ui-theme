@@ -3,7 +3,6 @@
     flex-direction: column;
     gap: 12px 0;
 
-    margin-top: 4px;
     padding: 12px 4px;
     border-radius: 12px;
 
@@ -15,6 +14,10 @@
 
 .mappable--suggest-control._dark {
     background-color: #111;
+}
+
+.mappable--suggest-control._bottom {
+    flex-direction: column-reverse;
 }
 
 .mappable--suggest-control._hide {

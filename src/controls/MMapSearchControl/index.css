@@ -1,8 +1,13 @@
 .mappable--search-control {
     display: flex;
     flex-direction: column;
+    gap: 4px 0;
 
     width: 320px;
+}
+
+.mappable--search-control._bottom {
+    flex-direction: column-reverse;
 }
 
 .mappable--search-control__form {

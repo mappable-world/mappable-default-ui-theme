@@ -17,5 +17,5 @@ async function main() {
     map.addChild(new MMapDefaultSchemeLayer({}));
     map.addChild(new MMapDefaultFeaturesLayer({}));
 
-    map.addChild(new MMapControls({position: 'top'}).addChild(new MMapSearchControl({})));
+    map.addChild(new MMapControls({position: 'bottom'}).addChild(new MMapSearchControl({})));
 }

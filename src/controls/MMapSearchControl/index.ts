@@ -16,8 +16,10 @@ class MMapSearchCommonControl extends mappable.MMapComplexEntity<{}> {
     private _rootElement?: HTMLElement;
     private _clearButton?: HTMLButtonElement;
     private _searchInput?: HTMLInputElement;
-    private _unwatchThemeContext?: () => void;
     private _suggest?: MMapSuggest;
+    private _unwatchThemeContext?: () => void;
+    private _unwatchControlContext?: () => void;
+    private _isBottomOrder?: boolean;
 
     private async _search(text: string) {
         const res = await mappable.search({text});
@@ -78,7 +80,7 @@ class MMapSearchCommonControl extends mappable.MMapComplexEntity<{}> {
 
                 this._suggest.update({
                     updateActiveSuggest: {
-                        isNext: false,
+                        isNext: this._isBottomOrder,
                         setInputValue: (text) => (this._searchInput.value = text)
                     }
                 });
@@ -90,7 +92,7 @@ class MMapSearchCommonControl extends mappable.MMapComplexEntity<{}> {
 
                 this._suggest.update({
                     updateActiveSuggest: {
-                        isNext: true,
+                        isNext: !this._isBottomOrder,
                         setInputValue: (text) => (this._searchInput.value = text)
                     }
                 });
@@ -119,6 +121,18 @@ class MMapSearchCommonControl extends mappable.MMapComplexEntity<{}> {
         } else if (theme === 'light') {
             searchInput.classList.remove(darkClassName);
         }
+    }
+
+    private _updateVerticalOrder(container: HTMLElement): void {
+        const controlCtx = this._consumeContext(mappable.ControlContext);
+        if (!controlCtx) {
+            return;
+        }
+
+        const verticalPosition = controlCtx.position[0];
+        const bottomOrderClassName = '_bottom';
+        this._isBottomOrder = verticalPosition === 'bottom';
+        container.classList.toggle(bottomOrderClassName, this._isBottomOrder);
     }
 
     protected override _onAttach(): void {
@@ -153,9 +167,13 @@ class MMapSearchCommonControl extends mappable.MMapComplexEntity<{}> {
         this._unwatchThemeContext = this._watchContext(
             mappable.ThemeContext,
             () => this._updateTheme(this._searchInput),
-            {
-                immediate: true
-            }
+            {immediate: true}
+        );
+
+        this._unwatchControlContext = this._watchContext(
+            mappable.ControlContext,
+            () => this._updateVerticalOrder(this._rootElement),
+            {immediate: true}
         );
     }
 
@@ -168,6 +186,9 @@ class MMapSearchCommonControl extends mappable.MMapComplexEntity<{}> {
 
         this._unwatchThemeContext?.();
         this._unwatchThemeContext = undefined;
+        this._unwatchControlContext?.();
+        this._unwatchControlContext = undefined;
+        this._isBottomOrder = undefined;
 
         this._clearButton.removeEventListener('click', this._resetInput);
         this._clearButton = undefined;
