@@ -78,7 +78,7 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
     private _titleHint: HTMLElement;
     private _subtitleHint: HTMLElement;
 
-    private _popup: MMapDefaultPopupMarker;
+    private _popup?: MMapDefaultPopupMarker;
 
     constructor(props: MMapDefaultMarkerProps) {
         super(props);
@@ -140,34 +140,42 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
         );
         this.addChild(this._marker);
 
-        this._popup = new MMapDefaultPopupMarker({
-            ...this._props,
-            ...this._props.popup,
-            show: false,
-            zIndex: 1000
-        });
-        this._updatePopupOffset();
-        this.addChild(this._popup);
+        if (this._props.popup) {
+            this._popup = this._createPopupMarker();
+            this.addChild(this._popup);
+        }
 
         this._watchContext(mappable.ThemeContext, () => this._updateTheme(), {
             immediate: true
         });
     }
 
-    protected _onUpdate(propsDiff: Partial<MMapDefaultMarkerProps>): void {
+    protected _onUpdate(propsDiff: Partial<MMapDefaultMarkerProps>, oldProps: MMapDefaultMarkerProps): void {
         const {title, subtitle} = this._props;
         if (propsDiff.color !== undefined) {
             this._color = this._getColor();
             this._updateTheme();
         }
+
+        // popup props is changed
+        if (this._props.popup !== oldProps.popup) {
+            if (this._props.popup === undefined && oldProps.popup !== undefined) {
+                this.removeChild(this._popup);
+                this._popup = undefined;
+            } else if (this._props.popup !== undefined && oldProps.popup === undefined) {
+                this._popup = this._createPopupMarker();
+                this.addChild(this._popup);
+            } else {
+                this._popup.update(this._props.popup);
+            }
+        }
+
         if (propsDiff.size !== undefined) {
             this._updateMarkerSize();
             this._updateSVG();
-            this._updatePopupOffset();
-        }
-
-        if (propsDiff.popup !== undefined) {
-            this._popup.update(this._props.popup);
+            if (this._popup) {
+                this._popup.update({offset: this._getPopupOffset()});
+            }
         }
 
         this._titleHint.textContent = title ?? '';
@@ -185,6 +193,16 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
         }
 
         this._marker.update({...this._props, onClick: this._onMarkerClick});
+    }
+
+    private _createPopupMarker() {
+        return new MMapDefaultPopupMarker({
+            ...this._props,
+            ...this._props.popup,
+            offset: this._getPopupOffset(),
+            show: false,
+            zIndex: 1000
+        });
     }
 
     private _createHintContainer(): HTMLElement {
@@ -207,6 +225,9 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
     }
 
     private _onMarkerClick = (event: MouseEvent) => {
+        if (!this._popup) {
+            return;
+        }
         this._popup.update({show: !this._popup.isOpen});
         this._props.onClick?.(event);
     };
@@ -263,7 +284,7 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
         }
     }
 
-    private _updatePopupOffset() {
+    private _getPopupOffset(): number {
         const {size} = this._props;
         let offset: number;
         switch (size) {
@@ -277,7 +298,7 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
                 offset = 14 / 2 + DISTANCE_BETWEEN_POPUP_AND_MARKER;
                 break;
         }
-        this._popup.update({offset});
+        return offset;
     }
 
     private _getIcon(): string {
