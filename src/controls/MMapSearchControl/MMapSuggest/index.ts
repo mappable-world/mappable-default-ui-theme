@@ -1,5 +1,7 @@
 import type {DomDetach} from '@mappable-world/mappable-types/imperative/DomContext';
 import type {SuggestResponse, SuggestResponseItem} from '@mappable-world/mappable-types/imperative/suggest';
+import type {MMap} from '@mappable-world/mappable-types/imperative/MMap';
+import {SearchParams} from '..';
 
 import './index.css';
 
@@ -12,7 +14,7 @@ const ACTIVE_CLASS = '_active';
 
 type UpdateSuggestOption = {
     value: string;
-    onSuggestClick: (text: string) => void;
+    onSuggestClick: (params: SearchParams) => void;
     isInputBlur?: boolean;
 };
 
@@ -24,6 +26,7 @@ type UpdateActiveSuggestOption = {
 type MMapSuggestProps = {
     updateSuggestList?: UpdateSuggestOption;
     updateActiveSuggest?: UpdateActiveSuggestOption;
+    suggest?: ({text, map}: {text: string; map: MMap}) => Promise<SuggestResponse> | SuggestResponse;
 };
 
 class MMapSuggest extends mappable.MMapComplexEntity<MMapSuggestProps> {
@@ -31,6 +34,10 @@ class MMapSuggest extends mappable.MMapComplexEntity<MMapSuggestProps> {
     private _rootElement?: HTMLElement;
     private _unwatchThemeContext?: () => void;
     private _unwatchControlContext?: () => void;
+
+    public get activeSuggest() {
+        return this._getSuggestElements().find((element) => element.classList.contains(ACTIVE_CLASS));
+    }
 
     private _updateSuggest(props: MMapSuggestProps) {
         if (props.updateSuggestList) {
@@ -43,11 +50,13 @@ class MMapSuggest extends mappable.MMapComplexEntity<MMapSuggestProps> {
     }
 
     private _updateSuggestList = async (updateSuggestList: UpdateSuggestOption) => {
-        const suggest = await mappable.suggest({text: updateSuggestList.value});
+        const suggestResult =
+            (await this._props.suggest?.({text: updateSuggestList.value, map: this.root})) ??
+            (await mappable.suggest({text: updateSuggestList.value}));
 
         this._removeSuggestItems();
 
-        this._addSuggestItems(suggest, updateSuggestList.onSuggestClick);
+        this._addSuggestItems(suggestResult, updateSuggestList.onSuggestClick);
 
         this._rootElement.classList.toggle(
             HIDE_CLASS,
@@ -56,11 +65,11 @@ class MMapSuggest extends mappable.MMapComplexEntity<MMapSuggestProps> {
     };
 
     private _updateActiveSuggest = (updateActiveSuggest: UpdateActiveSuggestOption) => {
-        if (this.children.length === 0) {
+        const suggestElements = this._getSuggestElements();
+
+        if (!suggestElements) {
             return;
         }
-
-        const suggestElements = this._getSuggestElements();
 
         let activeIndex = suggestElements.findIndex((element) => element.classList.contains(ACTIVE_CLASS));
 
@@ -77,8 +86,8 @@ class MMapSuggest extends mappable.MMapComplexEntity<MMapSuggestProps> {
             element.classList.toggle(ACTIVE_CLASS, index === activeIndex);
         });
 
-        if (suggestElements[activeIndex] && suggestElements[activeIndex]?.dataset?.value) {
-            updateActiveSuggest.setInputValue(suggestElements[activeIndex].dataset.value);
+        if (suggestElements[activeIndex] && suggestElements[activeIndex]?.dataset?.title) {
+            updateActiveSuggest.setInputValue(suggestElements[activeIndex].dataset.title);
         }
     };
 
@@ -90,12 +99,12 @@ class MMapSuggest extends mappable.MMapComplexEntity<MMapSuggestProps> {
 
     private _addSuggestItems(suggest: SuggestResponse, onSuggestClick: UpdateSuggestOption['onSuggestClick']) {
         suggest.forEach((suggestItem) => {
-            const searchText = suggestItem.uri ?? suggestItem.title.text;
+            const searchParams = suggestItem.uri ? {uri: suggestItem.uri} : {text: suggestItem.title.text};
 
             this.addChild(
                 new MMapSuggestItem({
                     suggestItem,
-                    onClick: () => onSuggestClick(searchText)
+                    onClick: () => onSuggestClick(searchParams)
                 })
             );
         });
@@ -203,10 +212,6 @@ class MMapSuggestItem extends mappable.MMapComplexEntity<MMapSuggestItemProps> {
     private _rootElement?: HTMLElement;
     private _unwatchThemeContext?: () => void;
 
-    constructor(props: MMapSuggestItemProps) {
-        super(props);
-    }
-
     public get element() {
         return this._rootElement;
     }
@@ -233,7 +238,8 @@ class MMapSuggestItem extends mappable.MMapComplexEntity<MMapSuggestItemProps> {
         this._rootElement = document.createElement('mappable');
         this._rootElement.classList.add(SUGGEST_ITEM_CLASS);
         this._rootElement.addEventListener('click', this._props.onClick);
-        this._rootElement.dataset.value = this._props.suggestItem.title.text;
+        this._rootElement.dataset.title = this._props.suggestItem.title.text;
+        this._rootElement.dataset.uri = this._props.suggestItem?.uri;
 
         this._detachDom = mappable.useDomContext(this, this._rootElement, this._rootElement);
 

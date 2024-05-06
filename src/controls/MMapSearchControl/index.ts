@@ -1,5 +1,8 @@
 import type {DomDetach} from '@mappable-world/mappable-types/imperative/DomContext';
 import type {MMapControl} from '@mappable-world/mappable-types/imperative/MMapControl';
+import type {MMap} from '@mappable-world/mappable-types/imperative/MMap';
+import type {SearchResponse} from '@mappable-world/mappable-types/imperative/search';
+import type {SuggestResponse} from '@mappable-world/mappable-types/imperative/suggest';
 import {debounce} from 'lodash';
 import {MMapSuggest} from './MMapSuggest';
 
@@ -11,19 +14,32 @@ const SEARCH_CONTROL_CLEAR_CLASS = 'mappable--search-control__clear';
 const SEARCH_CONTROL_FORM_CLASS = 'mappable--search-control__form';
 const HIDE_CLASS = '_hide';
 
-class MMapSearchCommonControl extends mappable.MMapComplexEntity<{}> {
+export type SearchParams = {
+    text?: string;
+    uri?: string;
+};
+
+type MMapSearchControlProps = {
+    search?: ({params, map}: {params: SearchParams; map: MMap}) => Promise<SearchResponse> | SearchResponse;
+    suggest?: ({text, map}: {text: string; map: MMap}) => Promise<SuggestResponse> | SuggestResponse;
+    searchResult: (result: SearchResponse) => void;
+};
+
+class MMapSearchCommonControl extends mappable.MMapComplexEntity<MMapSearchControlProps> {
     private _detachDom?: DomDetach;
     private _rootElement?: HTMLElement;
     private _clearButton?: HTMLButtonElement;
     private _searchInput?: HTMLInputElement;
-    private _suggest?: MMapSuggest;
+    private _searchForm?: HTMLFormElement;
+    private _suggestComponent?: MMapSuggest;
     private _unwatchThemeContext?: () => void;
     private _unwatchControlContext?: () => void;
     private _isBottomOrder?: boolean;
 
-    private async _search(text: string) {
-        const res = await mappable.search({text});
-        console.log(res);
+    private async _search(params: SearchParams) {
+        // @ts-ignore temporarily, until we add the uri prop to mappable.search
+        const searchResult = (await this._props.search?.({params, map: this.root})) ?? (await mappable.search(params));
+        this._props.searchResult(searchResult);
     }
 
     private _resetInput = () => {
@@ -32,11 +48,11 @@ class MMapSearchCommonControl extends mappable.MMapComplexEntity<{}> {
     };
 
     private _onChangeSearchInputDebounced = debounce(() => {
-        this._suggest.update({
+        this._suggestComponent.update({
             updateSuggestList: {
                 value: this._searchInput.value,
-                onSuggestClick: (text: string) => {
-                    this._search(text);
+                onSuggestClick: (params: SearchParams) => {
+                    this._search(params);
                     this._resetInput();
                 }
             }
@@ -50,11 +66,11 @@ class MMapSearchCommonControl extends mappable.MMapComplexEntity<{}> {
     };
 
     private _onFocusBlurSearchInput = (event: FocusEvent) => {
-        this._suggest.update({
+        this._suggestComponent.update({
             updateSuggestList: {
                 value: this._searchInput.value,
-                onSuggestClick: (text: string) => {
-                    this._search(text);
+                onSuggestClick: (params: SearchParams) => {
+                    this._search(params);
                     this._resetInput();
                 },
                 isInputBlur: event.type === 'blur'
@@ -66,19 +82,10 @@ class MMapSearchCommonControl extends mappable.MMapComplexEntity<{}> {
         if (!this._searchInput.value) return;
 
         switch (event.key) {
-            case 'Enter': {
-                event.preventDefault();
-
-                this._search(this._searchInput.value);
-                this._resetInput();
-                this._searchInput.blur();
-
-                break;
-            }
             case 'ArrowUp': {
                 event.preventDefault();
 
-                this._suggest.update({
+                this._suggestComponent.update({
                     updateActiveSuggest: {
                         isNext: this._isBottomOrder,
                         setInputValue: (text) => (this._searchInput.value = text)
@@ -90,7 +97,7 @@ class MMapSearchCommonControl extends mappable.MMapComplexEntity<{}> {
             case 'ArrowDown': {
                 event.preventDefault();
 
-                this._suggest.update({
+                this._suggestComponent.update({
                     updateActiveSuggest: {
                         isNext: !this._isBottomOrder,
                         setInputValue: (text) => (this._searchInput.value = text)
@@ -107,6 +114,17 @@ class MMapSearchCommonControl extends mappable.MMapComplexEntity<{}> {
 
         this._resetInput();
         this._searchInput.focus();
+    };
+
+    private _onSubmitSearchForm = (event: SubmitEvent) => {
+        event.preventDefault();
+
+        const activeSuggestUri = (this.children[0] as MMapSuggest)?.activeSuggest?.dataset?.uri;
+        const searchParams = activeSuggestUri ? {uri: activeSuggestUri} : {text: this._searchInput.value};
+
+        this._search(searchParams);
+        this._resetInput();
+        this._searchInput.blur();
     };
 
     private _updateTheme(searchInput: HTMLInputElement): void {
@@ -152,17 +170,20 @@ class MMapSearchCommonControl extends mappable.MMapComplexEntity<{}> {
         this._searchInput.addEventListener('keydown', this._onKeyDownSearchInput);
 
         this._clearButton = document.createElement('button');
+        this._clearButton.type = 'reset';
         this._clearButton.classList.add(SEARCH_CONTROL_CLEAR_CLASS, HIDE_CLASS);
         this._clearButton.addEventListener('click', this._onClickClearButton);
 
-        const searchForm = document.createElement('form');
-        searchForm.classList.add(SEARCH_CONTROL_FORM_CLASS);
-        searchForm.appendChild(this._searchInput);
-        searchForm.appendChild(this._clearButton);
-        this._rootElement.appendChild(searchForm);
+        this._searchForm = document.createElement('form');
+        this._searchForm.classList.add(SEARCH_CONTROL_FORM_CLASS);
+        this._searchForm.addEventListener('submit', this._onSubmitSearchForm);
+        this._searchForm.appendChild(this._searchInput);
+        this._searchForm.appendChild(this._clearButton);
 
-        this._suggest = new MMapSuggest({});
-        this.addChild(this._suggest);
+        this._rootElement.appendChild(this._searchForm);
+
+        this._suggestComponent = new MMapSuggest({suggest: this._props.suggest});
+        this.addChild(this._suggestComponent);
 
         this._unwatchThemeContext = this._watchContext(
             mappable.ThemeContext,
@@ -178,8 +199,8 @@ class MMapSearchCommonControl extends mappable.MMapComplexEntity<{}> {
     }
 
     protected override _onDetach(): void {
-        this.removeChild(this._suggest);
-        this._suggest = undefined;
+        this.removeChild(this._suggestComponent);
+        this._suggestComponent = undefined;
 
         this._detachDom?.();
         this._detachDom = undefined;
@@ -199,18 +220,25 @@ class MMapSearchCommonControl extends mappable.MMapComplexEntity<{}> {
         this._searchInput.removeEventListener('keydown', this._onKeyDownSearchInput);
         this._searchInput = undefined;
 
+        this._searchForm.removeEventListener('submit', this._onSubmitSearchForm);
+        this._searchForm = undefined;
+
         this._rootElement = undefined;
     }
 }
 
-class MMapSearchControl extends mappable.MMapComplexEntity<{}> {
+class MMapSearchControl extends mappable.MMapComplexEntity<MMapSearchControlProps> {
     private _control!: MMapControl;
     private _search!: MMapSearchCommonControl;
 
     protected override _onAttach(): void {
-        this._search = new MMapSearchCommonControl({});
+        this._search = new MMapSearchCommonControl(this._props);
         this._control = new mappable.MMapControl({transparent: true}).addChild(this._search);
         this.addChild(this._control);
+    }
+
+    protected _onUpdate(props: Partial<MMapSearchControlProps>): void {
+        this._search.update(props);
     }
 
     protected override _onDetach(): void {
