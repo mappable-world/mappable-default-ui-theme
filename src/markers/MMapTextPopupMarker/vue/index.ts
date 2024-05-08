@@ -1,9 +1,9 @@
 import {MMapFeatureProps, MMapMarkerEventHandler} from '@mappable-world/mappable-types';
 import {CustomVuefyOptions} from '@mappable-world/mappable-types/modules/vuefy';
 import type TVue from '@vue/runtime-core';
-import {MMapTooltipMarker, MMapTooltipMarkerProps} from '../';
+import {MMapTextPopupMarker, MMapTextPopupMarkerProps} from '../';
 
-export const MMapTooltipMarkerVuefyOptions: CustomVuefyOptions<MMapTooltipMarker> = {
+export const MMapTextPopupMarkerVuefyOptions: CustomVuefyOptions<MMapTextPopupMarker> = {
     props: {
         coordinates: {type: Object, required: true},
         source: String,
@@ -23,7 +23,7 @@ export const MMapTooltipMarkerVuefyOptions: CustomVuefyOptions<MMapTooltipMarker
         onClick: Function as TVue.PropType<MMapFeatureProps['onClick']>,
         onFastClick: Function as TVue.PropType<MMapFeatureProps['onFastClick']>,
         content: {type: String, required: true},
-        position: {type: String as TVue.PropType<MMapTooltipMarkerProps['position']>},
+        position: {type: String as TVue.PropType<MMapTextPopupMarkerProps['position']>},
         offset: {type: Number, default: 0}
     }
 };

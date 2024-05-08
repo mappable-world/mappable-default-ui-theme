@@ -1,5 +1,5 @@
-import {MMapTooltipMarkerProps} from '../../src';
-import {CENTER, LOCATION, TOOLTIP_TEXT} from '../common';
+import type {MMapTextPopupMarkerProps} from '../../src';
+import {CENTER, LOCATION, POPUP_TEXT} from '../common';
 
 window.map = null;
 
@@ -13,7 +13,7 @@ async function main() {
 
     const {useState, useCallback} = React;
 
-    const {MMapTooltipMarker} = reactify.module(await mappable.import('@mappable-world/mappable-default-ui-theme'));
+    const {MMapTextPopupMarker} = reactify.module(await mappable.import('@mappable-world/mappable-default-ui-theme'));
 
     ReactDOM.render(
         <React.StrictMode>
@@ -24,7 +24,7 @@ async function main() {
 
     function App() {
         const [location] = useState(LOCATION);
-        const [position, setPosition] = useState<MMapTooltipMarkerProps['position']>(undefined);
+        const [position, setPosition] = useState<MMapTextPopupMarkerProps['position']>(undefined);
 
         const positionLeft = useCallback(() => setPosition('left'), []);
         const positionLeftTop = useCallback(() => setPosition('left top'), []);
@@ -49,7 +49,7 @@ async function main() {
                     <MMapControlButton text="Right Bottom" onClick={positionRightBottom} />
                     <MMapControlButton text="Right" onClick={positionRight} />
                 </MMapControls>
-                <MMapTooltipMarker coordinates={CENTER} draggable content={TOOLTIP_TEXT} position={position} />
+                <MMapTextPopupMarker coordinates={CENTER} draggable content={POPUP_TEXT} position={position} />
             </MMap>
         );
     }

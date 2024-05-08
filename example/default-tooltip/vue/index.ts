@@ -1,5 +1,5 @@
-import {MMapTooltipMarkerProps} from '../../src';
-import {CENTER, LOCATION, TOOLTIP_TEXT} from '../common';
+import type {MMapTextPopupMarkerProps} from '../../src';
+import {CENTER, LOCATION, POPUP_TEXT} from '../common';
 
 window.map = null;
 
@@ -11,7 +11,7 @@ async function main() {
     const {MMap, MMapDefaultSchemeLayer, MMapDefaultFeaturesLayer, MMapControls, MMapControlButton} =
         vuefy.module(mappable);
 
-    const {MMapTooltipMarker} = vuefy.module(await mappable.import('@mappable-world/mappable-default-ui-theme'));
+    const {MMapTextPopupMarker} = vuefy.module(await mappable.import('@mappable-world/mappable-default-ui-theme'));
 
     const app = Vue.createApp({
         components: {
@@ -20,13 +20,13 @@ async function main() {
             MMapDefaultFeaturesLayer,
             MMapControls,
             MMapControlButton,
-            MMapTooltipMarker
+            MMapTextPopupMarker
         },
         setup() {
             const refMap = (ref: any) => {
                 window.map = ref?.entity;
             };
-            const position = Vue.ref<MMapTooltipMarkerProps['position']>(undefined);
+            const position = Vue.ref<MMapTextPopupMarkerProps['position']>(undefined);
 
             const positionLeft = () => (position.value = 'left');
             const positionLeftTop = () => (position.value = 'left top');
@@ -40,7 +40,7 @@ async function main() {
             return {
                 LOCATION,
                 CENTER,
-                TOOLTIP_TEXT,
+                POPUP_TEXT,
                 position,
                 refMap,
                 positionLeft,
@@ -67,7 +67,7 @@ async function main() {
                     <MMapControlButton text="Right Bottom" :onClick="positionRightBottom" />
                     <MMapControlButton text="Right" :onClick="positionRight" />
                 </MMapControls>
-                <MMapTooltipMarker :coordinates="CENTER" :draggable="true" :content="TOOLTIP_TEXT" :position="position" />
+                <MMapTextPopupMarker :coordinates="CENTER" :draggable="true" :content="POPUP_TEXT" :position="position" />
             </MMap>`
     });
     app.mount('#app');

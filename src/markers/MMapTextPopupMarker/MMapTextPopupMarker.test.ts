@@ -1,8 +1,8 @@
 import {MMap} from '@mappable-world/mappable-types';
 import {CENTER, createContainer} from '../../../tests/common';
-import {MMapTooltipMarker} from './';
+import {MMapTextPopupMarker} from './';
 
-describe('MMapTooltipMarker', () => {
+describe('MMapTextPopupMarker', () => {
     let map: MMap;
     let container: HTMLElement;
 
@@ -18,20 +18,20 @@ describe('MMapTooltipMarker', () => {
     });
 
     it('add on map', () => {
-        const tooltip = new MMapTooltipMarker({coordinates: CENTER, content: 'Tooltip'});
-        map.addChild(tooltip);
+        const popup = new MMapTextPopupMarker({coordinates: CENTER, content: 'Popup'});
+        map.addChild(popup);
 
-        expect(document.querySelector('.mappable--popup-marker .mappable--default-tooltip')).not.toBeNull();
+        expect(document.querySelector('.mappable--popup-marker .mappable--default-text-popup')).not.toBeNull();
     });
     it('change content props', () => {
-        const tooltip = new MMapTooltipMarker({coordinates: CENTER, content: 'Tooltip'});
-        map.addChild(tooltip);
-        const tooltipElement = document.querySelector<HTMLElement>(
-            '.mappable--popup-marker .mappable--default-tooltip'
+        const popup = new MMapTextPopupMarker({coordinates: CENTER, content: 'Popup'});
+        map.addChild(popup);
+        const popupElement = document.querySelector<HTMLElement>(
+            '.mappable--popup-marker .mappable--default-text-popup'
         );
-        expect(tooltipElement.textContent).toBe('Tooltip');
+        expect(popupElement.textContent).toBe('Popup');
 
-        tooltip.update({content: 'New content'});
-        expect(tooltipElement.textContent).toBe('New content');
+        popup.update({content: 'New content'});
+        expect(popupElement.textContent).toBe('New content');
     });
 });
