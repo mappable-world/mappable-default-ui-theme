@@ -1,32 +1,32 @@
 import {MMapMarker, MMapMarkerProps} from '@mappable-world/mappable-types';
-import {MMapBalloonMarkerReactifyOverride} from './react';
-import {MMapBalloonMarkerVuefyOptions, MMapBalloonMarkerVuefyOverride} from './vue';
+import {MMapPopupMarkerReactifyOverride} from './react';
+import {MMapPopupMarkerVuefyOptions, MMapPopupMarkerVuefyOverride} from './vue';
 
 import './index.css';
 import tailSVG from './tail.svg';
 
 type VerticalPosition = 'top' | 'bottom';
 type HorizontalPosition = 'left' | 'right';
-export type MMapBalloonPositionProps =
+export type MMapPopupPositionProps =
     | VerticalPosition
     | HorizontalPosition
     | `${VerticalPosition} ${HorizontalPosition}`
     | `${HorizontalPosition} ${VerticalPosition}`;
 
-export type MMapBalloonContentProps = () => HTMLElement;
+export type MMapPopupContentProps = () => HTMLElement;
 
-export type MMapBalloonMarkerProps = MMapMarkerProps & {
-    /** The function of creating balloon content */
-    content: MMapBalloonContentProps;
-    /** The position of the balloon in relation to the point it is pointing to */
-    position?: MMapBalloonPositionProps;
-    /** The offset in pixels between the balloon pointer and the point it is pointing to. */
+export type MMapPopupMarkerProps = MMapMarkerProps & {
+    /** The function of creating popup content */
+    content: MMapPopupContentProps;
+    /** The position of the popup in relation to the point it is pointing to */
+    position?: MMapPopupPositionProps;
+    /** The offset in pixels between the popup pointer and the point it is pointing to. */
     offset?: number;
-    /** Hide or show balloon on map */
+    /** Hide or show popup on map */
     show?: boolean;
-    /** Balloon closing callback */
+    /** Popup closing callback */
     onClose?: () => void;
-    /** Balloon opening callback */
+    /** Popup opening callback */
     onOpen?: () => void;
 };
 
@@ -34,70 +34,70 @@ const defaultProps = Object.freeze({position: 'top', offset: 0, show: true});
 type DefaultProps = typeof defaultProps;
 
 /**
- * `MMapBalloonMarker` is a balloon (popup) with customized content.
+ * `MMapPopupMarker` is a popup with customized content.
  * @example
  * ```js
- * const balloon = new MMapBalloonMarker({
+ * const popup = new MMapPopupMarker({
  *  content: (close) => createPopupContentHTMLElement(close),
  *  position: 'top',
  *  onOpen:() => console.log('open'),
  *  onClose:() => console.log('close'),
  *  // support MMapMarker props
- *  coordinates: BALLOON_COORD,
+ *  coordinates: POPUP_COORD,
  *  draggable: true,
  * });
- * map.addChild(balloon);
+ * map.addChild(popup);
  * ```
  */
-export class MMapBalloonMarker extends mappable.MMapComplexEntity<MMapBalloonMarkerProps, DefaultProps> {
+export class MMapPopupMarker extends mappable.MMapComplexEntity<MMapPopupMarkerProps, DefaultProps> {
     static defaultProps = defaultProps;
-    static [mappable.overrideKeyReactify] = MMapBalloonMarkerReactifyOverride;
-    static [mappable.overrideKeyVuefy] = MMapBalloonMarkerVuefyOverride;
-    static [mappable.optionsKeyVuefy] = MMapBalloonMarkerVuefyOptions;
+    static [mappable.overrideKeyReactify] = MMapPopupMarkerReactifyOverride;
+    static [mappable.overrideKeyVuefy] = MMapPopupMarkerVuefyOverride;
+    static [mappable.optionsKeyVuefy] = MMapPopupMarkerVuefyOptions;
 
     public get isOpen() {
         return this._props.show;
     }
     private _markerElement: HTMLElement;
-    private _balloonContainer: HTMLElement;
-    private _balloonTail: HTMLElement;
+    private _popupContainer: HTMLElement;
+    private _popupTail: HTMLElement;
     private _marker: MMapMarker;
 
-    private _togglePopup(forceShowBalloon?: boolean): void {
-        let openBalloon = !this._props.show;
-        if (forceShowBalloon !== undefined) {
-            openBalloon = forceShowBalloon;
+    private _togglePopup(forceShowPopup?: boolean): void {
+        let openPopup = !this._props.show;
+        if (forceShowPopup !== undefined) {
+            openPopup = forceShowPopup;
         }
 
-        this._markerElement.classList.toggle('mappable--balloon-marker__hide', !openBalloon);
+        this._markerElement.classList.toggle('mappable--popup-marker__hide', !openPopup);
 
-        if (openBalloon) {
+        if (openPopup) {
             this._props.onOpen?.();
         } else {
             this._props.onClose?.();
         }
 
-        this._props.show = openBalloon;
+        this._props.show = openPopup;
     }
 
     protected _onAttach(): void {
         this._markerElement = document.createElement('mappable');
-        this._markerElement.classList.add('mappable--balloon-marker');
+        this._markerElement.classList.add('mappable--popup-marker');
 
-        this._balloonContainer = document.createElement('mappable');
-        this._balloonContainer.classList.add('mappable--balloon-marker_container');
-        this._balloonContainer.appendChild(this._props.content());
+        this._popupContainer = document.createElement('mappable');
+        this._popupContainer.classList.add('mappable--popup-marker_container');
+        this._popupContainer.appendChild(this._props.content());
 
-        this._balloonTail = document.createElement('mappable');
-        this._balloonTail.classList.add('mappable--balloon-marker_tail');
-        this._balloonTail.innerHTML = tailSVG;
+        this._popupTail = document.createElement('mappable');
+        this._popupTail.classList.add('mappable--popup-marker_tail');
+        this._popupTail.innerHTML = tailSVG;
 
         this._togglePopup(this._props.show);
         this._updatePosition();
         this._updateOffset();
 
-        this._markerElement.appendChild(this._balloonContainer);
-        this._markerElement.appendChild(this._balloonTail);
+        this._markerElement.appendChild(this._popupContainer);
+        this._markerElement.appendChild(this._popupTail);
 
         this._marker = new mappable.MMapMarker(this._props, this._markerElement);
         this.addChild(this._marker);
@@ -107,7 +107,7 @@ export class MMapBalloonMarker extends mappable.MMapComplexEntity<MMapBalloonMar
         });
     }
 
-    protected _onUpdate(propsDiff: Partial<MMapBalloonMarkerProps>): void {
+    protected _onUpdate(propsDiff: Partial<MMapPopupMarkerProps>): void {
         if (propsDiff.position !== undefined) {
             this._updatePosition();
         }
@@ -116,8 +116,8 @@ export class MMapBalloonMarker extends mappable.MMapComplexEntity<MMapBalloonMar
         }
 
         if (propsDiff.content !== undefined) {
-            this._balloonContainer.innerHTML = '';
-            this._balloonContainer.appendChild(this._props.content());
+            this._popupContainer.innerHTML = '';
+            this._popupContainer.appendChild(this._props.content());
         }
 
         if (propsDiff.show !== undefined) {
@@ -130,8 +130,8 @@ export class MMapBalloonMarker extends mappable.MMapComplexEntity<MMapBalloonMar
     private _updateTheme() {
         const themeCtx = this._consumeContext(mappable.ThemeContext);
         const {theme} = themeCtx;
-        this._balloonContainer.classList.toggle('mappable--balloon-marker__dark', theme === 'dark');
-        this._balloonTail.classList.toggle('mappable--balloon-marker__dark', theme === 'dark');
+        this._popupContainer.classList.toggle('mappable--popup-marker__dark', theme === 'dark');
+        this._popupTail.classList.toggle('mappable--popup-marker__dark', theme === 'dark');
     }
 
     private _updateOffset(): void {
@@ -166,21 +166,15 @@ export class MMapBalloonMarker extends mappable.MMapComplexEntity<MMapBalloonMar
         }
 
         // check top position
-        this._markerElement.classList.toggle('mappable--balloon-marker__position-top', verticalPosition === 'top');
+        this._markerElement.classList.toggle('mappable--popup-marker__position-top', verticalPosition === 'top');
 
         // check bottom position
-        this._markerElement.classList.toggle(
-            'mappable--balloon-marker__position-bottom',
-            verticalPosition === 'bottom'
-        );
+        this._markerElement.classList.toggle('mappable--popup-marker__position-bottom', verticalPosition === 'bottom');
 
         // check left position
-        this._markerElement.classList.toggle('mappable--balloon-marker__position-left', horizontalPosition === 'left');
+        this._markerElement.classList.toggle('mappable--popup-marker__position-left', horizontalPosition === 'left');
 
         // check right position
-        this._markerElement.classList.toggle(
-            'mappable--balloon-marker__position-right',
-            horizontalPosition === 'right'
-        );
+        this._markerElement.classList.toggle('mappable--popup-marker__position-right', horizontalPosition === 'right');
     }
 }

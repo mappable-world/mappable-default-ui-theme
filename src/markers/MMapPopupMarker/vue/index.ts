@@ -1,9 +1,9 @@
 import {MMapFeatureProps, MMapMarkerEventHandler} from '@mappable-world/mappable-types';
 import {CustomVuefyFn, CustomVuefyOptions} from '@mappable-world/mappable-types/modules/vuefy';
 import type TVue from '@vue/runtime-core';
-import {MMapBalloonContentProps, MMapBalloonMarker, MMapBalloonMarkerProps, MMapBalloonPositionProps} from '../';
+import {MMapPopupContentProps, MMapPopupMarker, MMapPopupMarkerProps, MMapPopupPositionProps} from '../';
 
-export const MMapBalloonMarkerVuefyOptions: CustomVuefyOptions<MMapBalloonMarker> = {
+export const MMapPopupMarkerVuefyOptions: CustomVuefyOptions<MMapPopupMarker> = {
     props: {
         coordinates: {type: Object, required: true},
         source: String,
@@ -22,48 +22,44 @@ export const MMapBalloonMarkerVuefyOptions: CustomVuefyOptions<MMapBalloonMarker
         onDoubleClick: Function as TVue.PropType<MMapFeatureProps['onDoubleClick']>,
         onClick: Function as TVue.PropType<MMapFeatureProps['onClick']>,
         onFastClick: Function as TVue.PropType<MMapFeatureProps['onFastClick']>,
-        content: {type: Function as TVue.PropType<MMapBalloonContentProps>, required: true},
-        position: {type: String as TVue.PropType<MMapBalloonPositionProps>},
+        content: {type: Function as TVue.PropType<MMapPopupContentProps>, required: true},
+        position: {type: String as TVue.PropType<MMapPopupPositionProps>},
         offset: {type: Number, default: 0},
         show: {type: Boolean, default: true},
-        onClose: {type: Function as TVue.PropType<MMapBalloonMarkerProps['onClose']>},
-        onOpen: {type: Function as TVue.PropType<MMapBalloonMarkerProps['onOpen']>}
+        onClose: {type: Function as TVue.PropType<MMapPopupMarkerProps['onClose']>},
+        onOpen: {type: Function as TVue.PropType<MMapPopupMarkerProps['onOpen']>}
     }
 };
 
-type MMapBalloonMarkerSlots = {
+type MMapPopupMarkerSlots = {
     content: void;
 };
 
-export const MMapBalloonMarkerVuefyOverride: CustomVuefyFn<MMapBalloonMarker> = (
-    MMapBalloonMarkerI,
-    props,
-    {vuefy, Vue}
-) => {
-    const MMapBalloonMarkerV = vuefy.entity(MMapBalloonMarkerI);
+export const MMapPopupMarkerVuefyOverride: CustomVuefyFn<MMapPopupMarker> = (MMapPopupMarkerI, props, {vuefy, Vue}) => {
+    const MMapPopupMarkerV = vuefy.entity(MMapPopupMarkerI);
     const {content, ...overridedProps} = props;
     return Vue.defineComponent({
-        name: 'MMapBalloonMarker',
+        name: 'MMapPopupMarker',
         props: overridedProps,
-        slots: Object as TVue.SlotsType<MMapBalloonMarkerSlots>,
+        slots: Object as TVue.SlotsType<MMapPopupMarkerSlots>,
         setup(props, {slots, expose}) {
             const content: TVue.Ref<TVue.VNodeChild | null> = Vue.ref(null);
             const popupHTMLElement = document.createElement('mappable');
 
-            const markerRef = Vue.ref<{entity: MMapBalloonMarker} | null>(null);
+            const markerRef = Vue.ref<{entity: MMapPopupMarker} | null>(null);
             const markerEntity = Vue.computed(() => markerRef.value?.entity);
 
-            const balloon = Vue.computed<MMapBalloonMarkerProps['content']>(() => {
+            const popup = Vue.computed<MMapPopupMarkerProps['content']>(() => {
                 content.value = slots.content?.();
                 return () => popupHTMLElement;
             });
             expose({entity: markerEntity});
             return () =>
                 Vue.h(
-                    MMapBalloonMarkerV,
+                    MMapPopupMarkerV,
                     {
                         ...props,
-                        content: balloon.value,
+                        content: popup.value,
                         ref: markerRef
                     },
                     () => Vue.h(Vue.Teleport, {to: popupHTMLElement}, [content.value])

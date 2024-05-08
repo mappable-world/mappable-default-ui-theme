@@ -1,5 +1,5 @@
 import {MMap} from '@mappable-world/mappable-types';
-import {createContainer, CENTER} from '../../../tests/common';
+import {CENTER, createContainer} from '../../../tests/common';
 import {MMapTooltipMarker} from './';
 
 describe('MMapTooltipMarker', () => {
@@ -21,13 +21,13 @@ describe('MMapTooltipMarker', () => {
         const tooltip = new MMapTooltipMarker({coordinates: CENTER, content: 'Tooltip'});
         map.addChild(tooltip);
 
-        expect(document.querySelector('.mappable--balloon-marker .mappable--default-tooltip')).not.toBeNull();
+        expect(document.querySelector('.mappable--popup-marker .mappable--default-tooltip')).not.toBeNull();
     });
     it('change content props', () => {
         const tooltip = new MMapTooltipMarker({coordinates: CENTER, content: 'Tooltip'});
         map.addChild(tooltip);
         const tooltipElement = document.querySelector<HTMLElement>(
-            '.mappable--balloon-marker .mappable--default-tooltip'
+            '.mappable--popup-marker .mappable--default-tooltip'
         );
         expect(tooltipElement.textContent).toBe('Tooltip');
 

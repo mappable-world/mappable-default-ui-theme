@@ -1,4 +1,4 @@
-export {MMapBalloonMarker, MMapBalloonMarkerProps, MMapBalloonPositionProps} from './MMapBalloonMarker';
 export * from './MMapDefaultMarker';
 export {MMapDefaultPopupMarker, MMapDefaultPopupMarkerProps} from './MMapDefaultPopupMarker';
-export {MMapTooltipMarker, MMapTooltipMarkerProps} from './MMapTooltipMarker';
+export {MMapPopupMarker, MMapPopupMarkerProps, MMapPopupPositionProps} from './MMapPopupMarker';
+export {MMapTooltipMarker, MMapTooltipMarkerProps} from './MMapTextPopupMarker';

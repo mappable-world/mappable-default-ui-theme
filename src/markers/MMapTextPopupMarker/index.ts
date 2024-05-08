@@ -1,8 +1,8 @@
-import {MMapBalloonMarker, MMapBalloonMarkerProps} from '../MMapBalloonMarker';
-import {MMapTooltipMarkerVuefyOptions} from './vue';
+import {MMapPopupMarker, MMapPopupMarkerProps} from '../MMapPopupMarker';
 import './index.css';
+import {MMapTooltipMarkerVuefyOptions} from './vue';
 
-export type MMapTooltipMarkerProps = Omit<MMapBalloonMarkerProps, 'content' | 'show' | 'onClose' | 'onOpen'> & {
+export type MMapTooltipMarkerProps = Omit<MMapPopupMarkerProps, 'content' | 'show' | 'onClose' | 'onOpen'> & {
     /** The text content that the tooltip will display */
     content: string;
 };
@@ -15,7 +15,7 @@ export type MMapTooltipMarkerProps = Omit<MMapBalloonMarkerProps, 'content' | 's
  *  // support MMapMarker props
  *  coordinates: TOOLTIP_COORD,
  *  draggable: true,
- *  // support MMapBalloonMarker props
+ *  // support MMapPopupMarker props
  *  position: 'top',
  * });
  * map.addChild(tooltip);
@@ -23,12 +23,12 @@ export type MMapTooltipMarkerProps = Omit<MMapBalloonMarkerProps, 'content' | 's
  */
 export class MMapTooltipMarker extends mappable.MMapComplexEntity<MMapTooltipMarkerProps> {
     static [mappable.optionsKeyVuefy] = MMapTooltipMarkerVuefyOptions;
-    private _balloon: MMapBalloonMarker;
+    private _popup: MMapPopupMarker;
     private _element: HTMLElement;
 
     protected _onAttach(): void {
-        this._balloon = new MMapBalloonMarker({...this._props, content: this.__createTooltip});
-        this.addChild(this._balloon);
+        this._popup = new MMapPopupMarker({...this._props, content: this.__createTooltip});
+        this.addChild(this._popup);
     }
 
     protected _onUpdate(propsDiff: Partial<MMapTooltipMarkerProps>): void {
@@ -36,7 +36,7 @@ export class MMapTooltipMarker extends mappable.MMapComplexEntity<MMapTooltipMar
             this._element.textContent = this._props.content;
         }
         const {content, ...propsWithoutContent} = this._props;
-        this._balloon.update({...propsWithoutContent});
+        this._popup.update({...propsWithoutContent});
     }
 
     private __createTooltip = (): HTMLElement => {

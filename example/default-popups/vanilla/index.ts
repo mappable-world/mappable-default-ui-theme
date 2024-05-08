@@ -6,7 +6,7 @@ async function main() {
     await mappable.ready;
     const {MMap, MMapDefaultSchemeLayer, MMapDefaultFeaturesLayer, MMapControls, MMapControlButton} = mappable;
 
-    const {MMapBalloonMarker, MMapDefaultPopupMarker} = await mappable.import(
+    const {MMapPopupMarker, MMapDefaultPopupMarker} = await mappable.import(
         '@mappable-world/mappable-default-ui-theme'
     );
 
@@ -28,7 +28,7 @@ async function main() {
         ])
     );
 
-    const customPopup = new MMapBalloonMarker({
+    const customPopup = new MMapPopupMarker({
         coordinates: CUSTOM_POPUP_COORDS,
         content: () => {
             const popupElement = document.createElement('div');

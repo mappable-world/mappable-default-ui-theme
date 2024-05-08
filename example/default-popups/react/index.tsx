@@ -12,7 +12,7 @@ async function main() {
 
     const {useState, useCallback} = React;
 
-    const {MMapBalloonMarker, MMapDefaultPopupMarker} = reactify.module(
+    const {MMapPopupMarker, MMapDefaultPopupMarker} = reactify.module(
         await mappable.import('@mappable-world/mappable-default-ui-theme')
     );
 
@@ -53,7 +53,7 @@ async function main() {
                     <MMapControlButton text="Toggle default popup" onClick={toggleDefaultPopup} />
                 </MMapControls>
 
-                <MMapBalloonMarker show={showCustomPopup} coordinates={CUSTOM_POPUP_COORDS} content={contentCallback} />
+                <MMapPopupMarker show={showCustomPopup} coordinates={CUSTOM_POPUP_COORDS} content={contentCallback} />
 
                 <MMapDefaultPopupMarker
                     show={showDefaultPopup}

@@ -10,7 +10,7 @@ async function main() {
     const {MMap, MMapDefaultSchemeLayer, MMapDefaultFeaturesLayer, MMapControls, MMapControlButton} =
         vuefy.module(mappable);
 
-    const {MMapBalloonMarker, MMapDefaultPopupMarker} = vuefy.module(
+    const {MMapPopupMarker, MMapDefaultPopupMarker} = vuefy.module(
         await mappable.import('@mappable-world/mappable-default-ui-theme')
     );
 
@@ -21,7 +21,7 @@ async function main() {
             MMapDefaultFeaturesLayer,
             MMapControls,
             MMapControlButton,
-            MMapBalloonMarker,
+            MMapPopupMarker,
             MMapDefaultPopupMarker
         },
         setup() {
@@ -60,7 +60,7 @@ async function main() {
                     <MMapControlButton text="Toggle custom popup" :onClick="toggleCustomPopup" />
                     <MMapControlButton text="Toggle default popup" :onClick="toggleDefaultPopup" />
                 </MMapControls>
-                <MMapBalloonMarker :show="showCustomPopup" :coordinates="CUSTOM_POPUP_COORDS">
+                <MMapPopupMarker :show="showCustomPopup" :coordinates="CUSTOM_POPUP_COORDS">
                     <template #content>
                         <div class="custom-popup">
                             <div class="title">Title</div>
@@ -68,7 +68,7 @@ async function main() {
                             <div class="content">Custom popup content</div>
                         </div>
                     </template>
-                </MMapBalloonMarker>
+                </MMapPopupMarker>
                 <MMapDefaultPopupMarker
                     :show="showDefaultPopup"
                     :coordinates="DEFAULT_POPUP_COORDS"

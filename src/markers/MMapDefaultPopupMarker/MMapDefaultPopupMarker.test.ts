@@ -1,5 +1,5 @@
 import {MMap} from '@mappable-world/mappable-types';
-import {createContainer, CENTER} from '../../../tests/common';
+import {CENTER, createContainer} from '../../../tests/common';
 import {MMapDefaultPopupMarker} from './';
 
 describe('MMapDefaultPopupMarker', () => {
@@ -88,4 +88,4 @@ describe('MMapDefaultPopupMarker', () => {
     });
 });
 
-const BASE_SELECTOR = '.mappable--balloon-marker .mappable--default-popup';
+const BASE_SELECTOR = '.mappable--popup-marker .mappable--default-popup';

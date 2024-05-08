@@ -1,10 +1,10 @@
-import {MMapBalloonContentProps, MMapBalloonMarker, MMapBalloonMarkerProps} from '../MMapBalloonMarker';
+import {MMapPopupContentProps, MMapPopupMarker, MMapPopupMarkerProps} from '../MMapPopupMarker';
 import {MMapDefaultPopupMarkerVuefyOptions} from './vue';
 
 import closeSVG from './close.svg';
 import './index.css';
 
-export type MMapDefaultPopupMarkerProps = Omit<MMapBalloonMarkerProps, 'content'> & {
+export type MMapDefaultPopupMarkerProps = Omit<MMapPopupMarkerProps, 'content'> & {
     /** Displayed title in popup header */
     title?: string;
     /** Displayed description */
@@ -25,7 +25,7 @@ export type MMapDefaultPopupMarkerProps = Omit<MMapBalloonMarkerProps, 'content'
  *  // support MMapMarker props
  *  coordinates: POPUP_COORD,
  *  draggable: true,
- *  // support MMapBalloonMarker props
+ *  // support MMapPopupMarker props
  *  position: 'top',
  * });
  * map.addChild(defaultPopup);
@@ -33,11 +33,11 @@ export type MMapDefaultPopupMarkerProps = Omit<MMapBalloonMarkerProps, 'content'
  */
 export class MMapDefaultPopupMarker extends mappable.MMapComplexEntity<MMapDefaultPopupMarkerProps> {
     static [mappable.optionsKeyVuefy] = MMapDefaultPopupMarkerVuefyOptions;
-    private _balloon: MMapBalloonMarker;
+    private _popup: MMapPopupMarker;
     private _element: HTMLElement;
 
     public get isOpen() {
-        return this._balloon.isOpen;
+        return this._popup.isOpen;
     }
 
     protected _onAttach(): void {
@@ -49,7 +49,7 @@ export class MMapDefaultPopupMarker extends mappable.MMapComplexEntity<MMapDefau
             );
         }
 
-        this._balloon = new MMapBalloonMarker({
+        this._popup = new MMapPopupMarker({
             ...this._props,
             content: this.__createDefaultPopup,
             onClose: () => {
@@ -61,7 +61,7 @@ export class MMapDefaultPopupMarker extends mappable.MMapComplexEntity<MMapDefau
                 this._props.onOpen?.();
             }
         });
-        this.addChild(this._balloon);
+        this.addChild(this._popup);
 
         this._watchContext(mappable.ThemeContext, () => this._updateTheme(), {immediate: true});
     }
@@ -74,10 +74,10 @@ export class MMapDefaultPopupMarker extends mappable.MMapComplexEntity<MMapDefau
         const isActionChange = oldProps.action !== action;
 
         if (isTitleChange || isDescriptionChange || isActionChange) {
-            this._balloon.update({content: () => this.__createDefaultPopup()});
+            this._popup.update({content: () => this.__createDefaultPopup()});
         }
 
-        this._balloon.update(this._props);
+        this._popup.update(this._props);
     }
 
     private _updateTheme() {
@@ -85,7 +85,7 @@ export class MMapDefaultPopupMarker extends mappable.MMapComplexEntity<MMapDefau
         this._element.classList.toggle('mappable--default-popup__dark', themeCtx.theme === 'dark');
     }
 
-    private __createDefaultPopup: MMapBalloonContentProps = () => {
+    private __createDefaultPopup: MMapPopupContentProps = () => {
         const {title, description, action} = this._props;
         this._element = document.createElement('mappable');
         this._element.classList.add('mappable--default-popup');
@@ -104,7 +104,7 @@ export class MMapDefaultPopupMarker extends mappable.MMapComplexEntity<MMapDefau
         const closeButton = document.createElement('button');
         closeButton.classList.add('mappable--default-popup_header_close');
         closeButton.innerHTML = closeSVG;
-        closeButton.addEventListener('click', () => this._balloon.update({show: false}));
+        closeButton.addEventListener('click', () => this._popup.update({show: false}));
         popupHeaderElement.appendChild(closeButton);
 
         if (description) {
