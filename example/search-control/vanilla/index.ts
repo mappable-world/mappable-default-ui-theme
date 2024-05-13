@@ -8,7 +8,6 @@ async function main() {
 
     mappable
         .getDefaultConfig()
-        // @ts-ignore
         .setApikeys({search: 'pk_ZAROIlpukeMufiKGZFwyulaUQEXIjDySkgduDDiovkifzqXLsJweeFmxeoRwZNNc'});
     const {MMapSearchControl} = await mappable.import('@mappable-world/mappable-default-ui-theme');
 

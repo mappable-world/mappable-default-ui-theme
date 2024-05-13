@@ -1,7 +1,6 @@
 import type {DomDetach} from '@mappable-world/mappable-types/imperative/DomContext';
 import type {SuggestResponse, SuggestResponseItem} from '@mappable-world/mappable-types/imperative/suggest';
-import type {MMap} from '@mappable-world/mappable-types/imperative/MMap';
-import {SearchParams} from '..';
+import type {SearchParams, CustomSuggest} from '..';
 
 import './index.css';
 
@@ -12,21 +11,16 @@ const SUGGEST_ITEM_SUBTITLE_CLASS = 'mappable--suggest-item-control__subtitle';
 const HIDE_CLASS = '_hide';
 const ACTIVE_CLASS = '_active';
 
-type UpdateSuggestOption = {
-    value: string;
-    onSuggestClick: (params: SearchParams) => void;
-    isInputBlur?: boolean;
-};
-
-type UpdateActiveSuggestOption = {
-    isNext: boolean;
-    setInputValue: (text: string) => void;
+type SuggestNavigationAction = {
+    isNextSuggest: boolean;
 };
 
 type MMapSuggestProps = {
-    updateSuggestList?: UpdateSuggestOption;
-    updateActiveSuggest?: UpdateActiveSuggestOption;
-    suggest?: ({text, map}: {text: string; map: MMap}) => Promise<SuggestResponse> | SuggestResponse;
+    setSearchInputValue: (text: string) => void;
+    onSuggestClick: (params: SearchParams) => void;
+    searchInputValue?: string;
+    suggestNavigationAction?: SuggestNavigationAction;
+    suggest?: ({text, map}: CustomSuggest) => Promise<SuggestResponse> | SuggestResponse;
 };
 
 class MMapSuggest extends mappable.MMapComplexEntity<MMapSuggestProps> {
@@ -39,32 +33,29 @@ class MMapSuggest extends mappable.MMapComplexEntity<MMapSuggestProps> {
         return this._getSuggestElements().find((element) => element.classList.contains(ACTIVE_CLASS));
     }
 
-    private _updateSuggest(props: MMapSuggestProps) {
-        if (props.updateSuggestList) {
-            this._updateSuggestList(props.updateSuggestList);
+    private _updateSuggest(props: Partial<MMapSuggestProps>) {
+        if (props.searchInputValue) {
+            this._updateSuggestList(props.searchInputValue);
         }
 
-        if (props.updateActiveSuggest) {
-            this._updateActiveSuggest(props.updateActiveSuggest);
+        if (props.suggestNavigationAction) {
+            this._updateActiveSuggest(props.suggestNavigationAction);
         }
     }
 
-    private _updateSuggestList = async (updateSuggestList: UpdateSuggestOption) => {
+    private _updateSuggestList = async (searchInputValue: MMapSuggestProps['searchInputValue']) => {
         const suggestResult =
-            (await this._props.suggest?.({text: updateSuggestList.value, map: this.root})) ??
-            (await mappable.suggest({text: updateSuggestList.value}));
+            (await this._props.suggest?.({text: searchInputValue, map: this.root})) ??
+            (await mappable.suggest({text: searchInputValue}));
 
         this._removeSuggestItems();
 
-        this._addSuggestItems(suggestResult, updateSuggestList.onSuggestClick);
+        this._addSuggestItems(suggestResult, this._props.onSuggestClick);
 
-        this._rootElement.classList.toggle(
-            HIDE_CLASS,
-            updateSuggestList.isInputBlur || !updateSuggestList.value || !this.children.length
-        );
+        this._rootElement.classList.toggle(HIDE_CLASS, !this.children.length);
     };
 
-    private _updateActiveSuggest = (updateActiveSuggest: UpdateActiveSuggestOption) => {
+    private _updateActiveSuggest = (changeActiveSuggest: SuggestNavigationAction) => {
         const suggestElements = this._getSuggestElements();
 
         if (!suggestElements) {
@@ -73,7 +64,7 @@ class MMapSuggest extends mappable.MMapComplexEntity<MMapSuggestProps> {
 
         let activeIndex = suggestElements.findIndex((element) => element.classList.contains(ACTIVE_CLASS));
 
-        if (updateActiveSuggest.isNext) {
+        if (changeActiveSuggest.isNextSuggest) {
             activeIndex = (activeIndex + 1) % suggestElements.length; // cyclic movement
         } else {
             activeIndex =
@@ -87,7 +78,7 @@ class MMapSuggest extends mappable.MMapComplexEntity<MMapSuggestProps> {
         });
 
         if (suggestElements[activeIndex] && suggestElements[activeIndex]?.dataset?.title) {
-            updateActiveSuggest.setInputValue(suggestElements[activeIndex].dataset.title);
+            this._props.setSearchInputValue(suggestElements[activeIndex].dataset.title);
         }
     };
 
@@ -97,7 +88,7 @@ class MMapSuggest extends mappable.MMapComplexEntity<MMapSuggestProps> {
         }
     };
 
-    private _addSuggestItems(suggest: SuggestResponse, onSuggestClick: UpdateSuggestOption['onSuggestClick']) {
+    private _addSuggestItems(suggest: SuggestResponse, onSuggestClick: MMapSuggestProps['onSuggestClick']) {
         suggest.forEach((suggestItem) => {
             const searchParams = suggestItem.uri ? {uri: suggestItem.uri} : {text: suggestItem.title.text};
 
@@ -140,11 +131,7 @@ class MMapSuggest extends mappable.MMapComplexEntity<MMapSuggestProps> {
         }
         const {theme} = themeCtx;
         const darkClassName = '_dark';
-        if (theme === 'dark') {
-            container.classList.add(darkClassName);
-        } else if (theme === 'light') {
-            container.classList.remove(darkClassName);
-        }
+        container.classList.toggle(darkClassName, theme === 'dark');
     }
 
     private _updateVerticalOrder(container: HTMLElement): void {
@@ -188,6 +175,8 @@ class MMapSuggest extends mappable.MMapComplexEntity<MMapSuggestProps> {
     }
 
     protected override _onDetach(): void {
+        this._removeSuggestItems();
+
         this._detachDom?.();
         this._detachDom = undefined;
 
@@ -223,20 +212,15 @@ class MMapSuggestItem extends mappable.MMapComplexEntity<MMapSuggestItemProps> {
         }
         const {theme} = themeCtx;
         const darkClassName = '_dark';
-        if (theme === 'dark') {
-            container.classList.add(darkClassName);
-            titleElement.classList.add(darkClassName);
-            subtitleElement?.classList.add(darkClassName);
-        } else if (theme === 'light') {
-            container.classList.remove(darkClassName);
-            titleElement.classList.remove(darkClassName);
-            subtitleElement?.classList.remove(darkClassName);
-        }
+        container.classList.toggle(darkClassName, theme === 'dark');
+        titleElement.classList.toggle(darkClassName, theme === 'dark');
+        subtitleElement?.classList.toggle(darkClassName, theme === 'dark');
     }
 
     protected override _onAttach(): void {
         this._rootElement = document.createElement('mappable');
         this._rootElement.classList.add(SUGGEST_ITEM_CLASS);
+        this._rootElement.tabIndex = -1;
         this._rootElement.addEventListener('click', this._props.onClick);
         this._rootElement.dataset.title = this._props.suggestItem.title.text;
         this._rootElement.dataset.uri = this._props.suggestItem?.uri;

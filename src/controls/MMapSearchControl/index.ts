@@ -19,9 +19,19 @@ export type SearchParams = {
     uri?: string;
 };
 
+export type CustomSuggest = {
+    text: string;
+    map: MMap;
+};
+
+type CustomSearch = {
+    params: SearchParams;
+    map: MMap;
+};
+
 type MMapSearchControlProps = {
-    search?: ({params, map}: {params: SearchParams; map: MMap}) => Promise<SearchResponse> | SearchResponse;
-    suggest?: ({text, map}: {text: string; map: MMap}) => Promise<SuggestResponse> | SuggestResponse;
+    search?: ({params, map}: CustomSearch) => Promise<SearchResponse> | SearchResponse;
+    suggest?: ({text, map}: CustomSuggest) => Promise<SuggestResponse> | SuggestResponse;
     searchResult: (result: SearchResponse) => void;
 };
 
@@ -37,7 +47,6 @@ class MMapSearchCommonControl extends mappable.MMapComplexEntity<MMapSearchContr
     private _isBottomOrder?: boolean;
 
     private async _search(params: SearchParams) {
-        // @ts-ignore temporarily, until we add the uri prop to mappable.search
         const searchResult = (await this._props.search?.({params, map: this.root})) ?? (await mappable.search(params));
         this._props.searchResult(searchResult);
     }
@@ -47,16 +56,17 @@ class MMapSearchCommonControl extends mappable.MMapComplexEntity<MMapSearchContr
         this._searchInput.dispatchEvent(new Event('input'));
     };
 
+    private _updateSuggestComponent = () => {
+        if (this._searchInput.value) {
+            this._suggestComponent.update({searchInputValue: this._searchInput.value});
+            this.addChild(this._suggestComponent);
+        } else {
+            this.removeChild(this._suggestComponent);
+        }
+    };
+
     private _onChangeSearchInputDebounced = debounce(() => {
-        this._suggestComponent.update({
-            updateSuggestList: {
-                value: this._searchInput.value,
-                onSuggestClick: (params: SearchParams) => {
-                    this._search(params);
-                    this._resetInput();
-                }
-            }
-        });
+        this._updateSuggestComponent();
     }, 200);
 
     private _onChangeSearchInput = () => {
@@ -66,16 +76,14 @@ class MMapSearchCommonControl extends mappable.MMapComplexEntity<MMapSearchContr
     };
 
     private _onFocusBlurSearchInput = (event: FocusEvent) => {
-        this._suggestComponent.update({
-            updateSuggestList: {
-                value: this._searchInput.value,
-                onSuggestClick: (params: SearchParams) => {
-                    this._search(params);
-                    this._resetInput();
-                },
-                isInputBlur: event.type === 'blur'
+        if (event.type === 'focus') {
+            this._updateSuggestComponent();
+        } else if (event.type === 'blur') {
+            // add a check so that the function does not work if you click on the element of the suggest
+            if (event.relatedTarget !== this._suggestComponent?.activeSuggest) {
+                this.removeChild(this._suggestComponent);
             }
-        });
+        }
     };
 
     private _onKeyDownSearchInput = (event: KeyboardEvent) => {
@@ -86,9 +94,8 @@ class MMapSearchCommonControl extends mappable.MMapComplexEntity<MMapSearchContr
                 event.preventDefault();
 
                 this._suggestComponent.update({
-                    updateActiveSuggest: {
-                        isNext: this._isBottomOrder,
-                        setInputValue: (text) => (this._searchInput.value = text)
+                    suggestNavigationAction: {
+                        isNextSuggest: this._isBottomOrder
                     }
                 });
 
@@ -98,9 +105,8 @@ class MMapSearchCommonControl extends mappable.MMapComplexEntity<MMapSearchContr
                 event.preventDefault();
 
                 this._suggestComponent.update({
-                    updateActiveSuggest: {
-                        isNext: !this._isBottomOrder,
-                        setInputValue: (text) => (this._searchInput.value = text)
+                    suggestNavigationAction: {
+                        isNextSuggest: !this._isBottomOrder
                     }
                 });
 
@@ -134,11 +140,7 @@ class MMapSearchCommonControl extends mappable.MMapComplexEntity<MMapSearchContr
         }
         const {theme} = themeCtx;
         const darkClassName = '_dark';
-        if (theme === 'dark') {
-            searchInput.classList.add(darkClassName);
-        } else if (theme === 'light') {
-            searchInput.classList.remove(darkClassName);
-        }
+        searchInput.classList.toggle(darkClassName, theme === 'dark');
     }
 
     private _updateVerticalOrder(container: HTMLElement): void {
@@ -182,8 +184,16 @@ class MMapSearchCommonControl extends mappable.MMapComplexEntity<MMapSearchContr
 
         this._rootElement.appendChild(this._searchForm);
 
-        this._suggestComponent = new MMapSuggest({suggest: this._props.suggest});
-        this.addChild(this._suggestComponent);
+        this._suggestComponent = new MMapSuggest({
+            setSearchInputValue: (text) => {
+                this._searchInput.value = text;
+            },
+            onSuggestClick: (params: SearchParams) => {
+                this._search(params);
+                this._resetInput();
+            },
+            suggest: this._props.suggest
+        });
 
         this._unwatchThemeContext = this._watchContext(
             mappable.ThemeContext,
@@ -246,4 +256,4 @@ class MMapSearchControl extends mappable.MMapComplexEntity<MMapSearchControlProp
     }
 }
 
-export {MMapSearchControl};
+export {MMapSearchControl, MMapSearchControlProps};
