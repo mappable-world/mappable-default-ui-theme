@@ -9,7 +9,7 @@ export type MMapDefaultPopupMarkerProps = Omit<MMapPopupMarkerProps, 'content'> 
     title?: string;
     /** Displayed description */
     description?: string;
-    /** The inscription on the action button */
+    /** The description on the action button */
     action?: string;
     /** Callback of click the action button */
     onAction?: () => void;

@@ -64,10 +64,7 @@ export class MMapPopupMarker extends mappable.MMapComplexEntity<MMapPopupMarkerP
     private _marker: MMapMarker;
 
     private _togglePopup(forceShowPopup?: boolean): void {
-        let openPopup = !this._props.show;
-        if (forceShowPopup !== undefined) {
-            openPopup = forceShowPopup;
-        }
+        const openPopup = forceShowPopup ?? !this._props.show;
 
         this._markerElement.classList.toggle('mappable--popup-marker__hide', !openPopup);
 
