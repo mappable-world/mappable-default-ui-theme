@@ -1,5 +1,5 @@
-import {CUSTOM_POPUP_COORDS, DEFAULT_POPUP_COORDS, LOCATION} from '../common';
-
+import type {MMapPopupPositionProps} from '../../src';
+import {ACTION, CUSTOM_POPUP_COORDS, DESCRIPTION, LOCATION, POPUP_TEXT, TEXT_POPUP_COORDS, TITLE} from '../common';
 window.map = null;
 
 main();
@@ -12,9 +12,7 @@ async function main() {
 
     const {useState, useCallback} = React;
 
-    const {MMapPopupMarker, MMapDefaultPopupMarker} = reactify.module(
-        await mappable.import('@mappable-world/mappable-default-ui-theme')
-    );
+    const {MMapPopupMarker} = reactify.module(await mappable.import('@mappable-world/mappable-default-ui-theme'));
 
     ReactDOM.render(
         <React.StrictMode>
@@ -24,45 +22,55 @@ async function main() {
     );
 
     function App() {
-        const [location] = useState(LOCATION);
-        const [showDefaultPopup, setShowDefaultPopup] = useState(true);
-        const [showCustomPopup, setShowCustomPopup] = useState(true);
+        const [position, setPosition] = useState<MMapPopupPositionProps>(undefined);
+        const [showCustom, setShowCustom] = useState(true);
 
-        const toggleDefaultPopup = useCallback(() => setShowDefaultPopup((prev) => !prev), [showDefaultPopup]);
-        const toggleCustomPopup = useCallback(() => setShowCustomPopup((prev) => !prev), [showCustomPopup]);
-        const actionCallback = useCallback(() => alert('Click on action button!'), []);
-        const contentCallback = useCallback(
+        const positionLeft = useCallback(() => setPosition('left'), []);
+        const positionLeftTop = useCallback(() => setPosition('left top'), []);
+        const positionLeftBottom = useCallback(() => setPosition('left bottom'), []);
+        const positionBottom = useCallback(() => setPosition('bottom'), []);
+        const positionTop = useCallback(() => setPosition('top'), []);
+        const positionRightTop = useCallback(() => setPosition('right top'), []);
+        const positionRightBottom = useCallback(() => setPosition('right bottom'), []);
+        const positionRight = useCallback(() => setPosition('right'), []);
+
+        const customPopupContent = useCallback(
             () => (
-                <div className="custom-popup">
-                    <div className="title">Title</div>
-                    <button onClick={onCloseCustomPopup}>close</button>
-                    <div className="content">Custom popup content</div>
-                </div>
+                <span className="popup">
+                    <span className="header">
+                        <span className="header_title">{TITLE}</span>
+                        <button className="header_close" onClick={() => setShowCustom(false)}></button>
+                    </span>
+                    <span className="description">{DESCRIPTION}</span>
+                    <button className="action" onClick={() => alert('Click on action button!')}>
+                        {ACTION}
+                    </button>
+                </span>
             ),
             []
         );
-        const onCloseCustomPopup = useCallback(() => setShowCustomPopup(false), [showCustomPopup]);
-        const onCloseDefaultPopup = useCallback(() => setShowDefaultPopup(false), [showDefaultPopup]);
 
         return (
-            <MMap location={location} ref={(x) => (map = x)}>
+            <MMap location={LOCATION} ref={(x) => (map = x)}>
                 <MMapDefaultSchemeLayer />
                 <MMapDefaultFeaturesLayer />
                 <MMapControls position="top right">
-                    <MMapControlButton text="Toggle custom popup" onClick={toggleCustomPopup} />
-                    <MMapControlButton text="Toggle default popup" onClick={toggleDefaultPopup} />
+                    <MMapControlButton text="Left" onClick={positionLeft} />
+                    <MMapControlButton text="Left Top" onClick={positionLeftTop} />
+                    <MMapControlButton text="Left Bottom" onClick={positionLeftBottom} />
+                    <MMapControlButton text="Bottom" onClick={positionBottom} />
+                    <MMapControlButton text="Top" onClick={positionTop} />
+                    <MMapControlButton text="Right Top" onClick={positionRightTop} />
+                    <MMapControlButton text="Right Bottom" onClick={positionRightBottom} />
+                    <MMapControlButton text="Right" onClick={positionRight} />
                 </MMapControls>
-
-                <MMapPopupMarker show={showCustomPopup} coordinates={CUSTOM_POPUP_COORDS} content={contentCallback} />
-
-                <MMapDefaultPopupMarker
-                    show={showDefaultPopup}
-                    coordinates={DEFAULT_POPUP_COORDS}
-                    title="Default popup marker"
-                    description="Description for default popup"
-                    action="Make an action"
-                    onAction={actionCallback}
-                    onClose={onCloseDefaultPopup}
+                <MMapPopupMarker coordinates={TEXT_POPUP_COORDS} draggable position={position} content={POPUP_TEXT} />
+                <MMapPopupMarker
+                    coordinates={CUSTOM_POPUP_COORDS}
+                    draggable
+                    position={position}
+                    show={showCustom}
+                    content={customPopupContent}
                 />
             </MMap>
         );

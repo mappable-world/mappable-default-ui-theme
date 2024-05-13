@@ -1,4 +1,4 @@
-import {MarkerPopupProps, MarkerSizeProps} from '../../src';
+import {MarkerSizeProps} from '../../src';
 import {CENTER, LOCATION} from '../common';
 
 window.map = null;
@@ -24,11 +24,6 @@ async function main() {
         },
         setup() {
             const size = Vue.ref<MarkerSizeProps>('normal');
-            const popup = Vue.ref<MarkerPopupProps>({
-                title: 'Popup',
-                description: 'Description for this marker',
-                action: 'Action'
-            });
             const refMap = (ref: any) => {
                 window.map = ref?.entity;
             };
@@ -36,13 +31,17 @@ async function main() {
             const setSmallSize = () => (size.value = 'small');
             const setMicroSize = () => (size.value = 'micro');
 
-            return {LOCATION, CENTER, size, popup, refMap, setNormalSize, setSmallSize, setMicroSize};
+            return {LOCATION, CENTER, size, refMap, setNormalSize, setSmallSize, setMicroSize};
         },
         template: `
             <MMap :location="LOCATION" :ref="refMap">
                 <MMapDefaultSchemeLayer />
                 <MMapDefaultFeaturesLayer />
-                <MMapDefaultMarker :coordinates="CENTER" iconName="fallback" :size="size" :popup="popup" />
+                <MMapDefaultMarker :coordinates="CENTER" iconName="fallback" :size="size">
+                    <template #popupContent>
+                        <span>Marker popup</span>
+                    </template>
+                </MMapDefaultMarker>
                 <MMapControls position="top left">
                     <MMapControlButton text="Normal" :onClick="setNormalSize" />
                     <MMapControlButton text="Small" :onClick="setSmallSize" />

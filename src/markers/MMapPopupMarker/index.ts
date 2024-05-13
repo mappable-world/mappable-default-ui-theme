@@ -13,7 +13,7 @@ export type MMapPopupPositionProps =
     | `${VerticalPosition} ${HorizontalPosition}`
     | `${HorizontalPosition} ${VerticalPosition}`;
 
-export type MMapPopupContentProps = () => HTMLElement;
+export type MMapPopupContentProps = string | (() => HTMLElement);
 
 export type MMapPopupMarkerProps = MMapMarkerProps & {
     /** The function of creating popup content */
@@ -83,7 +83,12 @@ export class MMapPopupMarker extends mappable.MMapComplexEntity<MMapPopupMarkerP
 
         this._popupContainer = document.createElement('mappable');
         this._popupContainer.classList.add('mappable--popup-marker_container');
-        this._popupContainer.appendChild(this._props.content());
+
+        if (typeof this._props.content === 'string') {
+            this._popupContainer.textContent = this._props.content;
+        } else {
+            this._popupContainer.appendChild(this._props.content());
+        }
 
         this._popupTail = document.createElement('mappable');
         this._popupTail.classList.add('mappable--popup-marker_tail');
@@ -114,7 +119,12 @@ export class MMapPopupMarker extends mappable.MMapComplexEntity<MMapPopupMarkerP
 
         if (propsDiff.content !== undefined) {
             this._popupContainer.innerHTML = '';
-            this._popupContainer.appendChild(this._props.content());
+
+            if (typeof this._props.content === 'string') {
+                this._popupContainer.textContent = this._props.content;
+            } else {
+                this._popupContainer.appendChild(this._props.content());
+            }
         }
 
         if (propsDiff.show !== undefined) {

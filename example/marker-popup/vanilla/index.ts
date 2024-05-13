@@ -18,9 +18,11 @@ async function main() {
         iconName: 'fallback',
         size: 'normal',
         popup: {
-            title: 'Popup',
-            description: 'Description for this marker',
-            action: 'Action'
+            content: () => {
+                const popup = document.createElement('span');
+                popup.textContent = 'Marker popup';
+                return popup;
+            }
         }
     });
 

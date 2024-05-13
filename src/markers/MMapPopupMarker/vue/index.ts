@@ -22,7 +22,7 @@ export const MMapPopupMarkerVuefyOptions: CustomVuefyOptions<MMapPopupMarker> = 
         onDoubleClick: Function as TVue.PropType<MMapFeatureProps['onDoubleClick']>,
         onClick: Function as TVue.PropType<MMapFeatureProps['onClick']>,
         onFastClick: Function as TVue.PropType<MMapFeatureProps['onFastClick']>,
-        content: {type: Function as TVue.PropType<MMapPopupContentProps>, required: true},
+        content: {type: [Function, String] as TVue.PropType<MMapPopupContentProps>, required: true},
         position: {type: String as TVue.PropType<MMapPopupPositionProps>},
         offset: {type: Number, default: 0},
         show: {type: Boolean, default: true},

@@ -1,7 +1,0 @@
-.mappable--default-text-popup {
-    display: block;
-    max-width: inherit;
-    max-height: inherit;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}

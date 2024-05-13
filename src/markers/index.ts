@@ -1,4 +1,9 @@
-export * from './MMapDefaultMarker';
-export {MMapDefaultPopupMarker, MMapDefaultPopupMarkerProps} from './MMapDefaultPopupMarker';
+export {
+    MMapDefaultMarker,
+    MMapDefaultMarkerProps,
+    MarkerColorProps,
+    MarkerPopupProps,
+    MarkerSizeProps,
+    ThemesColor
+} from './MMapDefaultMarker';
 export {MMapPopupMarker, MMapPopupMarkerProps, MMapPopupPositionProps} from './MMapPopupMarker';
-export {MMapTextPopupMarker, MMapTextPopupMarkerProps} from './MMapTextPopupMarker';

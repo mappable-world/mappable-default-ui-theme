@@ -1,7 +1,8 @@
 import {MMapMarker, MMapMarkerProps} from '@mappable-world/mappable-types';
 import {IconColor, IconName, iconColors, icons} from '../../icons';
-import {MMapDefaultMarkerVuefyOptions} from './vue';
-import {MMapDefaultPopupMarker} from '../';
+import {MMapPopupContentProps, MMapPopupMarker} from '../MMapPopupMarker';
+import {MMapDefaultMarkerReactifyOverride} from './react';
+import {MMapDefaultMarkerVuefyOptions, MMapDefaultMarkerVuefyOverride} from './vue';
 
 import microPoiStrokeSVG from './backgrounds/micro-poi-stroke.svg';
 import microPoiSVG from './backgrounds/micro-poi.svg';
@@ -37,14 +38,8 @@ export type ThemesColor = {day: string; night: string};
 export type MarkerColorProps = IconColor | ThemesColor;
 export type MarkerSizeProps = 'normal' | 'small' | 'micro';
 export type MarkerPopupProps = {
-    /** Displayed title in popup header */
-    title?: string;
-    /** Displayed description */
-    description?: string;
-    /** The description on the action button */
-    action?: string;
-    /** Callback of click the action button */
-    onAction?: () => void;
+    /** The function of creating popup content */
+    content: MMapPopupContentProps;
 };
 
 export type MMapDefaultMarkerProps = MMapMarkerProps & {
@@ -64,6 +59,8 @@ type BackgroundAndIcon = {background: HTMLElement; stroke: HTMLElement; icon: HT
 
 export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMarkerProps, DefaultProps> {
     static defaultProps = defaultProps;
+    static [mappable.overrideKeyReactify] = MMapDefaultMarkerReactifyOverride;
+    static [mappable.overrideKeyVuefy] = MMapDefaultMarkerVuefyOverride;
     static [mappable.optionsKeyVuefy] = MMapDefaultMarkerVuefyOptions;
 
     private _marker: MMapMarker;
@@ -78,7 +75,7 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
     private _titleHint: HTMLElement;
     private _subtitleHint: HTMLElement;
 
-    private _popup?: MMapDefaultPopupMarker;
+    private _popup?: MMapPopupMarker;
 
     constructor(props: MMapDefaultMarkerProps) {
         super(props);
@@ -196,7 +193,7 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
     }
 
     private _createPopupMarker() {
-        return new MMapDefaultPopupMarker({
+        return new MMapPopupMarker({
             ...this._props,
             ...this._props.popup,
             offset: this._getPopupOffset(),

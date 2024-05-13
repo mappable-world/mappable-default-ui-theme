@@ -1,7 +1,7 @@
 import {MMapFeatureProps, MMapMarkerEventHandler} from '@mappable-world/mappable-types';
-import {CustomVuefyOptions} from '@mappable-world/mappable-types/modules/vuefy';
+import {CustomVuefyFn, CustomVuefyOptions} from '@mappable-world/mappable-types/modules/vuefy';
 import type TVue from '@vue/runtime-core';
-import {MMapDefaultMarker, MarkerColorProps, MarkerPopupProps, MarkerSizeProps} from '../';
+import {MMapDefaultMarker, MMapDefaultMarkerProps, MarkerColorProps, MarkerPopupProps, MarkerSizeProps} from '../';
 import {IconName} from '../../../icons';
 
 export const MMapDefaultMarkerVuefyOptions: CustomVuefyOptions<MMapDefaultMarker> = {
@@ -24,12 +24,56 @@ export const MMapDefaultMarkerVuefyOptions: CustomVuefyOptions<MMapDefaultMarker
         onClick: Function as TVue.PropType<MMapFeatureProps['onClick']>,
         onFastClick: Function as TVue.PropType<MMapFeatureProps['onFastClick']>,
         iconName: {type: String as TVue.PropType<IconName>},
-        // @ts-ignore CustomVuefyOptions types no support multiple types
-        color: {type: [Object as TVue.PropType<MarkerColorProps>, String], default: 'darkgray'},
+        color: {type: [Object, String] as TVue.PropType<MarkerColorProps>, default: 'darkgray'},
         size: {type: String as TVue.PropType<MarkerSizeProps>, default: 'small'},
         title: {type: String},
         subtitle: {type: String},
         staticHint: {type: Boolean, default: true},
         popup: {type: Object as TVue.PropType<MarkerPopupProps>}
     }
+};
+
+type MMapDefaultMarkerSlots = {
+    popupContent: void;
+};
+
+export const MMapDefaultMarkerVuefyOverride: CustomVuefyFn<MMapDefaultMarker> = (
+    MMapDefaultMarkerI,
+    props,
+    {vuefy, Vue}
+) => {
+    const MMapDefaultMarkerV = vuefy.entity(MMapDefaultMarkerI);
+    const {popup, ...overridedProps} = props;
+
+    return Vue.defineComponent({
+        name: 'MMapDefaultMarker',
+        props: overridedProps,
+        slots: Object as TVue.SlotsType<MMapDefaultMarkerSlots>,
+        setup(props, {slots, expose}) {
+            const content: TVue.Ref<TVue.VNodeChild | null> = Vue.ref(null);
+            const popupHTMLElement = document.createElement('mappable');
+
+            const markerRef = Vue.ref<{entity: MMapDefaultMarker} | null>(null);
+            const markerEntity = Vue.computed(() => markerRef.value?.entity);
+
+            const popup = Vue.computed<MMapDefaultMarkerProps['popup']>(() => {
+                if (slots.popupContent === undefined) {
+                    return undefined;
+                }
+                content.value = slots.popupContent();
+                return {content: () => popupHTMLElement};
+            });
+            expose({entity: markerEntity});
+            return () =>
+                Vue.h(
+                    MMapDefaultMarkerV,
+                    {
+                        ...props,
+                        popup: popup.value,
+                        ref: markerRef
+                    },
+                    () => Vue.h(Vue.Teleport, {to: popupHTMLElement}, [content.value])
+                );
+        }
+    });
 };

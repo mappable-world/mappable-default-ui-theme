@@ -24,6 +24,16 @@ describe('MMapPopupMarker', () => {
         expect(document.querySelector('.mappable--popup-marker')).not.toBeNull();
         expect(document.querySelector('.mappable--popup-marker .test-popup')).not.toBeNull();
     });
+    it('add on map with text', () => {
+        const popup = new MMapPopupMarker({coordinates: CENTER, content: 'test popup'});
+        map.addChild(popup);
+
+        expect(document.querySelector('.mappable--popup-marker')).not.toBeNull();
+        expect(document.querySelector('.mappable--popup-marker .mappable--popup-marker_container').textContent).toBe(
+            'test popup'
+        );
+    });
+
     it('changing show props', () => {
         const popup = new MMapPopupMarker({show: true, coordinates: CENTER, content: createPopupContent});
         map.addChild(popup);

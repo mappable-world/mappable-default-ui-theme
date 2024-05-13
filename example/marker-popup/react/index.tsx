@@ -1,4 +1,4 @@
-import {MarkerPopupProps, MarkerSizeProps} from '../../src';
+import {MarkerSizeProps} from '../../src';
 import {CENTER, LOCATION} from '../common';
 
 window.map = null;
@@ -11,7 +11,7 @@ async function main() {
     const {MMap, MMapDefaultSchemeLayer, MMapDefaultFeaturesLayer, MMapControls, MMapControlButton} =
         reactify.module(mappable);
 
-    const {useState, useCallback} = React;
+    const {useState, useCallback, useMemo} = React;
 
     const {MMapDefaultMarker} = reactify.module(await mappable.import('@mappable-world/mappable-default-ui-theme'));
 
@@ -25,11 +25,7 @@ async function main() {
     function App() {
         const [location] = useState(LOCATION);
         const [size, setSize] = useState<MarkerSizeProps>('normal');
-        const [popup] = useState<MarkerPopupProps>({
-            title: 'Popup',
-            description: 'Description for this marker',
-            action: 'Action'
-        });
+        const popup = useMemo(() => ({content: () => <span>Marker popup</span>}), []);
 
         return (
             <MMap location={location} ref={(x) => (map = x)}>
