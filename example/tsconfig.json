@@ -1,10 +1,10 @@
 {
-        "extends": "../tsconfig.json",
-        "compilerOptions": {
-            "strict": false,
-            "moduleResolution": "Node16",
-            "rootDirs": ["./", "../"],
-            "types": ["../types/index.d.ts"]
-        },
-        "include": ["./**/*.ts", "./**/*.tsx"]
+    "extends": "../tsconfig.json",
+    "compilerOptions": {
+        "strict": false,
+        "moduleResolution": "Node16",
+        "rootDirs": ["./", "../"],
+        "types": ["../types/index.d.ts"]
+    },
+    "include": ["./**/*.ts", "./**/*.tsx"]
 }
