@@ -50,6 +50,9 @@
     --mappable-default-tail-height-and-offset: calc(
         var(--mappable-default-tail-height) + var(--mappable-default-offset)
     );
+    --mappable-default-popup-tail-rotate-offset: calc(
+        var(--mappable-default-tail-width) / 2 - var(--mappable-default-tail-height) / 2
+    );
 
     --mappable-default-popup-tail-transform-top: translate(-50%, calc(-100% - var(--mappable-default-offset)))
         rotate(180deg);
@@ -184,7 +187,11 @@
         transform: translate(calc(-100% - var(--mappable-default-tail-height-and-offset)), -50%);
     }
     .mappable--popup-marker_tail {
-        transform: translate(calc(-100% - var(--mappable-default-offset)), -50%) rotate(90deg);
+        transform: translate(
+                calc(-100% - var(--mappable-default-offset) + var(--mappable-default-popup-tail-rotate-offset)),
+                -50%
+            )
+            rotate(90deg);
     }
 }
 
@@ -195,6 +202,10 @@
         transform: translate(var(--mappable-default-tail-height-and-offset), -50%);
     }
     .mappable--popup-marker_tail {
-        transform: translate(var(--mappable-default-offset), -50%) rotate(-90deg);
+        transform: translate(
+                calc(var(--mappable-default-offset) - var(--mappable-default-popup-tail-rotate-offset)),
+                -50%
+            )
+            rotate(-90deg);
     }
 }

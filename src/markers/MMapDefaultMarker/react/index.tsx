@@ -41,7 +41,7 @@ export const MMapDefaultMarkerReactifyOverride: CustomReactify<MMapDefaultMarker
             }
 
             return {content: () => popupElement};
-        }, [props.popup.content, popupElement]);
+        }, [props.popup, popupElement]);
 
         return (
             <>
