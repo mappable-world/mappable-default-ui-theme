@@ -1,0 +1,200 @@
+@keyframes mappable--popup-marker-show-top {
+    from {
+        transform: translateY(12px);
+        opacity: 0;
+    }
+    to {
+        transform: none;
+        opacity: 1;
+    }
+}
+
+@keyframes mappable--popup-marker-show-bottom {
+    from {
+        transform: translateY(-12px);
+        opacity: 0;
+    }
+    to {
+        transform: none;
+        opacity: 1;
+    }
+}
+
+@keyframes mappable--popup-marker-show-left {
+    from {
+        transform: translateX(12px);
+        opacity: 0;
+    }
+    to {
+        transform: none;
+        opacity: 1;
+    }
+}
+
+@keyframes mappable--popup-marker-show-right {
+    from {
+        transform: translateX(-12px);
+        opacity: 0;
+    }
+    to {
+        transform: none;
+        opacity: 1;
+    }
+}
+
+.mappable--popup-marker {
+    --mappable-default-tail-height: 12px;
+    --mappable-default-tail-width: 16px;
+    --mappable-default-border-radius: 12px;
+
+    --mappable-default-tail-height-and-offset: calc(
+        var(--mappable-default-tail-height) + var(--mappable-default-offset)
+    );
+
+    --mappable-default-popup-tail-transform-top: translate(-50%, calc(-100% - var(--mappable-default-offset)))
+        rotate(180deg);
+    --mappable-default-popup-tail-transform-bottom: translate(-50%, var(--mappable-default-offset));
+
+    position: absolute;
+
+    &.mappable--popup-marker__hide {
+        display: none;
+    }
+}
+
+.mappable--popup-marker svg {
+    display: block;
+}
+
+.mappable--popup-marker_container {
+    width: max-content;
+    max-width: 500px;
+    max-height: 600px;
+    display: block;
+    position: absolute;
+    padding: 8px 12px;
+    border-radius: var(--mappable-default-border-radius);
+    background-color: #fff;
+    color: #34374a;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
+    box-shadow:
+        0px 4px 12px 0px #5f69831a,
+        0px 4px 24px 0px #5f69830a;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    &.mappable--popup-marker__dark {
+        background-color: #272729;
+        color: #c8c9cc;
+    }
+}
+
+.mappable--popup-marker_tail {
+    display: block;
+    position: absolute;
+    color: #fff;
+
+    &.mappable--popup-marker__dark {
+        color: #272729;
+    }
+
+    svg {
+        filter: drop-shadow(0px 4px 24px rgba(95, 105, 131, 0.04)) drop-shadow(0px 4px 12px rgba(95, 105, 131, 0.1));
+    }
+}
+
+/* positions */
+.mappable--popup-marker__position-top {
+    animation: mappable--popup-marker-show-top 200ms ease-out !important;
+
+    .mappable--popup-marker_container {
+        transform: translate(-50%, calc(-100% - var(--mappable-default-tail-height-and-offset)));
+    }
+    .mappable--popup-marker_tail {
+        transform: var(--mappable-default-popup-tail-transform-top);
+    }
+    /* top left */
+    &.mappable--popup-marker__position-left {
+        .mappable--popup-marker_container {
+            transform: translate(
+                calc(-100% + var(--mappable-default-border-radius) + var(--mappable-default-tail-width) / 2),
+                calc(-100% - var(--mappable-default-tail-height-and-offset))
+            );
+        }
+        .mappable--popup-marker_tail {
+            transform: var(--mappable-default-popup-tail-transform-top);
+        }
+    }
+    /* top right */
+    &.mappable--popup-marker__position-right {
+        .mappable--popup-marker_container {
+            transform: translate(
+                calc(-1 * var(--mappable-default-border-radius) - var(--mappable-default-tail-width) / 2),
+                calc(-100% - var(--mappable-default-tail-height-and-offset))
+            );
+        }
+        .mappable--popup-marker_tail {
+            transform: var(--mappable-default-popup-tail-transform-top);
+        }
+    }
+}
+
+.mappable--popup-marker__position-bottom {
+    animation: mappable--popup-marker-show-bottom 200ms ease-out !important;
+
+    .mappable--popup-marker_container {
+        transform: translate(-50%, var(--mappable-default-tail-height-and-offset));
+    }
+    .mappable--popup-marker_tail {
+        transform: var(--mappable-default-popup-tail-transform-bottom);
+    }
+    /* bottom left */
+    &.mappable--popup-marker__position-left {
+        .mappable--popup-marker_container {
+            transform: translate(
+                calc(-100% + var(--mappable-default-border-radius) + var(--mappable-default-tail-width) / 2),
+                var(--mappable-default-tail-height-and-offset)
+            );
+        }
+        .mappable--popup-marker_tail {
+            transform: var(--mappable-default-popup-tail-transform-bottom);
+        }
+    }
+    /* bottom right */
+    &.mappable--popup-marker__position-right {
+        .mappable--popup-marker_container {
+            transform: translate(
+                calc(-1 * var(--mappable-default-border-radius) - var(--mappable-default-tail-width) / 2),
+                var(--mappable-default-tail-height-and-offset)
+            );
+        }
+        .mappable--popup-marker_tail {
+            transform: var(--mappable-default-popup-tail-transform-bottom);
+        }
+    }
+}
+
+.mappable--popup-marker__position-left {
+    animation: mappable--popup-marker-show-left 200ms ease-out;
+
+    .mappable--popup-marker_container {
+        transform: translate(calc(-100% - var(--mappable-default-tail-height-and-offset)), -50%);
+    }
+    .mappable--popup-marker_tail {
+        transform: translate(calc(-100% - var(--mappable-default-offset)), -50%) rotate(90deg);
+    }
+}
+
+.mappable--popup-marker__position-right {
+    animation: mappable--popup-marker-show-right 200ms ease-out;
+
+    .mappable--popup-marker_container {
+        transform: translate(var(--mappable-default-tail-height-and-offset), -50%);
+    }
+    .mappable--popup-marker_tail {
+        transform: translate(var(--mappable-default-offset), -50%) rotate(-90deg);
+    }
+}

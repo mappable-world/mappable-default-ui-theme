@@ -1,6 +1,8 @@
 import {MMapMarker, MMapMarkerProps} from '@mappable-world/mappable-types';
 import {IconColor, IconName, iconColors, icons} from '../../icons';
-import {MMapDefaultMarkerVuefyOptions} from './vue';
+import {MMapPopupContentProps, MMapPopupMarker} from '../MMapPopupMarker';
+import {MMapDefaultMarkerReactifyOverride} from './react';
+import {MMapDefaultMarkerVuefyOptions, MMapDefaultMarkerVuefyOverride} from './vue';
 
 import microPoiStrokeSVG from './backgrounds/micro-poi-stroke.svg';
 import microPoiSVG from './backgrounds/micro-poi.svg';
@@ -30,9 +32,15 @@ const HINT_SUBTITLE_CLASS = 'mappable--hint-subtitle';
 const HINT_STABLE = 'mappable--hint__stable';
 const HINT_HOVERED = 'mappable--hint__hovered';
 
+const DISTANCE_BETWEEN_POPUP_AND_MARKER = 8;
+
 export type ThemesColor = {day: string; night: string};
 export type MarkerColorProps = IconColor | ThemesColor;
 export type MarkerSizeProps = 'normal' | 'small' | 'micro';
+export type MarkerPopupProps = {
+    /** The function of creating popup content */
+    content: MMapPopupContentProps;
+};
 
 export type MMapDefaultMarkerProps = MMapMarkerProps & {
     iconName?: IconName;
@@ -41,6 +49,7 @@ export type MMapDefaultMarkerProps = MMapMarkerProps & {
     title?: string;
     subtitle?: string;
     staticHint?: boolean;
+    popup?: MarkerPopupProps;
 };
 
 const defaultProps = Object.freeze({color: 'darkgray', size: 'small', staticHint: true});
@@ -50,6 +59,8 @@ type BackgroundAndIcon = {background: HTMLElement; stroke: HTMLElement; icon: HT
 
 export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMarkerProps, DefaultProps> {
     static defaultProps = defaultProps;
+    static [mappable.overrideKeyReactify] = MMapDefaultMarkerReactifyOverride;
+    static [mappable.overrideKeyVuefy] = MMapDefaultMarkerVuefyOverride;
     static [mappable.optionsKeyVuefy] = MMapDefaultMarkerVuefyOptions;
 
     private _marker: MMapMarker;
@@ -63,6 +74,8 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
     private _hintContainer: HTMLElement;
     private _titleHint: HTMLElement;
     private _subtitleHint: HTMLElement;
+
+    private _popup?: MMapPopupMarker;
 
     constructor(props: MMapDefaultMarkerProps) {
         super(props);
@@ -115,23 +128,51 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
             this._markerElement.appendChild(this._hintContainer);
         }
 
-        this._marker = new mappable.MMapMarker(this._props, this._markerElement);
+        this._marker = new mappable.MMapMarker(
+            {
+                ...this._props,
+                onClick: this._onMarkerClick
+            },
+            this._markerElement
+        );
         this.addChild(this._marker);
+
+        if (this._props.popup) {
+            this._popup = this._createPopupMarker();
+            this.addChild(this._popup);
+        }
 
         this._watchContext(mappable.ThemeContext, () => this._updateTheme(), {
             immediate: true
         });
     }
 
-    protected _onUpdate(propsDiff: Partial<MMapDefaultMarkerProps>): void {
+    protected _onUpdate(propsDiff: Partial<MMapDefaultMarkerProps>, oldProps: MMapDefaultMarkerProps): void {
         const {title, subtitle} = this._props;
         if (propsDiff.color !== undefined) {
             this._color = this._getColor();
             this._updateTheme();
         }
+
+        // popup props is changed
+        if (this._props.popup !== oldProps.popup) {
+            if (this._props.popup === undefined && oldProps.popup !== undefined) {
+                this.removeChild(this._popup);
+                this._popup = undefined;
+            } else if (this._props.popup !== undefined && oldProps.popup === undefined) {
+                this._popup = this._createPopupMarker();
+                this.addChild(this._popup);
+            } else {
+                this._popup.update(this._props.popup);
+            }
+        }
+
         if (propsDiff.size !== undefined) {
             this._updateMarkerSize();
             this._updateSVG();
+            if (this._popup) {
+                this._popup.update({offset: this._getPopupOffset()});
+            }
         }
 
         this._titleHint.textContent = title ?? '';
@@ -148,7 +189,17 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
             this._hintContainer.classList.toggle(HINT_HOVERED, !this._props.staticHint);
         }
 
-        this._marker.update(this._props);
+        this._marker.update({...this._props, onClick: this._onMarkerClick});
+    }
+
+    private _createPopupMarker() {
+        return new MMapPopupMarker({
+            ...this._props,
+            ...this._props.popup,
+            offset: this._getPopupOffset(),
+            show: false,
+            zIndex: 1000
+        });
     }
 
     private _createHintContainer(): HTMLElement {
@@ -169,6 +220,14 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
         hintContainer.appendChild(this._subtitleHint);
         return hintContainer;
     }
+
+    private _onMarkerClick = (event: MouseEvent) => {
+        if (!this._popup) {
+            return;
+        }
+        this._popup.update({show: !this._popup.isOpen});
+        this._props.onClick?.(event);
+    };
 
     private _updateTheme() {
         const themeCtx = this._consumeContext(mappable.ThemeContext);
@@ -220,6 +279,23 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
                 this._stroke.innerHTML = microPoiStrokeSVG;
                 break;
         }
+    }
+
+    private _getPopupOffset(): number {
+        const {size} = this._props;
+        let offset: number;
+        switch (size) {
+            case 'normal':
+                offset = 59 + DISTANCE_BETWEEN_POPUP_AND_MARKER;
+                break;
+            case 'small':
+                offset = 24 / 2 + DISTANCE_BETWEEN_POPUP_AND_MARKER;
+                break;
+            case 'micro':
+                offset = 14 / 2 + DISTANCE_BETWEEN_POPUP_AND_MARKER;
+                break;
+        }
+        return offset;
     }
 
     private _getIcon(): string {
