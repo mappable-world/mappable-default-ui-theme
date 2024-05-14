@@ -38,7 +38,7 @@ type DefaultProps = typeof defaultProps;
  * @example
  * ```js
  * const popup = new MMapPopupMarker({
- *  content: (close) => createPopupContentHTMLElement(close),
+ *  content: () => createPopupContentHTMLElement(),
  *  position: 'top',
  *  onOpen:() => console.log('open'),
  *  onClose:() => console.log('close'),

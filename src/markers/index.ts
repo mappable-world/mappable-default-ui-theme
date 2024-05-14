@@ -6,4 +6,4 @@ export {
     MarkerSizeProps,
     ThemesColor
 } from './MMapDefaultMarker';
-export {MMapPopupMarker, MMapPopupMarkerProps, MMapPopupPositionProps} from './MMapPopupMarker';
+export {MMapPopupMarker, MMapPopupMarkerProps, MMapPopupPositionProps, MMapPopupContentProps} from './MMapPopupMarker';
