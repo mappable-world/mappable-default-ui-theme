@@ -52,7 +52,7 @@ class MMapSuggest extends mappable.MMapComplexEntity<MMapSuggestProps> {
 
         this._addSuggestItems(suggestResult, this._props.onSuggestClick);
 
-        this._rootElement.classList.toggle(HIDE_CLASS, !this.children.length);
+        this._rootElement?.classList.toggle(HIDE_CLASS, !this.children.length);
     };
 
     private _updateActiveSuggest = (changeActiveSuggest: SuggestNavigationAction) => {
