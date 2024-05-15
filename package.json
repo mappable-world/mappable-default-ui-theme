@@ -1,5 +1,5 @@
 {
-    "version": "0.0.1-beta.1",
+    "version": "0.0.1-beta.2",
     "name": "@mappable-world/mappable-default-ui-theme",
     "description": "Mappable Maps JS API 3.0 example @mappable-world/mappable-default-ui-theme",
     "types": "./dist/types/index.d.ts",
@@ -22,7 +22,7 @@
     },
     "devDependencies": {
         "@mappable-world/mappable-cli": "^0.0.32",
-        "@mappable-world/mappable-types": "^0.0.18",
+        "@mappable-world/mappable-types": "^0.0.20",
         "@types/got": "9.6.12",
         "@types/jest": "29.5.3",
         "@types/jsdom": "21.1.1",
