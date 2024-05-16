@@ -1,0 +1,147 @@
+.mappable--route-control {
+    display: flex;
+    width: 330px;
+    padding: 12px;
+    flex-direction: column;
+    gap: 12px;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow:
+        0px 4px 12px 0px rgba(95, 105, 131, 0.1),
+        0px 4px 24px 0px rgba(95, 105, 131, 0.04);
+
+    svg {
+        display: block;
+    }
+}
+
+.mappable--route-control_modes {
+    width: 100%;
+    padding: 4px;
+
+    .mappable--route-control_modes__container {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        gap: 5px;
+        padding: 2px;
+        border-radius: 8px;
+        background: rgba(92, 94, 102, 0.06);
+    }
+
+    input[type='radio'] {
+        display: none;
+    }
+    label {
+        display: flex;
+        justify-content: center;
+        flex-grow: 1;
+        padding: 6px;
+        border-radius: 8px;
+        cursor: pointer;
+        color: #7b7d85;
+    }
+
+    input[type='radio']:checked + label {
+        background: #fff;
+        box-shadow:
+            0px 4px 12px 0px rgba(95, 105, 131, 0.1),
+            0px 4px 24px 0px rgba(95, 105, 131, 0.04);
+        color: #050d33;
+    }
+}
+
+.mappable--route-control_waypoints {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.mappable--route-control_waypoint-input {
+    display: flex;
+    padding: 4px 4px 4px 2px;
+    position: relative;
+    align-items: center;
+    gap: 12px;
+    align-self: stretch;
+
+    .mappable--route-control_waypoint-input__indicator {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .mappable--route-control_waypoint-input__field {
+        box-sizing: border-box;
+        height: 40px;
+        padding: 12px;
+        border: none;
+        border-radius: 8px;
+        background: rgba(92, 94, 102, 0.06);
+        flex-grow: 1;
+        color: var(--text-text-primary, #050d33);
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 16px;
+
+        &:focus {
+            border: 1px solid #122db2;
+        }
+    }
+
+    .mappable--route-control_waypoint-input__field:focus + .mappable--route-control_waypoint-input__button {
+        display: flex;
+    }
+
+    .mappable--route-control_waypoint-input__button {
+        display: none;
+        padding: 8px;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        right: 8px;
+        border-radius: 8px;
+        background: none;
+        outline: none;
+        border: none;
+        cursor: pointer;
+        color: #122db2;
+
+        &:hover {
+            background: rgba(18, 45, 178, 0.04);
+            color: #2e4ce5;
+        }
+    }
+}
+
+.mappable--route-control_actions {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    button {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 0px;
+        background: none;
+        border: none;
+        color: #122db2;
+        text-align: center;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 16px;
+        cursor: pointer;
+
+        &:hover {
+            color: #2e4ce5;
+        }
+
+        &:disabled {
+            color: #c8c9cc;
+        }
+    }
+}
