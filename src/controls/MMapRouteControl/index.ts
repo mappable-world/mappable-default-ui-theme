@@ -1,28 +1,33 @@
-import {DomDetach, MMapControl} from '@mappable-world/mappable-types';
+import {
+    BaseRouteResponse,
+    DomDetach,
+    MMap,
+    MMapControl,
+    SearchResponse,
+    SuggestResponse
+} from '@mappable-world/mappable-types';
 import {RouteOptions, TruckParameters} from '@mappable-world/mappable-types/imperative/route';
-
-import drivingSVG from './icons/driving.svg';
-import truckSVG from './icons/truck.svg';
-import walkingSVG from './icons/walking.svg';
-import transitSVG from './icons/transit.svg';
-import emptyIndicatorSVG from './icons/empty-field.svg';
-import locationSVG from './icons/location-button.svg';
-import changeOrderSVG from './icons/change-order.svg';
-
+import type {Feature as SearchResponseFeature} from '@mappable-world/mappable-types/imperative/search';
+import {CustomSearch, CustomSuggest} from '../MMapSearchControl';
+import {MMapWaypointInput} from './MMapWaypointInput';
+import {createActionsContainer, createSegmentedControl} from './helpers';
 import './index.css';
 
-const svgIcons: Record<AvailableTypes, string> = {
-    driving: drivingSVG,
-    truck: truckSVG,
-    walking: walkingSVG,
-    transit: transitSVG
-};
-
 export type AvailableTypes = RouteOptions['type'];
+
+export type CustomRoute = {
+    params: RouteOptions;
+    map: MMap;
+};
 
 export type MMapRouteControlProps = {
     availableTypes?: AvailableTypes[];
     truckParameters?: TruckParameters;
+    search?: (args: CustomSearch) => Promise<SearchResponse> | SearchResponse;
+    suggest?: (args: CustomSuggest) => Promise<SuggestResponse> | SuggestResponse;
+    route?: (args: CustomRoute) => Promise<BaseRouteResponse[]> | BaseRouteResponse[];
+    onUpdateWaypoints?: (waypoints: SearchResponseFeature[]) => void;
+    onRouteResult?: (result: BaseRouteResponse) => void;
 };
 
 const defaultProps = Object.freeze({availableTypes: ['driving', 'truck', 'walking', 'transit']});
@@ -51,9 +56,11 @@ class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControl
     private _rootElement: HTMLElement;
     private _routeModesElement: HTMLElement;
     private _waypointsElement: HTMLElement;
-    private _waypointInputFromElement: HTMLElement;
-    private _waypointInputToElement: HTMLElement;
+    private _waypointInputFromElement: MMapWaypointInput;
+    private _waypointInputToElement: MMapWaypointInput;
     private _actionsElement: HTMLElement;
+
+    private _routeMode: RouteOptions['type'];
 
     private _detachDom?: DomDetach;
 
@@ -61,22 +68,33 @@ class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControl
         this._rootElement = document.createElement('mappable');
         this._rootElement.classList.add('mappable--route-control');
 
-        this._routeModesElement = this.__createSegmentedControl();
+        this._routeModesElement = createSegmentedControl(this._props.availableTypes);
+        this._routeModesElement.addEventListener('change', this.__onUpdateRouteMode);
         this._rootElement.appendChild(this._routeModesElement);
 
         this._waypointsElement = document.createElement('mappable');
         this._waypointsElement.classList.add('mappable--route-control_waypoints');
         this._rootElement.appendChild(this._waypointsElement);
 
-        this._waypointInputFromElement = this.__createWaypointInput('from');
-        this._waypointInputToElement = this.__createWaypointInput('to');
-        this._waypointsElement.appendChild(this._waypointInputFromElement);
-        this._waypointsElement.appendChild(this._waypointInputToElement);
+        this._waypointInputFromElement = new MMapWaypointInput({
+            type: 'from',
+            onSelectWaypoint: (res) => {
+                console.log('from', res.feature.geometry.coordinates, res.feature.properties.name);
+            }
+        });
+        this._waypointInputToElement = new MMapWaypointInput({
+            type: 'to',
+            onSelectWaypoint: (res) => {
+                console.log('to', res.feature.geometry.coordinates, res.feature.properties.name);
+            }
+        });
 
-        this._actionsElement = this.__createActionsContainer();
+        this._actionsElement = createActionsContainer();
         this._rootElement.appendChild(this._actionsElement);
+        this._detachDom = mappable.useDomContext(this, this._rootElement, this._waypointsElement);
 
-        this._detachDom = mappable.useDomContext(this, this._rootElement, null);
+        this.addChild(this._waypointInputFromElement);
+        this.addChild(this._waypointInputToElement);
     }
 
     protected _onDetach(): void {
@@ -84,83 +102,8 @@ class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControl
         this._detachDom = undefined;
     }
 
-    private __createSegmentedControl(): HTMLElement {
-        const element = document.createElement('mappable');
-        element.classList.add('mappable--route-control_modes');
-
-        const container = document.createElement('mappable');
-        container.classList.add('mappable--route-control_modes__container');
-        element.appendChild(container);
-
-        // TODO: Do it normally
-        if (this._props.availableTypes.length < 1) {
-            throw new Error('The route must contain at least one type of route.');
-        }
-
-        const options: {option: HTMLInputElement; label: HTMLLabelElement}[] = [];
-        (['driving', 'truck', 'walking', 'transit'] as AvailableTypes[]).forEach((routeType) => {
-            if (!this._props.availableTypes.includes(routeType)) {
-                return;
-            }
-            const option = document.createElement('input');
-            const label = document.createElement('label');
-
-            option.type = 'radio';
-            option.id = routeType;
-            label.htmlFor = routeType;
-            label.innerHTML = svgIcons[routeType];
-            option.name = 'route-mode';
-            options.push({option, label});
-        });
-
-        options[0].option.checked = true;
-
-        options.forEach(({option, label}) => {
-            container.appendChild(option);
-            container.appendChild(label);
-        });
-
-        return element;
-    }
-
-    private __createWaypointInput(type: 'from' | 'to'): HTMLElement {
-        const element = document.createElement('mappable');
-        element.classList.add('mappable--route-control_waypoint-input');
-
-        const indicator = document.createElement('mappable');
-        indicator.classList.add('mappable--route-control_waypoint-input__indicator');
-        indicator.innerHTML = emptyIndicatorSVG;
-        element.appendChild(indicator);
-
-        const input = document.createElement('input');
-        input.classList.add('mappable--route-control_waypoint-input__field');
-        input.placeholder = type === 'from' ? 'From' : 'To';
-        element.appendChild(input);
-
-        const locationButton = document.createElement('button');
-        locationButton.classList.add('mappable--route-control_waypoint-input__button');
-        locationButton.innerHTML = locationSVG;
-        element.appendChild(locationButton);
-
-        return element;
-    }
-
-    private __createActionsContainer(): HTMLElement {
-        const container = document.createElement('mappable');
-        container.classList.add('mappable--route-control_actions');
-
-        const changeOrderButton = document.createElement('button');
-        changeOrderButton.innerHTML = changeOrderSVG;
-        const changeOrderButtonLabel = document.createElement('span');
-        changeOrderButtonLabel.textContent = 'Change the order';
-        changeOrderButton.appendChild(changeOrderButtonLabel);
-
-        const clearFieldsButton = document.createElement('button');
-        clearFieldsButton.textContent = 'Clear all';
-
-        container.appendChild(changeOrderButton);
-        container.appendChild(clearFieldsButton);
-
-        return container;
-    }
+    private __onUpdateRouteMode = (e: Event) => {
+        const target = e.target as HTMLInputElement;
+        this._routeMode = target.value as RouteOptions['type'];
+    };
 }

@@ -58,63 +58,6 @@
     gap: 12px;
 }
 
-.mappable--route-control_waypoint-input {
-    display: flex;
-    padding: 4px 4px 4px 2px;
-    position: relative;
-    align-items: center;
-    gap: 12px;
-    align-self: stretch;
-
-    .mappable--route-control_waypoint-input__indicator {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-    .mappable--route-control_waypoint-input__field {
-        box-sizing: border-box;
-        height: 40px;
-        padding: 12px;
-        border: none;
-        border-radius: 8px;
-        background: rgba(92, 94, 102, 0.06);
-        flex-grow: 1;
-        color: var(--text-text-primary, #050d33);
-        font-size: 14px;
-        font-style: normal;
-        font-weight: 400;
-        line-height: 16px;
-
-        &:focus {
-            border: 1px solid #122db2;
-        }
-    }
-
-    .mappable--route-control_waypoint-input__field:focus + .mappable--route-control_waypoint-input__button {
-        display: flex;
-    }
-
-    .mappable--route-control_waypoint-input__button {
-        display: none;
-        padding: 8px;
-        justify-content: center;
-        align-items: center;
-        position: absolute;
-        right: 8px;
-        border-radius: 8px;
-        background: none;
-        outline: none;
-        border: none;
-        cursor: pointer;
-        color: #122db2;
-
-        &:hover {
-            background: rgba(18, 45, 178, 0.04);
-            color: #2e4ce5;
-        }
-    }
-}
-
 .mappable--route-control_actions {
     display: flex;
     flex-direction: row;
