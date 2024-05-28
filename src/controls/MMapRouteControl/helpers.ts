@@ -35,6 +35,7 @@ export function createSegmentedControl(availableTypes: AvailableTypes[]): HTMLEl
 
         option.type = 'radio';
         option.id = routeType;
+        option.value = routeType;
         label.htmlFor = routeType;
         label.insertAdjacentHTML('afterbegin', svgIcons[routeType]);
         option.name = 'route-mode';

@@ -1,17 +1,19 @@
 import {
     BaseRouteResponse,
     DomDetach,
+    Feature,
     MMap,
     MMapControl,
     SearchResponse,
     SuggestResponse
 } from '@mappable-world/mappable-types';
 import {RouteOptions, TruckParameters} from '@mappable-world/mappable-types/imperative/route';
-import type {Feature as SearchResponseFeature} from '@mappable-world/mappable-types/imperative/search';
 import {CustomSearch, CustomSuggest} from '../MMapSearchControl';
-import {MMapWaypointInput} from './MMapWaypointInput';
+import {MMapWaypointInput, SelectWaypointArgs} from './MMapWaypointInput';
 import {createActionsContainer, createSegmentedControl} from './helpers';
 import './index.css';
+
+type WaypointsArray = Array<SelectWaypointArgs['feature'] | null>;
 
 export type AvailableTypes = RouteOptions['type'];
 
@@ -26,7 +28,7 @@ export type MMapRouteControlProps = {
     search?: (args: CustomSearch) => Promise<SearchResponse> | SearchResponse;
     suggest?: (args: CustomSuggest) => Promise<SuggestResponse> | SuggestResponse;
     route?: (args: CustomRoute) => Promise<BaseRouteResponse[]> | BaseRouteResponse[];
-    onUpdateWaypoints?: (waypoints: SearchResponseFeature[]) => void;
+    onUpdateWaypoints?: (waypoints: WaypointsArray) => void;
     onRouteResult?: (result: BaseRouteResponse) => void;
 };
 
@@ -60,6 +62,8 @@ class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControl
     private _waypointInputToElement: MMapWaypointInput;
     private _actionsElement: HTMLElement;
 
+    private _waypoints: WaypointsArray = [null, null];
+
     private _routeMode: RouteOptions['type'];
 
     private _detachDom?: DomDetach;
@@ -68,6 +72,7 @@ class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControl
         this._rootElement = document.createElement('mappable');
         this._rootElement.classList.add('mappable--route-control');
 
+        this._routeMode = this._props.availableTypes[0];
         this._routeModesElement = createSegmentedControl(this._props.availableTypes);
         this._routeModesElement.addEventListener('change', this.__onUpdateRouteMode);
         this._rootElement.appendChild(this._routeModesElement);
@@ -78,14 +83,22 @@ class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControl
 
         this._waypointInputFromElement = new MMapWaypointInput({
             type: 'from',
-            onSelectWaypoint: (res) => {
-                console.log('from', res.feature.geometry.coordinates, res.feature.properties.name);
+            onSelectWaypoint: ({feature}) => {
+                this._waypoints[0] = feature;
+                if (!this._waypoints[1]) {
+                    this._waypoints[1] = null;
+                }
+                this._onUpdateWaypoints(feature, 0);
             }
         });
         this._waypointInputToElement = new MMapWaypointInput({
             type: 'to',
-            onSelectWaypoint: (res) => {
-                console.log('to', res.feature.geometry.coordinates, res.feature.properties.name);
+            onSelectWaypoint: ({feature}) => {
+                this._waypoints[1] = feature;
+                if (!this._waypoints[0]) {
+                    this._waypoints[0] = null;
+                }
+                this._onUpdateWaypoints(feature, 1);
             }
         });
 
@@ -97,6 +110,26 @@ class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControl
         this.addChild(this._waypointInputToElement);
     }
 
+    private _onUpdateWaypoints(feature: Feature, index: number) {
+        this._waypoints[index] = feature;
+        this._props.onUpdateWaypoints(this._waypoints);
+
+        if (this._waypoints.every((point) => point !== null)) {
+            this._route();
+        }
+    }
+
+    private async _route() {
+        if (!this._waypoints.every((point) => point !== null)) {
+            return;
+        }
+        const response = await mappable.route({
+            points: this._waypoints.map((point) => point.geometry.coordinates),
+            type: this._routeMode
+        });
+        this._props.onRouteResult(response[0]);
+    }
+
     protected _onDetach(): void {
         this._detachDom?.();
         this._detachDom = undefined;
@@ -105,5 +138,6 @@ class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControl
     private __onUpdateRouteMode = (e: Event) => {
         const target = e.target as HTMLInputElement;
         this._routeMode = target.value as RouteOptions['type'];
+        this._route();
     };
 }
