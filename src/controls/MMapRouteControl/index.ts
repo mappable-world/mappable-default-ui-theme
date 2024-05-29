@@ -2,6 +2,7 @@ import {
     BaseRouteResponse,
     DomDetach,
     Feature,
+    LngLat,
     MMap,
     MMapControl,
     SearchResponse,
@@ -9,7 +10,7 @@ import {
 } from '@mappable-world/mappable-types';
 import {RouteOptions, TruckParameters} from '@mappable-world/mappable-types/imperative/route';
 import {CustomSearch, CustomSuggest} from '../MMapSearchControl';
-import {MMapWaypointInput, SelectWaypointArgs} from './MMapWaypointInput';
+import {MMapWaypointInput, MMapWaypointInputProps, SelectWaypointArgs} from './MMapWaypointInput';
 import {createActionsContainer, createSegmentedControl} from './helpers';
 import './index.css';
 
@@ -28,8 +29,9 @@ export type MMapRouteControlProps = {
     search?: (args: CustomSearch) => Promise<SearchResponse> | SearchResponse;
     suggest?: (args: CustomSuggest) => Promise<SuggestResponse> | SuggestResponse;
     route?: (args: CustomRoute) => Promise<BaseRouteResponse[]> | BaseRouteResponse[];
+    onMouseMoveOnMap?: (coordinates: LngLat, index: number, lastCall: boolean) => void;
     onUpdateWaypoints?: (waypoints: WaypointsArray) => void;
-    onRouteResult?: (result: BaseRouteResponse) => void;
+    onRouteResult?: (result: BaseRouteResponse, type: AvailableTypes) => void;
 };
 
 const defaultProps = Object.freeze({availableTypes: ['driving', 'truck', 'walking', 'transit']});
@@ -81,26 +83,8 @@ class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControl
         this._waypointsElement.classList.add('mappable--route-control_waypoints');
         this._rootElement.appendChild(this._waypointsElement);
 
-        this._waypointInputFromElement = new MMapWaypointInput({
-            type: 'from',
-            onSelectWaypoint: ({feature}) => {
-                this._waypoints[0] = feature;
-                if (!this._waypoints[1]) {
-                    this._waypoints[1] = null;
-                }
-                this._onUpdateWaypoints(feature, 0);
-            }
-        });
-        this._waypointInputToElement = new MMapWaypointInput({
-            type: 'to',
-            onSelectWaypoint: ({feature}) => {
-                this._waypoints[1] = feature;
-                if (!this._waypoints[0]) {
-                    this._waypoints[0] = null;
-                }
-                this._onUpdateWaypoints(feature, 1);
-            }
-        });
+        this._waypointInputFromElement = this.__createWaypointInput('from');
+        this._waypointInputToElement = this.__createWaypointInput('to');
 
         this._actionsElement = createActionsContainer();
         this._rootElement.appendChild(this._actionsElement);
@@ -108,6 +92,23 @@ class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControl
 
         this.addChild(this._waypointInputFromElement);
         this.addChild(this._waypointInputToElement);
+    }
+
+    private __createWaypointInput(type: MMapWaypointInputProps['type']): MMapWaypointInput {
+        const waypointIndex = type === 'from' ? 0 : 1;
+        return new MMapWaypointInput({
+            type,
+            onSelectWaypoint: ({feature}) => {
+                this._waypoints[waypointIndex] = feature;
+                if (!this._waypoints[0]) {
+                    this._waypoints[0] = null;
+                }
+                this._onUpdateWaypoints(feature, waypointIndex);
+            },
+            onMouseMoveOnMap: (coordinates, lastCall) => {
+                this._props.onMouseMoveOnMap?.(coordinates, waypointIndex, lastCall);
+            }
+        });
     }
 
     private _onUpdateWaypoints(feature: Feature, index: number) {
@@ -123,11 +124,12 @@ class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControl
         if (!this._waypoints.every((point) => point !== null)) {
             return;
         }
-        const response = await mappable.route({
-            points: this._waypoints.map((point) => point.geometry.coordinates),
-            type: this._routeMode
-        });
-        this._props.onRouteResult(response[0]);
+        const points = this._waypoints.map((point) => point.geometry.coordinates);
+        const type = this._routeMode;
+        const params = {points, type};
+
+        const response = (await this._props.route?.({params, map: this.root})) ?? (await mappable.route(params));
+        this._props.onRouteResult(response[0], this._routeMode);
     }
 
     protected _onDetach(): void {

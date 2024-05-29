@@ -1,4 +1,12 @@
-import {DomDetach, SearchResponse, SuggestResponse} from '@mappable-world/mappable-types';
+import {
+    DomDetach,
+    DomEvent,
+    DomEventHandlerObject,
+    LngLat,
+    MMapListener,
+    SearchResponse,
+    SuggestResponse
+} from '@mappable-world/mappable-types';
 import type {Feature as SearchResponseFeature} from '@mappable-world/mappable-types/imperative/search';
 import debounce from 'lodash/debounce';
 import {CustomSearch, CustomSuggest, SearchParams} from '../../MMapSearchControl';
@@ -16,6 +24,7 @@ export type MMapWaypointInputProps = {
     search?: ({params, map}: CustomSearch) => Promise<SearchResponse> | SearchResponse;
     suggest?: (args: CustomSuggest) => Promise<SuggestResponse> | SuggestResponse;
     onSelectWaypoint?: (args: SelectWaypointArgs) => void;
+    onMouseMoveOnMap?: (coordinates: LngLat, lastCall: boolean) => void;
 };
 
 export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointInputProps> {
@@ -25,6 +34,17 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
     private _rootElement: HTMLElement;
     private _isBottomPosition: boolean;
     private _inputEl: HTMLInputElement;
+    private _mapListener: MMapListener;
+
+    private _isHoverMode = false;
+
+    private get _isInputFocused(): boolean {
+        return document.activeElement === this._inputEl;
+    }
+
+    constructor(props: MMapWaypointInputProps) {
+        super(props, {container: true});
+    }
 
     protected _onAttach(): void {
         this._rootElement = document.createElement('mappable');
@@ -70,6 +90,13 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
             }
         });
 
+        this._mapListener = new mappable.MMapListener({
+            onMouseMove: this.__onMapMouseMove,
+            onMouseLeave: this.__onMapMouseLeave,
+            onFastClick: this.__onMapFastClick
+        });
+        this._addDirectChild(this._mapListener);
+
         this._detachDom = mappable.useDomContext(this, this._rootElement, suggestContainer);
 
         this._watchContext(
@@ -78,9 +105,15 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
                 const controlCtx = this._consumeContext(mappable.ControlContext);
                 const [verticalPosition] = controlCtx.position;
                 this._isBottomPosition = verticalPosition === 'bottom';
+                suggestContainer.classList.toggle('_bottom', this._isBottomPosition);
             },
             {immediate: true}
         );
+    }
+
+    protected _onDetach(): void {
+        this._detachDom?.();
+        this._detachDom = undefined;
     }
 
     private __onUpdateWaypoint = debounce((e: Event) => {
@@ -93,6 +126,9 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
     };
 
     private _onBlurInput = (event: FocusEvent) => {
+        if (this._isHoverMode) {
+            this._inputEl.focus();
+        }
         if (event.relatedTarget !== this._suggestComponent.activeSuggest) {
             this.removeChild(this._suggestComponent);
         }
@@ -125,15 +161,35 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
         }
     };
 
-    private async _search(params: SearchParams) {
+    private async _search(params: SearchParams, reverseGeocodingCoordinate?: LngLat) {
         const searchResult = (await this._props.search?.({params, map: this.root})) ?? (await mappable.search(params));
         const feature = searchResult[0];
-
+        if (reverseGeocodingCoordinate) {
+            this._inputEl.value = feature.properties.name;
+            feature.geometry.coordinates = reverseGeocodingCoordinate;
+        }
         this._props.onSelectWaypoint({feature});
     }
 
-    protected _onDetach(): void {
-        this._detachDom?.();
-        this._detachDom = undefined;
-    }
+    private __onMapMouseLeave = (object: DomEventHandlerObject, event: DomEvent): void => {
+        if (this._isInputFocused && object === undefined) {
+            this._isHoverMode = false;
+            this._props.onMouseMoveOnMap?.(event.coordinates, true);
+        }
+    };
+
+    private __onMapMouseMove = (object: DomEventHandlerObject, event: DomEvent): void => {
+        if (this._isInputFocused) {
+            this._isHoverMode = true;
+            this._props.onMouseMoveOnMap?.(event.coordinates, false);
+        }
+    };
+
+    private __onMapFastClick = (object: DomEventHandlerObject, event: DomEvent): void => {
+        if (this._isInputFocused) {
+            this._isHoverMode = false;
+            this._inputEl.blur();
+            this._search({text: event.coordinates.toString()}, event.coordinates);
+        }
+    };
 }

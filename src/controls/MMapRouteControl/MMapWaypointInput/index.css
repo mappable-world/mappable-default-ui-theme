@@ -17,6 +17,11 @@
         position: absolute;
         top: 48px;
         z-index: 1000;
+
+        &._bottom {
+            top: unset;
+            bottom: 48px;
+        }
     }
 
     .mappable--route-control_waypoint-input__indicator {
