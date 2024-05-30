@@ -1,6 +1,6 @@
 import type {BaseRouteResponse, MMapFeature, RouteOptions, Stroke} from '@mappable-world/mappable-types';
 import type {MMapDefaultMarker} from '../../src';
-import {LOCATION, computeBoundsForPoints} from '../common';
+import {LOCATION, TRUCK_PARAMS, computeBoundsForPoints} from '../common';
 
 window.map = null;
 
@@ -25,6 +25,11 @@ async function main() {
     map.addChild(
         new MMapControls({position: 'top left'}).addChild(
             new MMapRouteControl({
+                truckParameters: TRUCK_PARAMS,
+                onBuildRouteError() {
+                    featuresOnMap.forEach((f) => map.removeChild(f));
+                    featuresOnMap = [];
+                },
                 onRouteResult(result, type) {
                     featuresOnMap.forEach((f) => map.removeChild(f));
                     featuresOnMap = getFeatures(result, type);

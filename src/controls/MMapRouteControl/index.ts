@@ -11,8 +11,16 @@ import {
 import {RouteOptions, TruckParameters} from '@mappable-world/mappable-types/imperative/route';
 import {CustomSearch, CustomSuggest} from '../MMapSearchControl';
 import {MMapWaypointInput, MMapWaypointInputProps, SelectWaypointArgs} from './MMapWaypointInput';
-import {createActionsContainer, createSegmentedControl} from './helpers';
+import {
+    createActionsContainer,
+    createInfoElementComponent,
+    createLoadingSpinner,
+    createRouteNoBuildError,
+    createRouteServerError,
+    createSegmentedControl
+} from './helpers';
 import './index.css';
+import {formatDistance, formatDuration} from './utils';
 
 type WaypointsArray = Array<SelectWaypointArgs['feature'] | null>;
 
@@ -32,6 +40,7 @@ export type MMapRouteControlProps = {
     onMouseMoveOnMap?: (coordinates: LngLat, index: number, lastCall: boolean) => void;
     onUpdateWaypoints?: (waypoints: WaypointsArray) => void;
     onRouteResult?: (result: BaseRouteResponse, type: AvailableTypes) => void;
+    onBuildRouteError?: () => void;
 };
 
 const defaultProps = Object.freeze({availableTypes: ['driving', 'truck', 'walking', 'transit']});
@@ -58,6 +67,9 @@ export class MMapRouteControl extends mappable.MMapComplexEntity<MMapRouteContro
 
 class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControlProps> {
     private _rootElement: HTMLElement;
+    private _routeParametersElement: HTMLElement;
+    private _routeInfoElement: HTMLElement;
+
     private _routeModesElement: HTMLElement;
     private _waypointsElement: HTMLElement;
     private _waypointInputFromElement: MMapWaypointInput;
@@ -74,24 +86,47 @@ class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControl
         this._rootElement = document.createElement('mappable');
         this._rootElement.classList.add('mappable--route-control');
 
+        this._routeParametersElement = document.createElement('mappable');
+        this._routeParametersElement.classList.add('mappable--route-control_parameters');
+        this._rootElement.appendChild(this._routeParametersElement);
+
+        this._routeInfoElement = document.createElement('mappable');
+        this._routeInfoElement.classList.add('mappable--route-control_info');
+
         this._routeMode = this._props.availableTypes[0];
         this._routeModesElement = createSegmentedControl(this._props.availableTypes);
         this._routeModesElement.addEventListener('change', this.__onUpdateRouteMode);
-        this._rootElement.appendChild(this._routeModesElement);
+        this._routeParametersElement.appendChild(this._routeModesElement);
 
         this._waypointsElement = document.createElement('mappable');
         this._waypointsElement.classList.add('mappable--route-control_waypoints');
-        this._rootElement.appendChild(this._waypointsElement);
+        this._routeParametersElement.appendChild(this._waypointsElement);
 
         this._waypointInputFromElement = this.__createWaypointInput('from');
         this._waypointInputToElement = this.__createWaypointInput('to');
 
         this._actionsElement = createActionsContainer();
-        this._rootElement.appendChild(this._actionsElement);
+        this._routeParametersElement.appendChild(this._actionsElement);
+
         this._detachDom = mappable.useDomContext(this, this._rootElement, this._waypointsElement);
 
         this.addChild(this._waypointInputFromElement);
         this.addChild(this._waypointInputToElement);
+
+        this._watchContext(
+            mappable.ControlContext,
+            () => {
+                const controlCtx = this._consumeContext(mappable.ControlContext);
+                const [verticalPosition] = controlCtx.position;
+                this._rootElement.classList.toggle('_bottom', verticalPosition === 'bottom');
+            },
+            {immediate: true}
+        );
+    }
+
+    protected _onDetach(): void {
+        this._detachDom?.();
+        this._detachDom = undefined;
     }
 
     private __createWaypointInput(type: MMapWaypointInputProps['type']): MMapWaypointInput {
@@ -120,26 +155,56 @@ class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControl
         }
     }
 
+    private __onUpdateRouteMode = (e: Event) => {
+        const target = e.target as HTMLInputElement;
+        this._routeMode = target.value as RouteOptions['type'];
+        this._route();
+    };
+
     private async _route() {
         if (!this._waypoints.every((point) => point !== null)) {
             return;
         }
         const points = this._waypoints.map((point) => point.geometry.coordinates);
         const type = this._routeMode;
-        const params = {points, type};
+        const params = {points, type, truck: type === 'truck' ? this._props.truckParameters : undefined};
 
-        const response = (await this._props.route?.({params, map: this.root})) ?? (await mappable.route(params));
-        this._props.onRouteResult(response[0], this._routeMode);
+        this._routeInfoElement.classList.remove('error');
+        this._routeInfoElement.replaceChildren(createLoadingSpinner());
+        this._rootElement.appendChild(this._routeInfoElement);
+
+        try {
+            const response = (await this._props.route?.({params, map: this.root})) ?? (await mappable.route(params));
+            const route = response[0].toRoute();
+            if (route.geometry.coordinates.length !== 0) {
+                this._props.onRouteResult(response[0], this._routeMode);
+                this._routeInfoElement.replaceChildren(...this.__getRouteDetails(response[0]));
+            } else {
+                this._props.onBuildRouteError?.();
+                this._routeInfoElement.classList.add('error');
+                this._routeInfoElement.replaceChildren(...createRouteNoBuildError());
+            }
+        } catch (error) {
+            this._props.onBuildRouteError?.();
+            this._routeInfoElement.classList.add('error');
+            this._routeInfoElement.replaceChildren(...createRouteServerError(() => this._route()));
+        }
     }
 
-    protected _onDetach(): void {
-        this._detachDom?.();
-        this._detachDom = undefined;
-    }
+    private __getRouteDetails(response: BaseRouteResponse): HTMLElement[] {
+        const steps = response.toSteps();
+        let totalLength = 0;
+        let totalDuration = 0;
+        steps.forEach((step) => {
+            totalLength += step.properties.length;
+            totalDuration += step.properties.duration;
+        });
+        const formattedLength = formatDistance(totalLength);
+        const formattedDuration = formatDuration(totalDuration);
 
-    private __onUpdateRouteMode = (e: Event) => {
-        const target = e.target as HTMLInputElement;
-        this._routeMode = target.value as RouteOptions['type'];
-        this._route();
-    };
+        return [
+            createInfoElementComponent('time', formattedDuration),
+            createInfoElementComponent('distance', formattedLength)
+        ];
+    }
 }

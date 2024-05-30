@@ -1,5 +1,20 @@
 .mappable--route-control {
     display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    &._bottom {
+        flex-direction: column-reverse;
+    }
+
+    svg {
+        display: block;
+    }
+}
+
+.mappable--route-control_parameters {
+    box-sizing: border-box;
+    display: flex;
     width: 330px;
     padding: 12px;
     flex-direction: column;
@@ -12,6 +27,28 @@
 
     svg {
         display: block;
+    }
+}
+.mappable--route-control_info {
+    box-sizing: border-box;
+    display: flex;
+    width: 330px;
+    padding: 12px 16px;
+    align-items: flex-start;
+    gap: 20px;
+    border-radius: 12px;
+    border: 1px solid #ebedf0;
+    background: #fff;
+
+    box-shadow:
+        0px 4px 12px 0px rgba(95, 105, 131, 0.1),
+        0px 4px 24px 0px rgba(95, 105, 131, 0.04);
+
+    &.error {
+        padding: 20px 16px;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
     }
 }
 
@@ -86,5 +123,98 @@
         &:disabled {
             color: #c8c9cc;
         }
+    }
+}
+
+@keyframes mappable--spinner_rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.mappable--route-control_info_loading {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    svg {
+        position: relative;
+        animation: mappable--spinner_rotate 1.5s linear infinite;
+    }
+}
+
+.mappable--route-control_info_container {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+
+    .mappable--route-control_info_container__label {
+        color: #7b7d85;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 20px;
+    }
+
+    .mappable--route-control_info_container__value {
+        color: #050d33;
+        font-size: 20px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 28px;
+    }
+}
+
+.mappable--route-control_info_error__icon {
+    display: flex;
+    padding: 10px;
+    gap: 10px;
+    border-radius: 12px;
+    background: #ffeceb;
+}
+
+.mappable--route-control_info_error__text-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.mappable--route-control_info_error__label {
+    color: #050d33;
+    text-align: center;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px;
+}
+
+.mappable--route-control_info_error__description {
+    color: #7b7d85;
+    text-align: center;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
+}
+
+.mappable--route-control_info_error__button {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: none;
+    background-color: #eefd7d;
+    color: #050d33;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 16px;
+    cursor: pointer;
+
+    &:hover {
+        background-color: #e5fd30;
     }
 }

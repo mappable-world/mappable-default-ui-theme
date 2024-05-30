@@ -1,6 +1,8 @@
 import {AvailableTypes} from '.';
 import changeOrderSVG from './icons/change-order.svg';
 import drivingSVG from './icons/driving.svg';
+import errorIconSVG from './icons/error-icon.svg';
+import loadingSpinnerSVG from './icons/loading-spinner.svg';
 import transitSVG from './icons/transit.svg';
 import truckSVG from './icons/truck.svg';
 import walkingSVG from './icons/walking.svg';
@@ -69,4 +71,67 @@ export function createActionsContainer(): HTMLElement {
     container.appendChild(clearFieldsButton);
 
     return container;
+}
+
+export function createLoadingSpinner(): HTMLElement {
+    const containerElement = document.createElement('mappable');
+    containerElement.classList.add('mappable--route-control_info_loading');
+    containerElement.insertAdjacentHTML('afterbegin', loadingSpinnerSVG);
+    return containerElement;
+}
+
+export function createInfoElementComponent(type: 'time' | 'distance', value: string): HTMLElement {
+    const containerElement = document.createElement('mappable');
+    containerElement.classList.add('mappable--route-control_info_container');
+
+    const labelEl = document.createElement('mappable');
+    labelEl.classList.add('mappable--route-control_info_container__label');
+    labelEl.textContent = type === 'time' ? 'Time of your route' : 'Distance';
+
+    const valueEl = document.createElement('mappable');
+    valueEl.classList.add('mappable--route-control_info_container__value');
+    valueEl.textContent = value;
+
+    containerElement.replaceChildren(labelEl, valueEl);
+
+    return containerElement;
+}
+
+export function createRouteNoBuildError(): HTMLElement[] {
+    const errorIcon = document.createElement('mappable');
+    errorIcon.classList.add('mappable--route-control_info_error__icon');
+    errorIcon.insertAdjacentHTML('afterbegin', errorIconSVG);
+
+    const textContainer = document.createElement('mappable');
+    textContainer.classList.add('mappable--route-control_info_error__text-container');
+
+    const labelElement = document.createElement('mappable');
+    labelElement.classList.add('mappable--route-control_info_error__label');
+    labelElement.textContent = 'There is no opportunity to build route';
+
+    const descriptionElement = document.createElement('mappable');
+    descriptionElement.classList.add('mappable--route-control_info_error__description');
+    descriptionElement.textContent =
+        'Check the places of the start and finish points, or the availability of roads between';
+
+    textContainer.replaceChildren(labelElement, descriptionElement);
+
+    return [errorIcon, textContainer];
+}
+
+export function createRouteServerError(onClick: () => void): HTMLElement[] {
+    const errorIcon = document.createElement('mappable');
+    errorIcon.classList.add('mappable--route-control_info_error__icon');
+    errorIcon.insertAdjacentHTML('afterbegin', errorIconSVG);
+
+    const labelElement = document.createElement('mappable');
+    labelElement.classList.add('mappable--route-control_info_error__label');
+    labelElement.textContent = 'Server error';
+
+    const buttonElement = document.createElement('button');
+    buttonElement.classList.add('mappable--route-control_info_error__button');
+    buttonElement.textContent = 'Build a rout again';
+    buttonElement.addEventListener('click', onClick);
+
+    return [errorIcon, labelElement, buttonElement];
 }
