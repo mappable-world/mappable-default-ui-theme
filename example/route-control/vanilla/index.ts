@@ -43,7 +43,7 @@ async function main() {
                     if (from) {
                         const {coordinates} = from.geometry;
                         const {name} = from.properties;
-                        if (fromPoint) fromPoint.update({coordinates});
+                        if (fromPoint) fromPoint.update({coordinates, title: name});
                         else {
                             fromPoint = new MMapDefaultMarker({
                                 coordinates,
@@ -63,7 +63,7 @@ async function main() {
                     if (to) {
                         const {coordinates} = to.geometry;
                         const {name} = to.properties;
-                        if (toPoint) toPoint.update({coordinates});
+                        if (toPoint) toPoint.update({coordinates, title: name});
                         else {
                             toPoint = new MMapDefaultMarker({
                                 coordinates,
