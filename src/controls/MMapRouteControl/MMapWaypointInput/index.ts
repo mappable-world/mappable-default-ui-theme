@@ -11,9 +11,23 @@ import type {Feature as SearchResponseFeature} from '@mappable-world/mappable-ty
 import debounce from 'lodash/debounce';
 import {CustomSearch, CustomSuggest, SearchParams} from '../../MMapSearchControl';
 import {MMapSuggest} from '../../MMapSearchControl/MMapSuggest';
-import emptyIndicatorSVG from '../icons/empty-field.svg';
+import emptyIndicatorSVG from '../icons/indicators/empty-indicator.svg';
+import fromFocusIndicator from '../icons/indicators/from-focus-indicator.svg';
+import fromSettedIndicator from '../icons/indicators/from-setted-indicator.svg';
+import toFocusIndicator from '../icons/indicators/to-focus-indicator.svg';
+import toSettedIndicator from '../icons/indicators/to-setted-indicator.svg';
 import locationSVG from '../icons/location-button.svg';
 import './index.css';
+
+const focusIndicator = {
+    from: fromFocusIndicator,
+    to: toFocusIndicator
+};
+
+const settedIndicator = {
+    from: fromSettedIndicator,
+    to: toSettedIndicator
+};
 
 export type SelectWaypointArgs = {
     feature: SearchResponseFeature;
@@ -34,6 +48,8 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
     private _rootElement: HTMLElement;
     private _isBottomPosition: boolean;
     private _inputEl: HTMLInputElement;
+    private _indicator: HTMLElement;
+
     private _mapListener: MMapListener;
 
     private _isHoverMode = false;
@@ -54,10 +70,10 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
         form.addEventListener('submit', this._submitWaypointInput);
         form.classList.add('mappable--route-control_waypoint-input_form');
 
-        const indicator = document.createElement('mappable');
-        indicator.classList.add('mappable--route-control_waypoint-input__indicator');
-        indicator.insertAdjacentHTML('afterbegin', emptyIndicatorSVG);
-        form.appendChild(indicator);
+        this._indicator = document.createElement('mappable');
+        this._indicator.classList.add('mappable--route-control_waypoint-input__indicator');
+        this._indicator.insertAdjacentHTML('afterbegin', emptyIndicatorSVG);
+        form.appendChild(this._indicator);
 
         this._inputEl = document.createElement('input');
         this._inputEl.classList.add('mappable--route-control_waypoint-input__field');
@@ -123,6 +139,8 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
 
     private _onFocusInput = (_event: FocusEvent) => {
         this.addChild(this._suggestComponent);
+        this._indicator.innerHTML = '';
+        this._indicator.insertAdjacentHTML('afterbegin', focusIndicator[this._props.type]);
     };
 
     private _onBlurInput = (event: FocusEvent) => {
@@ -132,6 +150,8 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
         if (event.relatedTarget !== this._suggestComponent.activeSuggest) {
             this.removeChild(this._suggestComponent);
         }
+        this._indicator.innerHTML = '';
+        this._indicator.insertAdjacentHTML('afterbegin', emptyIndicatorSVG);
     };
 
     private _submitWaypointInput = (event?: SubmitEvent) => {
@@ -168,6 +188,8 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
             this._inputEl.value = feature.properties.name;
             feature.geometry.coordinates = reverseGeocodingCoordinate;
         }
+        this._indicator.innerHTML = '';
+        this._indicator.insertAdjacentHTML('afterbegin', settedIndicator[this._props.type]);
         this._props.onSelectWaypoint({feature});
     }
 
