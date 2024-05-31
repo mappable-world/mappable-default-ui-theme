@@ -1,6 +1,14 @@
 import type {BaseRouteResponse, LngLat, MMapFeature, RouteOptions, Stroke} from '@mappable-world/mappable-types';
 import type {MMapDefaultMarker} from '../../src';
-import {LOCATION, TRUCK_PARAMS, computeBoundsForPoints} from '../common';
+import {
+    FROM_POINT_STYLE,
+    LOCATION,
+    PREVIEW_POINT_STYLE,
+    TO_POINT_STYLE,
+    TRUCK_PARAMS,
+    computeBoundsForPoints,
+    getStroke
+} from '../common';
 
 window.map = null;
 
@@ -18,15 +26,11 @@ async function main() {
 
     const fromPoint: MMapDefaultMarker = new MMapDefaultMarker({
         coordinates: map.center as LngLat,
-        size: 'normal',
-        color: {day: '#2E4CE5', night: '#D6FD63'},
-        iconName: 'fallback'
+        ...FROM_POINT_STYLE
     });
     const toPoint: MMapDefaultMarker = new MMapDefaultMarker({
         coordinates: map.center as LngLat,
-        size: 'normal',
-        color: {day: '#313133', night: '#C8D2E6'},
-        iconName: 'fallback'
+        ...TO_POINT_STYLE
     });
     let previewPoint: MMapDefaultMarker;
 
@@ -53,8 +57,7 @@ async function main() {
                     const [from, to] = waypoints;
                     if (from) {
                         const {coordinates} = from.geometry;
-                        const {name} = from.properties;
-                        fromPoint.update({coordinates, title: name});
+                        fromPoint.update({coordinates});
                         if (!map.children.includes(fromPoint)) {
                             map.addChild(fromPoint);
                         }
@@ -66,8 +69,7 @@ async function main() {
 
                     if (to) {
                         const {coordinates} = to.geometry;
-                        const {name} = to.properties;
-                        toPoint.update({coordinates, title: name});
+                        toPoint.update({coordinates});
                         if (!map.children.includes(toPoint)) {
                             map.addChild(toPoint);
                         }
@@ -81,9 +83,7 @@ async function main() {
                     if (!previewPoint) {
                         previewPoint = new MMapDefaultMarker({
                             coordinates,
-                            size: 'normal',
-                            color: {day: '#2E4CE580', night: '#D6FD6380'},
-                            iconName: 'fallback'
+                            ...PREVIEW_POINT_STYLE
                         });
                     }
 
@@ -114,17 +114,5 @@ async function main() {
                     style: {stroke: getStroke(step.properties.mode as RouteOptions['type']), simplificationRate: 0}
                 })
         );
-    };
-    const getStroke = (type: RouteOptions['type']): Stroke => {
-        if (type === 'walking') {
-            return [
-                {width: 4, color: '#7D90F0', dash: [4, 8]},
-                {width: 8, color: '#ffffff'}
-            ];
-        }
-        return [
-            {width: 6, color: '#34D9AD'},
-            {width: 8, color: '#050D3366'}
-        ];
     };
 }

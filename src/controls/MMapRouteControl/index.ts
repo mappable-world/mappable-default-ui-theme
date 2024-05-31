@@ -22,7 +22,7 @@ import {
 import './index.css';
 import {formatDistance, formatDuration} from './utils';
 
-type WaypointsArray = Array<SelectWaypointArgs['feature'] | null>;
+export type WaypointsArray = Array<SelectWaypointArgs['feature'] | null>;
 
 export type AvailableTypes = RouteOptions['type'];
 
@@ -168,7 +168,7 @@ class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControl
 
     private _onUpdateWaypoints(feature: Feature | null, index: number) {
         this._waypoints[index] = feature;
-        this._props.onUpdateWaypoints(this._waypoints);
+        this._props.onUpdateWaypoints?.(this._waypoints);
 
         if (this._waypoints.every((point) => point !== null)) {
             this._route();
