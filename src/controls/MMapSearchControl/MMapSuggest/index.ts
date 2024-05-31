@@ -223,7 +223,9 @@ class MMapSuggestItem extends mappable.MMapComplexEntity<MMapSuggestItemProps> {
         this._rootElement.tabIndex = -1;
         this._rootElement.addEventListener('click', this._props.onClick);
         this._rootElement.dataset.title = this._props.suggestItem.title.text;
-        this._rootElement.dataset.uri = this._props.suggestItem?.uri;
+        if (this._props.suggestItem?.uri) {
+            this._rootElement.dataset.uri = this._props.suggestItem.uri;
+        }
 
         this._detachDom = mappable.useDomContext(this, this._rootElement, this._rootElement);
 
