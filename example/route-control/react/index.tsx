@@ -1,10 +1,5 @@
-import {
-    BaseRouteResponse,
-    LineStringGeometry,
-    LngLat,
-    MMapLocationRequest,
-    RouteOptions
-} from '@mappable-world/mappable-types';
+import {BaseRouteResponse, LngLat, MMapLocationRequest, RouteOptions} from '@mappable-world/mappable-types';
+import {MMapRouteControlProps, WaypointsArray} from '../../src';
 import {
     FROM_POINT_STYLE,
     LOCATION,
@@ -15,7 +10,6 @@ import {
     computeBoundsForPoints,
     getStroke
 } from '../common';
-import {MMapDefaultMarkerProps, MMapRouteControlProps, WaypointsArray} from '../../src';
 
 window.map = null;
 
@@ -49,28 +43,20 @@ async function main() {
         const onRouteResult = React.useCallback((result: BaseRouteResponse, type: RouteOptions['type']) => {
             setRouteType(type);
             setRouteResult(result);
+            setShowFeature(true);
             const bounds = computeBoundsForPoints(result.toRoute().geometry.coordinates);
             setLocation({bounds, duration: 500});
-            setShowFeature(true);
         }, []);
 
         const onUpdateWaypoints = React.useCallback((waypoints: WaypointsArray) => {
             const [from, to] = waypoints;
-            if (from) {
-                setFromCoords(from.geometry.coordinates);
-            } else {
-                setFromCoords(undefined);
-            }
-
-            if (to) {
-                setToCoords(to.geometry.coordinates);
-            } else {
-                setToCoords(undefined);
-            }
+            setFromCoords(from?.geometry?.coordinates);
+            setToCoords(to?.geometry?.coordinates);
 
             if (!from && !to) {
                 setShowFeature(false);
             }
+            setPreviewCoords(undefined);
         }, []);
 
         const onBuildRouteError = React.useCallback(() => {

@@ -197,7 +197,7 @@ class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControl
             const response = (await this._props.route?.({params, map: this.root})) ?? (await mappable.route(params));
             const route = response[0].toRoute();
             if (route.geometry.coordinates.length !== 0) {
-                this._props.onRouteResult(response[0], this._routeMode);
+                this._props.onRouteResult?.(response[0], this._routeMode);
                 this._routeInfoElement.replaceChildren(...this._getRouteDetails(response[0]));
             } else {
                 this._props.onBuildRouteError?.();
