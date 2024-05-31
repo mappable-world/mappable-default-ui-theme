@@ -47,12 +47,13 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
     private _suggestComponent?: MMapSuggest;
 
     private _rootElement: HTMLElement;
-    private _isBottomPosition: boolean;
     private _inputEl: HTMLInputElement;
     private _indicator: HTMLElement;
+    private _locationButton: HTMLElement;
 
     private _mapListener: MMapListener;
 
+    private _isBottomPosition: boolean;
     private _isHoverMode = false;
 
     private get _isInputFocused(): boolean {
@@ -85,10 +86,10 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
         this._inputEl.addEventListener('keydown', this._onKeydownInput);
         form.appendChild(this._inputEl);
 
-        const locationButton = document.createElement('button');
-        locationButton.classList.add('mappable--route-control_waypoint-input__button');
-        locationButton.insertAdjacentHTML('afterbegin', locationSVG);
-        form.appendChild(locationButton);
+        this._locationButton = document.createElement('button');
+        this._locationButton.classList.add('mappable--route-control_waypoint-input__button');
+        this._locationButton.insertAdjacentHTML('afterbegin', locationSVG);
+        form.appendChild(this._locationButton);
 
         const suggestContainer = document.createElement('mappable');
         suggestContainer.classList.add('mappable--route-control_waypoint-input_suggest');
@@ -171,9 +172,14 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
     private _onBlurInput = (event: FocusEvent) => {
         if (this._isHoverMode) {
             this._inputEl.focus();
+            return;
         }
         if (event.relatedTarget !== this._suggestComponent.activeSuggest) {
             this.removeChild(this._suggestComponent);
+        }
+        if (event.relatedTarget === this._locationButton) {
+            this._getGeolocation();
+            return;
         }
         this._indicator.innerHTML = '';
         this._indicator.insertAdjacentHTML('afterbegin', emptyIndicatorSVG);
@@ -205,6 +211,21 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
                 break;
         }
     };
+
+    private async _getGeolocation() {
+        const position = await mappable.geolocation.getPosition();
+        const text = 'My location';
+        const feature: SearchResponseFeature = {
+            properties: {name: text, description: text},
+            geometry: {type: 'Point', coordinates: position.coords}
+        };
+
+        this._inputEl.value = text;
+
+        this._indicator.innerHTML = '';
+        this._indicator.insertAdjacentHTML('afterbegin', settedIndicator[this._props.type]);
+        this._props.onSelectWaypoint({feature});
+    }
 
     private async _search(params: SearchParams, reverseGeocodingCoordinate?: LngLat) {
         const searchResult = (await this._props.search?.({params, map: this.root})) ?? (await mappable.search(params));
