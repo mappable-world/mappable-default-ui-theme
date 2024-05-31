@@ -35,9 +35,10 @@ export type SelectWaypointArgs = {
 
 export type MMapWaypointInputProps = {
     type: 'from' | 'to';
+    waypoint?: LngLat | null;
     search?: ({params, map}: CustomSearch) => Promise<SearchResponse> | SearchResponse;
     suggest?: (args: CustomSuggest) => Promise<SuggestResponse> | SuggestResponse;
-    onSelectWaypoint?: (args: SelectWaypointArgs) => void;
+    onSelectWaypoint?: (args: SelectWaypointArgs | null) => void;
     onMouseMoveOnMap?: (coordinates: LngLat, lastCall: boolean) => void;
 };
 
@@ -78,7 +79,7 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
         this._inputEl = document.createElement('input');
         this._inputEl.classList.add('mappable--route-control_waypoint-input__field');
         this._inputEl.placeholder = this._props.type === 'from' ? 'From' : 'To';
-        this._inputEl.addEventListener('input', this.__onUpdateWaypoint);
+        this._inputEl.addEventListener('input', this._onUpdateWaypoint);
         this._inputEl.addEventListener('focus', this._onFocusInput);
         this._inputEl.addEventListener('blur', this._onBlurInput);
         this._inputEl.addEventListener('keydown', this._onKeydownInput);
@@ -107,9 +108,9 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
         });
 
         this._mapListener = new mappable.MMapListener({
-            onMouseMove: this.__onMapMouseMove,
-            onMouseLeave: this.__onMapMouseLeave,
-            onFastClick: this.__onMapFastClick
+            onMouseMove: this._onMapMouseMove,
+            onMouseLeave: this._onMapMouseLeave,
+            onFastClick: this._onMapFastClick
         });
         this._addDirectChild(this._mapListener);
 
@@ -125,6 +126,21 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
             },
             {immediate: true}
         );
+
+        if (this._props.waypoint !== undefined && this._props.waypoint !== null) {
+            this._search({text: this._props.waypoint.toString()}, this._props.waypoint);
+        }
+    }
+
+    protected _onUpdate(): void {
+        if (this._props.waypoint !== undefined) {
+            if (this._props.waypoint === null) {
+                this._props.waypoint = undefined;
+                this._resetInput();
+            } else {
+                this._search({text: this._props.waypoint.toString()}, this._props.waypoint);
+            }
+        }
     }
 
     protected _onDetach(): void {
@@ -132,7 +148,16 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
         this._detachDom = undefined;
     }
 
-    private __onUpdateWaypoint = debounce((e: Event) => {
+    private _resetInput() {
+        this._inputEl.value = '';
+
+        this._indicator.innerHTML = '';
+        this._indicator.insertAdjacentHTML('afterbegin', emptyIndicatorSVG);
+
+        this._props.onSelectWaypoint(null);
+    }
+
+    private _onUpdateWaypoint = debounce((e: Event) => {
         const target = e.target as HTMLInputElement;
         this._suggestComponent.update({searchInputValue: target.value});
     }, 200);
@@ -193,21 +218,21 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
         this._props.onSelectWaypoint({feature});
     }
 
-    private __onMapMouseLeave = (object: DomEventHandlerObject, event: DomEvent): void => {
+    private _onMapMouseLeave = (object: DomEventHandlerObject, event: DomEvent): void => {
         if (this._isInputFocused && object === undefined) {
             this._isHoverMode = false;
             this._props.onMouseMoveOnMap?.(event.coordinates, true);
         }
     };
 
-    private __onMapMouseMove = (object: DomEventHandlerObject, event: DomEvent): void => {
+    private _onMapMouseMove = (object: DomEventHandlerObject, event: DomEvent): void => {
         if (this._isInputFocused) {
             this._isHoverMode = true;
             this._props.onMouseMoveOnMap?.(event.coordinates, false);
         }
     };
 
-    private __onMapFastClick = (object: DomEventHandlerObject, event: DomEvent): void => {
+    private _onMapFastClick = (object: DomEventHandlerObject, event: DomEvent): void => {
         if (this._isInputFocused) {
             this._isHoverMode = false;
             this._inputEl.blur();

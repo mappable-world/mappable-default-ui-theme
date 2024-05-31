@@ -34,6 +34,7 @@ export type CustomRoute = {
 export type MMapRouteControlProps = {
     availableTypes?: AvailableTypes[];
     truckParameters?: TruckParameters;
+    waypoints?: [LngLat | null, LngLat | null];
     search?: (args: CustomSearch) => Promise<SearchResponse> | SearchResponse;
     suggest?: (args: CustomSuggest) => Promise<SuggestResponse> | SuggestResponse;
     route?: (args: CustomRoute) => Promise<BaseRouteResponse[]> | BaseRouteResponse[];
@@ -74,7 +75,7 @@ class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControl
     private _waypointsElement: HTMLElement;
     private _waypointInputFromElement: MMapWaypointInput;
     private _waypointInputToElement: MMapWaypointInput;
-    private _actionsElement: HTMLElement;
+    private _actionsContainerElement: HTMLElement;
 
     private _waypoints: WaypointsArray = [null, null];
 
@@ -95,18 +96,21 @@ class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControl
 
         this._routeMode = this._props.availableTypes[0];
         this._routeModesElement = createSegmentedControl(this._props.availableTypes);
-        this._routeModesElement.addEventListener('change', this.__onUpdateRouteMode);
+        this._routeModesElement.addEventListener('change', this._onUpdateRouteMode);
         this._routeParametersElement.appendChild(this._routeModesElement);
 
         this._waypointsElement = document.createElement('mappable');
         this._waypointsElement.classList.add('mappable--route-control_waypoints');
         this._routeParametersElement.appendChild(this._waypointsElement);
 
-        this._waypointInputFromElement = this.__createWaypointInput('from');
-        this._waypointInputToElement = this.__createWaypointInput('to');
+        this._waypointInputFromElement = this._createWaypointInput('from', this._props.waypoints?.[0] ?? undefined);
+        this._waypointInputToElement = this._createWaypointInput('to', this._props.waypoints?.[1] ?? undefined);
 
-        this._actionsElement = createActionsContainer();
-        this._routeParametersElement.appendChild(this._actionsElement);
+        const {container, changeOrderButton, clearFieldsButton} = createActionsContainer();
+        changeOrderButton.addEventListener('click', this._changeOrder);
+        clearFieldsButton.addEventListener('click', this._clearAll);
+        this._actionsContainerElement = container;
+        this._routeParametersElement.appendChild(this._actionsContainerElement);
 
         this._detachDom = mappable.useDomContext(this, this._rootElement, this._waypointsElement);
 
@@ -129,15 +133,20 @@ class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControl
         this._detachDom = undefined;
     }
 
-    private __createWaypointInput(type: MMapWaypointInputProps['type']): MMapWaypointInput {
+    private _createWaypointInput(type: MMapWaypointInputProps['type'], waypoint?: LngLat): MMapWaypointInput {
         const waypointIndex = type === 'from' ? 0 : 1;
         return new MMapWaypointInput({
             type,
-            onSelectWaypoint: ({feature}) => {
-                this._waypoints[waypointIndex] = feature;
-                if (!this._waypoints[0]) {
-                    this._waypoints[0] = null;
+            waypoint,
+            onSelectWaypoint: (result) => {
+                if (result === null) {
+                    this._waypoints[waypointIndex] = null;
+                    this._onUpdateWaypoints(null, waypointIndex);
+                    return;
                 }
+
+                const {feature} = result;
+                this._waypoints[waypointIndex] = feature;
                 this._onUpdateWaypoints(feature, waypointIndex);
             },
             onMouseMoveOnMap: (coordinates, lastCall) => {
@@ -146,7 +155,18 @@ class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControl
         });
     }
 
-    private _onUpdateWaypoints(feature: Feature, index: number) {
+    private _clearAll = () => {
+        this._waypointInputToElement.update({waypoint: null});
+        this._waypointInputFromElement.update({waypoint: null});
+    };
+
+    private _changeOrder = () => {
+        const [fromOld, toOld] = this._waypoints;
+        this._waypointInputToElement.update({waypoint: fromOld === null ? null : fromOld.geometry.coordinates});
+        this._waypointInputFromElement.update({waypoint: toOld === null ? null : toOld.geometry.coordinates});
+    };
+
+    private _onUpdateWaypoints(feature: Feature | null, index: number) {
         this._waypoints[index] = feature;
         this._props.onUpdateWaypoints(this._waypoints);
 
@@ -155,7 +175,7 @@ class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControl
         }
     }
 
-    private __onUpdateRouteMode = (e: Event) => {
+    private _onUpdateRouteMode = (e: Event) => {
         const target = e.target as HTMLInputElement;
         this._routeMode = target.value as RouteOptions['type'];
         this._route();
@@ -178,7 +198,7 @@ class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControl
             const route = response[0].toRoute();
             if (route.geometry.coordinates.length !== 0) {
                 this._props.onRouteResult(response[0], this._routeMode);
-                this._routeInfoElement.replaceChildren(...this.__getRouteDetails(response[0]));
+                this._routeInfoElement.replaceChildren(...this._getRouteDetails(response[0]));
             } else {
                 this._props.onBuildRouteError?.();
                 this._routeInfoElement.classList.add('error');
@@ -191,7 +211,7 @@ class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControl
         }
     }
 
-    private __getRouteDetails(response: BaseRouteResponse): HTMLElement[] {
+    private _getRouteDetails(response: BaseRouteResponse): HTMLElement[] {
         const steps = response.toSteps();
         let totalLength = 0;
         let totalDuration = 0;

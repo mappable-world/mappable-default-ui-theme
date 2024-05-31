@@ -54,7 +54,7 @@ export function createSegmentedControl(availableTypes: AvailableTypes[]): HTMLEl
     return element;
 }
 
-export function createActionsContainer(): HTMLElement {
+export function createActionsContainer() {
     const container = document.createElement('mappable');
     container.classList.add('mappable--route-control_actions');
 
@@ -70,7 +70,7 @@ export function createActionsContainer(): HTMLElement {
     container.appendChild(changeOrderButton);
     container.appendChild(clearFieldsButton);
 
-    return container;
+    return {container, changeOrderButton, clearFieldsButton};
 }
 
 export function createLoadingSpinner(): HTMLElement {

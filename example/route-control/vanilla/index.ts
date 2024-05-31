@@ -1,4 +1,4 @@
-import type {BaseRouteResponse, MMapFeature, RouteOptions, Stroke} from '@mappable-world/mappable-types';
+import type {BaseRouteResponse, LngLat, MMapFeature, RouteOptions, Stroke} from '@mappable-world/mappable-types';
 import type {MMapDefaultMarker} from '../../src';
 import {LOCATION, TRUCK_PARAMS, computeBoundsForPoints} from '../common';
 
@@ -16,8 +16,18 @@ async function main() {
     map.addChild(new MMapDefaultSchemeLayer({}));
     map.addChild(new MMapDefaultFeaturesLayer({}));
 
-    let fromPoint: MMapDefaultMarker;
-    let toPoint: MMapDefaultMarker;
+    const fromPoint: MMapDefaultMarker = new MMapDefaultMarker({
+        coordinates: map.center as LngLat,
+        size: 'normal',
+        color: {day: '#2E4CE5', night: '#D6FD63'},
+        iconName: 'fallback'
+    });
+    const toPoint: MMapDefaultMarker = new MMapDefaultMarker({
+        coordinates: map.center as LngLat,
+        size: 'normal',
+        color: {day: '#313133', night: '#C8D2E6'},
+        iconName: 'fallback'
+    });
     let previewPoint: MMapDefaultMarker;
 
     let featuresOnMap: MMapFeature[] = [];
@@ -26,6 +36,7 @@ async function main() {
         new MMapControls({position: 'top left'}).addChild(
             new MMapRouteControl({
                 truckParameters: TRUCK_PARAMS,
+                waypoints: [map.center as LngLat, null],
                 onBuildRouteError() {
                     featuresOnMap.forEach((f) => map.removeChild(f));
                     featuresOnMap = [];
@@ -43,19 +54,12 @@ async function main() {
                     if (from) {
                         const {coordinates} = from.geometry;
                         const {name} = from.properties;
-                        if (fromPoint) fromPoint.update({coordinates, title: name});
-                        else {
-                            fromPoint = new MMapDefaultMarker({
-                                coordinates,
-                                title: name,
-                                size: 'normal',
-                                color: {day: '#2E4CE5', night: '#D6FD63'},
-                                iconName: 'fallback'
-                            });
+                        fromPoint.update({coordinates, title: name});
+                        if (!map.children.includes(fromPoint)) {
                             map.addChild(fromPoint);
                         }
                     } else {
-                        if (fromPoint) {
+                        if (map.children.includes(fromPoint)) {
                             map.removeChild(fromPoint);
                         }
                     }
@@ -63,19 +67,12 @@ async function main() {
                     if (to) {
                         const {coordinates} = to.geometry;
                         const {name} = to.properties;
-                        if (toPoint) toPoint.update({coordinates, title: name});
-                        else {
-                            toPoint = new MMapDefaultMarker({
-                                coordinates,
-                                title: name,
-                                size: 'normal',
-                                color: {day: '#313133', night: '#C8D2E6'},
-                                iconName: 'fallback'
-                            });
+                        toPoint.update({coordinates, title: name});
+                        if (!map.children.includes(toPoint)) {
                             map.addChild(toPoint);
                         }
                     } else {
-                        if (toPoint) {
+                        if (map.children.includes(toPoint)) {
                             map.removeChild(toPoint);
                         }
                     }
