@@ -1,9 +1,9 @@
 import type {MMapLocationRequest, LngLatBounds, SearchResponse, Margin, Feature} from '@mappable-world/mappable-types';
 
 mappable.ready.then(() => {
-    mappable
-        .getDefaultConfig()
-        .setApikeys({search: 'pk_ZAROIlpukeMufiKGZFwyulaUQEXIjDySkgduDDiovkifzqXLsJweeFmxeoRwZNNc'});
+    mappable.getDefaultConfig().setApikeys({
+        search: '%APIKEY%'
+    });
 });
 
 const BOUNDS: LngLatBounds = [

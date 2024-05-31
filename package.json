@@ -21,7 +21,7 @@
         "sync-colors": "node -r dotenv/config -r ts-node/register ./tools/scripts/sync-colors.ts"
     },
     "devDependencies": {
-        "@mappable-world/mappable-cli": "^0.0.32",
+        "@mappable-world/mappable-cli": "^0.0.34",
         "@mappable-world/mappable-types": "^0.0.20",
         "@types/got": "9.6.12",
         "@types/jest": "29.5.3",
