@@ -12,22 +12,15 @@ import debounce from 'lodash/debounce';
 import {CustomSearch, CustomSuggest, SearchParams} from '../../MMapSearchControl';
 import {MMapSuggest} from '../../MMapSearchControl/MMapSuggest';
 import emptyIndicatorSVG from '../icons/indicators/empty-indicator.svg';
-import fromFocusIndicator from '../icons/indicators/from-focus-indicator.svg';
-import fromSettedIndicator from '../icons/indicators/from-setted-indicator.svg';
-import toFocusIndicator from '../icons/indicators/to-focus-indicator.svg';
-import toSettedIndicator from '../icons/indicators/to-setted-indicator.svg';
+import focusIndicatorSVG from '../icons/indicators/focus-indicator.svg';
+import settedIndicatorSVG from '../icons/indicators/setted-indicator.svg';
 import locationSVG from '../icons/location-button.svg';
 import resetSVG from '../icons/reset-button.svg';
 import './index.css';
 
-const focusIndicator = {
-    from: fromFocusIndicator,
-    to: toFocusIndicator
-};
-
-const settedIndicator = {
-    from: fromSettedIndicator,
-    to: toSettedIndicator
+const INDICATOR_COLORS = {
+    light: {from: '#2E4CE5', to: '#313133'},
+    dark: {from: '#D6FD63', to: '#C8D2E6'}
 };
 
 export type SelectWaypointArgs = {
@@ -76,7 +69,7 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
 
         this._indicator = document.createElement('mappable');
         this._indicator.classList.add('mappable--route-control_waypoint-input__indicator');
-        this._indicator.insertAdjacentHTML('afterbegin', emptyIndicatorSVG);
+        this._updateIndicatorStatus('empty');
         form.appendChild(this._indicator);
 
         this._inputEl = document.createElement('input');
@@ -138,6 +131,15 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
             },
             {immediate: true}
         );
+        this._watchContext(
+            mappable.ThemeContext,
+            () => {
+                const {theme} = this._consumeContext(mappable.ThemeContext);
+                this._indicator.style.color = INDICATOR_COLORS[theme][this._props.type];
+                this._rootElement.classList.toggle('_dark-input', theme === 'dark');
+            },
+            {immediate: true}
+        );
 
         if (this._props.waypoint !== undefined && this._props.waypoint !== null) {
             this._search({text: this._props.waypoint.toString()}, this._props.waypoint);
@@ -160,12 +162,26 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
         this._detachDom = undefined;
     }
 
+    private _updateIndicatorStatus(status: 'empty' | 'focus' | 'setted'): void {
+        this._indicator.innerHTML = '';
+        this._indicator.classList.toggle('_empty', status === 'empty');
+
+        switch (status) {
+            case 'empty':
+                this._indicator.insertAdjacentHTML('afterbegin', emptyIndicatorSVG);
+                break;
+            case 'focus':
+                this._indicator.insertAdjacentHTML('afterbegin', focusIndicatorSVG);
+                break;
+            case 'setted':
+                this._indicator.insertAdjacentHTML('afterbegin', settedIndicatorSVG);
+                break;
+        }
+    }
+
     private _resetInput() {
         this._inputEl.value = '';
-
-        this._indicator.innerHTML = '';
-        this._indicator.insertAdjacentHTML('afterbegin', emptyIndicatorSVG);
-
+        this._updateIndicatorStatus('empty');
         this._props.onSelectWaypoint(null);
     }
 
@@ -176,8 +192,7 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
 
     private _onFocusInput = (_event: FocusEvent) => {
         this.addChild(this._suggestComponent);
-        this._indicator.innerHTML = '';
-        this._indicator.insertAdjacentHTML('afterbegin', focusIndicator[this._props.type]);
+        this._updateIndicatorStatus('focus');
     };
 
     private _onBlurInput = (event: FocusEvent) => {
@@ -196,8 +211,7 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
             this._resetInput();
             return;
         }
-        this._indicator.innerHTML = '';
-        this._indicator.insertAdjacentHTML('afterbegin', emptyIndicatorSVG);
+        this._updateIndicatorStatus('empty');
     };
 
     private _submitWaypointInput = (event?: SubmitEvent) => {
@@ -236,9 +250,7 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
             properties: {name: text, description: text},
             geometry: {type: 'Point', coordinates: position.coords}
         };
-
-        this._indicator.innerHTML = '';
-        this._indicator.insertAdjacentHTML('afterbegin', settedIndicator[this._props.type]);
+        this._updateIndicatorStatus('setted');
         this._props.onSelectWaypoint({feature});
     }
 
@@ -249,8 +261,7 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
             this._inputEl.value = feature.properties.name;
             feature.geometry.coordinates = reverseGeocodingCoordinate;
         }
-        this._indicator.innerHTML = '';
-        this._indicator.insertAdjacentHTML('afterbegin', settedIndicator[this._props.type]);
+        this._updateIndicatorStatus('setted');
         this._props.onSelectWaypoint({feature});
     }
 

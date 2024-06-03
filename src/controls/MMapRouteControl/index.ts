@@ -126,6 +126,14 @@ class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControl
             },
             {immediate: true}
         );
+        this._watchContext(
+            mappable.ThemeContext,
+            () => {
+                const {theme} = this._consumeContext(mappable.ThemeContext);
+                this._rootElement.classList.toggle('_dark', theme === 'dark');
+            },
+            {immediate: true}
+        );
     }
 
     protected _onDetach(): void {

@@ -28,6 +28,10 @@
         justify-content: center;
         align-items: center;
         margin-right: 12px;
+
+        &._empty {
+            color: #c8c9cc !important;
+        }
     }
     .mappable--route-control_waypoint-input__field {
         box-sizing: border-box;
@@ -37,7 +41,7 @@
         border-radius: 8px;
         background: rgba(92, 94, 102, 0.06);
         flex-grow: 1;
-        color: var(--text-text-primary, #050d33);
+        color: #050d33;
         font-size: 14px;
         font-style: normal;
         font-weight: 400;
@@ -100,13 +104,42 @@
         align-items: center;
         position: absolute;
         transform: translate(-36px, -50%);
+        border-radius: 8px;
         background: none;
         outline: none;
         border: none;
         cursor: pointer;
+        color: #7b7d85;
 
         &:hover {
             background: rgba(18, 45, 178, 0.04);
+        }
+    }
+}
+
+/* dark theme styles */
+.mappable--route-control_waypoint-input._dark-input {
+    .mappable--route-control_waypoint-input__field {
+        background: rgba(250, 251, 255, 0.039);
+        color: #f2f5fa;
+        &:focus {
+            border: 1px solid #7d90f0;
+        }
+    }
+    .mappable--route-control_waypoint-input__indicator._empty {
+        color: #46464d !important;
+    }
+    .mappable--route-control_waypoint-input__field-buttons__location {
+        color: #7d90f0;
+        &:hover {
+            background: rgba(125, 144, 240, 0.071);
+            color: #aebbff;
+        }
+    }
+    .mappable--route-control_waypoint-input__field-buttons__reset {
+        color: #939499;
+        &:hover {
+            background: rgba(125, 144, 240, 0.071);
         }
     }
 }

@@ -140,6 +140,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    color: #34374a;
 
     svg {
         position: relative;
@@ -216,5 +217,52 @@
 
     &:hover {
         background-color: #e5fd30;
+    }
+}
+
+/* dark theme styles */
+.mappable--route-control._dark {
+    .mappable--route-control_parameters {
+        background: #1d1e1f;
+        box-shadow:
+            0px 4px 12px 0px rgba(18, 20, 26, 0.22),
+            0px 4px 24px 0px rgba(18, 20, 26, 0.14);
+    }
+    .mappable--route-control_modes {
+        .mappable--route-control_modes__container {
+            background: rgba(250, 251, 255, 0.04);
+        }
+
+        input[type='radio']:checked + label {
+            background: #1d1e1f;
+            color: #f2f5fa;
+        }
+    }
+    .mappable--route-control_actions button {
+        color: #7d90f0;
+
+        &:disabled {
+            color: #46464d;
+        }
+    }
+    .mappable--route-control_info {
+        border: 1px solid #313133;
+        background: #1d1e1f;
+        box-shadow:
+            0px 4px 12px 0px rgba(18, 20, 26, 0.22),
+            0px 4px 24px 0px rgba(18, 20, 26, 0.14);
+
+        .mappable--route-control_info_container__value {
+            color: #f2f5fa;
+        }
+        .mappable--route-control_info_error__icon {
+            background: #4f1f24;
+        }
+        .mappable--route-control_info_error__label {
+            color: #f2f5fa;
+        }
+        .mappable--route-control_info_loading {
+            color: #f2f5fa;
+        }
     }
 }
