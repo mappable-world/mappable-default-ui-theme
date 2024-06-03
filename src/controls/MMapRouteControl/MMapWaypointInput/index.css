@@ -9,7 +9,6 @@
         padding: 4px 4px 4px 2px;
         position: relative;
         align-items: center;
-        gap: 12px;
         align-self: stretch;
     }
 
@@ -28,6 +27,7 @@
         display: flex;
         justify-content: center;
         align-items: center;
+        margin-right: 12px;
     }
     .mappable--route-control_waypoint-input__field {
         box-sizing: border-box;
@@ -48,17 +48,37 @@
         }
     }
 
-    .mappable--route-control_waypoint-input__field:focus + .mappable--route-control_waypoint-input__button {
-        display: flex;
+    .mappable--route-control_waypoint-input__field-buttons {
+        display: none;
+        position: relative;
     }
 
-    .mappable--route-control_waypoint-input__button {
+    .mappable--route-control_waypoint-input__field:focus + .mappable--route-control_waypoint-input__field-buttons {
+        display: inline-block;
+    }
+
+    .mappable--route-control_waypoint-input__field:focus:placeholder-shown
+        + .mappable--route-control_waypoint-input__field-buttons {
+        .mappable--route-control_waypoint-input__field-buttons__location {
+            display: flex;
+        }
+    }
+
+    .mappable--route-control_waypoint-input__field:focus:not(:placeholder-shown)
+        + .mappable--route-control_waypoint-input__field-buttons {
+        .mappable--route-control_waypoint-input__field-buttons__reset {
+            display: flex;
+        }
+    }
+
+    .mappable--route-control_waypoint-input__field-buttons__location {
+        /* display: flex; */
         display: none;
         padding: 8px;
         justify-content: center;
         align-items: center;
         position: absolute;
-        right: 8px;
+        transform: translate(-36px, -50%);
         border-radius: 8px;
         background: none;
         outline: none;
@@ -69,6 +89,24 @@
         &:hover {
             background: rgba(18, 45, 178, 0.04);
             color: #2e4ce5;
+        }
+    }
+
+    .mappable--route-control_waypoint-input__field-buttons__reset {
+        /* display: flex; */
+        display: none;
+        padding: 8px;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        transform: translate(-36px, -50%);
+        background: none;
+        outline: none;
+        border: none;
+        cursor: pointer;
+
+        &:hover {
+            background: rgba(18, 45, 178, 0.04);
         }
     }
 }
