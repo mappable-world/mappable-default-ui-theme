@@ -1,4 +1,4 @@
-import {LOCATION} from '../common';
+import {ENABLED_BEHAVIORS, LOCATION} from '../common';
 
 window.map = null;
 
@@ -9,9 +9,8 @@ async function main() {
 
     const {MMap, MMapDefaultSchemeLayer, MMapDefaultFeaturesLayer, MMapControls} = reactify.module(mappable);
 
-    const {useState} = React;
-
-    const {MMapZoomControl} = reactify.module(await mappable.import('@mappable-world/mappable-default-ui-theme'));
+    const {MMapGeolocationControl, MMapRotateControl, MMapRotateTiltControl, MMapTiltControl, MMapZoomControl} =
+        reactify.module(await mappable.import('@mappable-world/mappable-default-ui-theme'));
 
     ReactDOM.render(
         <React.StrictMode>
@@ -21,17 +20,24 @@ async function main() {
     );
 
     function App() {
-        const [location] = useState(LOCATION);
+        const location = React.useMemo(() => LOCATION, []);
+        const behaviors = React.useMemo(() => ENABLED_BEHAVIORS, []);
 
         return (
-            <MMap location={location} ref={(x) => (map = x)}>
+            <MMap location={location} behaviors={behaviors} ref={(x) => (map = x)}>
                 <MMapDefaultSchemeLayer />
                 <MMapDefaultFeaturesLayer />
-                <MMapControls position="right">
+                <MMapControls position="left">
                     <MMapZoomControl />
+                    <MMapGeolocationControl />
                 </MMapControls>
                 <MMapControls position="bottom">
                     <MMapZoomControl />
+                </MMapControls>
+                <MMapControls position="right">
+                    <MMapRotateTiltControl />
+                    <MMapRotateControl />
+                    <MMapTiltControl />
                 </MMapControls>
             </MMap>
         );
