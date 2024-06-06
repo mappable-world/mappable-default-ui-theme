@@ -1,4 +1,4 @@
-import {MMapMarker, MMapMarkerProps} from '@mappable-world/mappable-types';
+import {LngLat, MMapMarker, MMapMarkerProps} from '@mappable-world/mappable-types';
 import {MMapPopupMarkerReactifyOverride} from './react';
 import {MMapPopupMarkerVuefyOptions, MMapPopupMarkerVuefyOverride} from './vue';
 
@@ -62,6 +62,10 @@ export class MMapPopupMarker extends mappable.MMapComplexEntity<MMapPopupMarkerP
     private _popupContainer: HTMLElement;
     private _popupTail: HTMLElement;
     private _marker: MMapMarker;
+
+    public get coordinates(): LngLat {
+        return this._marker.coordinates;
+    }
 
     private _togglePopup(forceShowPopup?: boolean): void {
         const openPopup = forceShowPopup ?? !this._props.show;
