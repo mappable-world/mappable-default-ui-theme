@@ -55,3 +55,7 @@ mappable.import.registerCdn(
 // import package from CDN
 const pkg = await mappable.import('@mappable-world/mappable-default-ui-theme');
 ```
+
+## More about working with the package
+
+Read more about working with the package in the [documentation](https://mappable-world.github.io/mappable-default-ui-theme/).
