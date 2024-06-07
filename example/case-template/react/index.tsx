@@ -1,4 +1,4 @@
-import {LOCATION} from '../common';
+import {CENTER, LOCATION} from '../common';
 
 window.map = null;
 
@@ -9,11 +9,9 @@ async function main() {
 
     const {MMap, MMapDefaultSchemeLayer, MMapDefaultFeaturesLayer, MMapControls} = reactify.module(mappable);
 
-    const {useState, useCallback} = React;
-
-    const {MMapZoomControl} = reactify.module(await mappable.import('@mappable-world/mappable-controls@0.0.1'));
-
-    const {MMapButtonExample} = reactify.module(await mappable.import('@mappable-world/mappable-default-ui-theme'));
+    const {MMapDefaultMarker, MMapZoomControl} = reactify.module(
+        await mappable.import('@mappable-world/mappable-default-ui-theme')
+    );
 
     ReactDOM.render(
         <React.StrictMode>
@@ -23,17 +21,14 @@ async function main() {
     );
 
     function App() {
-        const [location, setLocation] = useState(LOCATION);
-        const onClick = useCallback(() => alert('Click!'), []);
-
         return (
-            <MMap location={location} ref={(x) => (map = x)}>
+            <MMap location={LOCATION} ref={(x) => (map = x)}>
                 <MMapDefaultSchemeLayer />
                 <MMapDefaultFeaturesLayer />
                 <MMapControls position="right">
                     <MMapZoomControl />
-                    <MMapButtonExample text={'My button'} onClick={onClick} />
                 </MMapControls>
+                <MMapDefaultMarker coordinates={CENTER} size="normal" iconName="fallback" />
             </MMap>
         );
     }

@@ -1,4 +1,4 @@
-import {LOCATION} from '../common';
+import {CENTER, LOCATION} from '../common';
 
 window.map = null;
 
@@ -9,9 +9,9 @@ async function main() {
 
     const {MMap, MMapDefaultSchemeLayer, MMapDefaultFeaturesLayer, MMapControls} = vuefy.module(mappable);
 
-    const {MMapZoomControl} = vuefy.module(await mappable.import('@mappable-world/mappable-controls@0.0.1'));
-
-    const {MMapButtonExample} = vuefy.module(await mappable.import('@mappable-world/mappable-default-ui-theme'));
+    const {MMapDefaultMarker, MMapZoomControl} = vuefy.module(
+        await mappable.import('@mappable-world/mappable-default-ui-theme')
+    );
 
     const app = Vue.createApp({
         components: {
@@ -19,15 +19,14 @@ async function main() {
             MMapDefaultSchemeLayer,
             MMapDefaultFeaturesLayer,
             MMapControls,
-            MMapZoomControl,
-            MMapButtonExample
+            MMapDefaultMarker,
+            MMapZoomControl
         },
         setup() {
             const refMap = (ref: any) => {
                 window.map = ref?.entity;
             };
-            const onClick = () => alert('Click!');
-            return {LOCATION, refMap, onClick};
+            return {LOCATION, CENTER, refMap};
         },
         template: `
             <MMap :location="LOCATION" :ref="refMap">
@@ -35,8 +34,8 @@ async function main() {
                 <MMapDefaultFeaturesLayer />
                 <MMapControls position="right">
                     <MMapZoomControl />
-                    <MMapButtonExample text="My button" :onClick="onClick" />
                 </MMapControls>
+                <MMapDefaultMarker :coordinates="CENTER" size="normal" iconName="fallback" />
             </MMap>`
     });
     app.mount('#app');

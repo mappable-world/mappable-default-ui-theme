@@ -1,4 +1,4 @@
-import {LOCATION} from '../common';
+import {ENABLED_BEHAVIORS, LOCATION} from '../common';
 
 window.map = null;
 
@@ -9,7 +9,8 @@ async function main() {
 
     const {MMap, MMapDefaultSchemeLayer, MMapDefaultFeaturesLayer, MMapControls} = vuefy.module(mappable);
 
-    const {MMapZoomControl} = vuefy.module(await mappable.import('@mappable-world/mappable-default-ui-theme'));
+    const {MMapGeolocationControl, MMapRotateControl, MMapRotateTiltControl, MMapTiltControl, MMapZoomControl} =
+        vuefy.module(await mappable.import('@mappable-world/mappable-default-ui-theme'));
 
     const app = Vue.createApp({
         components: {
@@ -17,23 +18,33 @@ async function main() {
             MMapDefaultSchemeLayer,
             MMapDefaultFeaturesLayer,
             MMapControls,
+            MMapGeolocationControl,
+            MMapRotateControl,
+            MMapRotateTiltControl,
+            MMapTiltControl,
             MMapZoomControl
         },
         setup() {
             const refMap = (ref: any) => {
                 window.map = ref?.entity;
             };
-            return {LOCATION, refMap};
+            return {LOCATION, ENABLED_BEHAVIORS, refMap};
         },
         template: `
-            <MMap :location="LOCATION" :ref="refMap">
+            <MMap :location="LOCATION" :behaviors="ENABLED_BEHAVIORS" :ref="refMap">
                 <MMapDefaultSchemeLayer />
                 <MMapDefaultFeaturesLayer />
-                <MMapControls position="right">
+                <MMapControls position="left">
                     <MMapZoomControl />
+                    <MMapGeolocationControl />
                 </MMapControls>
                 <MMapControls position="bottom">
                     <MMapZoomControl />
+                </MMapControls>
+                <MMapControls position="right">
+                    <MMapRotateTiltControl />
+                    <MMapRotateControl />
+                    <MMapTiltControl />
                 </MMapControls>
             </MMap>`
     });
