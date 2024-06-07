@@ -1,4 +1,4 @@
-import {MMapMarker, MMapMarkerProps} from '@mappable-world/mappable-types';
+import {LngLat, MMapMarker, MMapMarkerProps} from '@mappable-world/mappable-types';
 import {IconColor, IconName, iconColors, icons} from '../../icons';
 import {MMapPopupContentProps, MMapPopupMarker} from '../MMapPopupMarker';
 import {MMapDefaultMarkerReactifyOverride} from './react';
@@ -76,6 +76,10 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
     private _subtitleHint: HTMLElement;
 
     private _popup?: MMapPopupMarker;
+
+    public get coordinates(): LngLat {
+        return this._marker.coordinates;
+    }
 
     constructor(props: MMapDefaultMarkerProps) {
         super(props);
