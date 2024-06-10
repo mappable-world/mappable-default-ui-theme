@@ -37,9 +37,6 @@ export class MMapRotateTiltControl extends mappable.MMapComplexEntity<MMapRotate
 
     constructor(props: MMapRotateTiltControlProps) {
         super(props);
-    }
-
-    protected _onAttach(): void {
         this._control = new mappable.MMapControl({transparent: true});
         this._rotateControl = new MMapRotateControl(this._props);
         this._tiltControl = new MMapTiltControl(this._props);
@@ -48,6 +45,7 @@ export class MMapRotateTiltControl extends mappable.MMapComplexEntity<MMapRotate
         this._control.addChild(this._rotateControl);
         this.addChild(this._control);
     }
+
     protected _onUpdate(): void {
         this._rotateControl.update(this._props);
         this._tiltControl.update(this._props);

@@ -138,6 +138,10 @@ export class MMapPopupMarker extends mappable.MMapComplexEntity<MMapPopupMarkerP
         this._marker.update(this._props);
     }
 
+    protected _onDetach(): void {
+        this.removeChild(this._marker);
+    }
+
     private _updateTheme() {
         const themeCtx = this._consumeContext(mappable.ThemeContext);
         const {theme} = themeCtx;

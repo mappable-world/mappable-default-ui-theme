@@ -192,6 +192,7 @@ class MMapZoomControl extends mappable.MMapComplexEntity<MMapZoomControlProps, D
     }
 
     protected override _onDetach(): void {
+        this._control.removeChild(this._zoom);
         this.removeChild(this._control);
     }
 }

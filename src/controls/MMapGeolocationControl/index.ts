@@ -131,6 +131,8 @@ class MMapGeolocationControl extends mappable.MMapGroupEntity<MMapGeolocationCon
     }
 
     protected override _onDetach() {
+        this._control.removeChild(this._button);
+        this.removeChild(this._control);
         this._unwatchThemeContext?.();
     }
 
