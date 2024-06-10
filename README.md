@@ -29,7 +29,7 @@ await mappable.ready;
 
 // ...
 
-const {MMapZoomControl} = await import('@mappable-world/mappable-default-ui-theme');
+const {MMapDefaultMarker} = await import('@mappable-world/mappable-default-ui-theme');
 
 // ...
 
