@@ -252,6 +252,7 @@ class MMapSearchControl extends mappable.MMapComplexEntity<MMapSearchControlProp
     }
 
     protected override _onDetach(): void {
+        this._control.removeChild(this._search);
         this.removeChild(this._control);
     }
 }

@@ -19,14 +19,13 @@ export class MMapTiltControl extends mappable.MMapComplexEntity<MMapRotateTiltCo
 
     constructor(props: MMapRotateTiltControlProps) {
         super(props);
-    }
-
-    protected _onAttach(): void {
         this._listener = new mappable.MMapListener({
             onUpdate: (event) => this._onMapUpdate(event.camera)
         });
         this.addChild(this._listener);
+    }
 
+    protected _onAttach(): void {
         this._element = document.createElement('mappable');
         this._element.classList.add(TILT_CONTROL_CLASS);
         const {tilt, tiltRange} = this.root;

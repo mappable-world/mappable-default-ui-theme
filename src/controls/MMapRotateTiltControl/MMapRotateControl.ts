@@ -22,14 +22,13 @@ export class MMapRotateControl extends mappable.MMapGroupEntity<MMapRotateTiltCo
 
     constructor(props: MMapRotateTiltControlProps) {
         super(props);
-    }
-
-    protected _onAttach(): void {
         this._listener = new mappable.MMapListener({
             onUpdate: (event) => this._onMapUpdate(event.camera)
         });
         this.addChild(this._listener);
+    }
 
+    protected _onAttach(): void {
         this._element = document.createElement('mappable');
         this._element.classList.add(ROTATE_CONTROL_CLASS);
 

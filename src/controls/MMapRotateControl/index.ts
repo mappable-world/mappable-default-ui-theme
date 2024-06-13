@@ -32,14 +32,11 @@ type DefaultProps = typeof defaultProps;
 export class MMapRotateControl extends mappable.MMapComplexEntity<MMapRotateControlProps, DefaultProps> {
     static defaultProps = defaultProps;
     static [mappable.optionsKeyVuefy] = MMapRotateControlVuefyOptions;
-    private _control!: MMapControl;
-    private _rotateControl!: InternalRotateControl;
+    private _control: MMapControl;
+    private _rotateControl: InternalRotateControl;
 
     constructor(props: MMapRotateControlProps) {
         super(props);
-    }
-
-    protected _onAttach(): void {
         this._control = new mappable.MMapControl({transparent: true});
         this._rotateControl = new InternalRotateControl(this._props);
 
@@ -64,12 +61,15 @@ export class InternalRotateControl extends mappable.MMapComplexEntity<MMapRotate
     private _startMovePosition?: Position;
     private _startAzimuth?: number;
 
-    protected _onAttach(): void {
+    constructor(props: MMapRotateControlProps) {
+        super(props);
         this._listener = new mappable.MMapListener({
             onUpdate: (event) => this._onMapUpdate(event.camera)
         });
         this.addChild(this._listener);
+    }
 
+    protected _onAttach(): void {
         this._element = document.createElement('mappable');
         this._element.textContent = 'N';
         this._element.classList.add(ROTATE_CONTROL_CLASS);

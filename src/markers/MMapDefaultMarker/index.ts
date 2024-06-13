@@ -196,6 +196,13 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
         this._marker.update({...this._props, onClick: this._onMarkerClick});
     }
 
+    protected override _onDetach(): void {
+        if (this._popup) {
+            this.removeChild(this._popup);
+        }
+        this.removeChild(this._marker);
+    }
+
     private _createPopupMarker() {
         return new MMapPopupMarker({
             ...this._props,

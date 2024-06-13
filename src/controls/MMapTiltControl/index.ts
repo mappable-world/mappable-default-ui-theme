@@ -37,9 +37,6 @@ export class MMapTiltControl extends mappable.MMapComplexEntity<MMapTiltControlP
 
     constructor(props: MMapTiltControlProps) {
         super(props);
-    }
-
-    protected _onAttach(): void {
         this._control = new mappable.MMapControl({transparent: true});
         this._tiltControl = new InternalTiltControl(this._props);
 
