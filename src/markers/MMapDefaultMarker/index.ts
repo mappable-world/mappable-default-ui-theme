@@ -179,6 +179,13 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
             }
         }
 
+        if (this._props.iconName !== oldProps.iconName) {
+            const icon = this._getIcon();
+            if (icon !== undefined) {
+                this._icon.innerHTML = icon;
+            }
+        }
+
         this._titleHint.textContent = title ?? '';
         this._subtitleHint.textContent = subtitle ?? '';
         const hintAttached = this._markerElement.contains(this._hintContainer);
@@ -315,7 +322,7 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
             return '';
         }
 
-        return icons[this._props.iconName];
+        return icons[this._props.iconName] ?? '';
     }
 
     private _getColor(): ThemesColor {
