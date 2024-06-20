@@ -181,9 +181,7 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
 
         if (this._props.iconName !== oldProps.iconName) {
             const icon = this._getIcon();
-            if (icon !== undefined) {
-                this._icon.innerHTML = icon;
-            }
+            this._icon.innerHTML = icon;
         }
 
         this._titleHint.textContent = title ?? '';
