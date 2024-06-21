@@ -90,7 +90,6 @@ class MMapSearchCommonControl extends mappable.MMapComplexEntity<MMapSearchContr
         if (!this._searchInput.value) return;
 
         switch (event.key) {
-            case 'Up': // IE/Edge specific value
             case 'ArrowUp': {
                 event.preventDefault();
 
@@ -102,7 +101,6 @@ class MMapSearchCommonControl extends mappable.MMapComplexEntity<MMapSearchContr
 
                 break;
             }
-            case 'Down': // IE/Edge specific value
             case 'ArrowDown': {
                 event.preventDefault();
 

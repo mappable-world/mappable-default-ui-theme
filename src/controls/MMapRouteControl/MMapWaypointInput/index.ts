@@ -228,12 +228,10 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
 
     private _onKeydownInput = (event: KeyboardEvent) => {
         switch (event.key) {
-            case 'Down': // IE/Edge specific value
             case 'ArrowDown':
                 event.preventDefault();
                 this._suggestComponent.update({suggestNavigationAction: {isNextSuggest: !this._isBottomPosition}});
                 break;
-            case 'Up': // IE/Edge specific value
             case 'ArrowUp':
                 event.preventDefault();
                 this._suggestComponent.update({suggestNavigationAction: {isNextSuggest: this._isBottomPosition}});
