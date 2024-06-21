@@ -126,7 +126,7 @@ class MMapSearchCommonControl extends mappable.MMapComplexEntity<MMapSearchContr
         event.preventDefault();
 
         const activeSuggestUri = (this.children[0] as MMapSuggest)?.activeSuggest?.dataset?.uri;
-        const searchParams = activeSuggestUri ? {uri: activeSuggestUri} : {text: this._searchInput.value};
+        const searchParams = {uri: activeSuggestUri, text: this._searchInput.value};
 
         this._search(searchParams);
         this._resetInput();
