@@ -2,6 +2,11 @@ const SEC_TO_DAYS = 24 * 3600;
 const SEC_TO_HOURS = 3600;
 const SEC_TO_MIN = 60;
 
+/**
+ * Formats the distance length into a string with units of measurement
+ * @param length - the length of the distance in meters
+ * @returns formatted string
+ */
 export function formatDistance(length: number): string {
     if (length < 1000) {
         return `${length.toFixed(0)} m`;
@@ -9,6 +14,11 @@ export function formatDistance(length: number): string {
     return `${(length / 1000).toFixed(2)} km`;
 }
 
+/**
+ * Formats the duration in seconds in string
+ * @param durationS - duration in seconds
+ * @returns formatted string
+ */
 export function formatDuration(durationS: number): string {
     const days = Math.floor(durationS / SEC_TO_DAYS);
     const hours = Math.floor((durationS % SEC_TO_DAYS) / SEC_TO_HOURS);
