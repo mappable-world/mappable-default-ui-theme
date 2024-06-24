@@ -38,6 +38,7 @@ export type MMapRouteControlProps = {
     availableTypes?: AvailableTypes[];
     truckParameters?: TruckParameters;
     waypoints?: [LngLat | null, LngLat | null];
+    waypointsPlaceholders?: [string, string];
     search?: (args: CustomSearch) => Promise<SearchResponse> | SearchResponse;
     suggest?: (args: CustomSuggest) => Promise<SuggestResponse> | SuggestResponse;
     route?: (args: CustomRoute) => Promise<BaseRouteResponse[]> | BaseRouteResponse[];
@@ -51,6 +52,7 @@ const defaultProps = Object.freeze({
     geolocationTextInput: 'My location',
     clearFieldsText: 'Clear all',
     changeOrderText: 'Change the order',
+    waypointsPlaceholders: ['From', 'To'],
     availableTypes: ['driving', 'truck', 'walking', 'transit']
 });
 type DefaultProps = typeof defaultProps;
@@ -157,6 +159,7 @@ class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControl
         const {geolocationTextInput, onMouseMoveOnMap} = this._props;
         return new MMapWaypointInput({
             type,
+            inputPlaceholder: this._props.waypointsPlaceholders[waypointIndex],
             waypoint,
             geolocationTextInput: geolocationTextInput,
             onSelectWaypoint: (result) => {

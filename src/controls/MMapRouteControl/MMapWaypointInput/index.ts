@@ -29,6 +29,7 @@ export type SelectWaypointArgs = {
 
 export type MMapWaypointInputProps = {
     type: 'from' | 'to';
+    inputPlaceholder: string;
     waypoint?: LngLat | null;
     geolocationTextInput?: string;
     search?: ({params, map}: CustomSearch) => Promise<SearchResponse> | SearchResponse;
@@ -96,7 +97,7 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
 
         this._inputEl = document.createElement('input');
         this._inputEl.classList.add('mappable--route-control_waypoint-input__field');
-        this._inputEl.placeholder = this._props.type === 'from' ? 'From' : 'To';
+        this._inputEl.placeholder = this._props.inputPlaceholder;
         this._inputEl.addEventListener('input', this._onUpdateWaypoint);
         this._inputEl.addEventListener('focus', this._onFocusInput);
         this._inputEl.addEventListener('blur', this._onBlurInput);
