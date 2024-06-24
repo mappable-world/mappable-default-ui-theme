@@ -29,7 +29,7 @@
         align-items: center;
         margin-right: 12px;
 
-        &._empty {
+        &.mappable--route-control_waypoint-input__indicator_empty {
             color: #c8c9cc !important;
         }
     }
@@ -126,7 +126,7 @@
             border: 1px solid #7d90f0;
         }
     }
-    .mappable--route-control_waypoint-input__indicator._empty {
+    .mappable--route-control_waypoint-input__indicator_empty {
         color: #46464d !important;
     }
     .mappable--route-control_waypoint-input__field-buttons__location {

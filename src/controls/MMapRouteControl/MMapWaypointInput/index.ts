@@ -57,6 +57,24 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
 
     constructor(props: MMapWaypointInputProps) {
         super(props, {container: true});
+
+        this._suggestComponent = new MMapSuggest({
+            suggest: this._props.suggest,
+            setSearchInputValue: (text) => {
+                this._inputEl.value = text;
+            },
+            onSuggestClick: (params: SearchParams) => {
+                this._inputEl.value = params.text;
+                this._submitWaypointInput();
+            }
+        });
+
+        this._mapListener = new mappable.MMapListener({
+            onMouseMove: this._onMapMouseMove,
+            onMouseLeave: this._onMapMouseLeave,
+            onFastClick: this._onMapFastClick
+        });
+        this._addDirectChild(this._mapListener);
     }
 
     protected _onAttach(): void {
@@ -100,24 +118,6 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
 
         this._rootElement.appendChild(form);
         this._rootElement.appendChild(suggestContainer);
-
-        this._suggestComponent = new MMapSuggest({
-            suggest: this._props.suggest,
-            setSearchInputValue: (text) => {
-                this._inputEl.value = text;
-            },
-            onSuggestClick: (params: SearchParams) => {
-                this._inputEl.value = params.text;
-                this._submitWaypointInput();
-            }
-        });
-
-        this._mapListener = new mappable.MMapListener({
-            onMouseMove: this._onMapMouseMove,
-            onMouseLeave: this._onMapMouseLeave,
-            onFastClick: this._onMapFastClick
-        });
-        this._addDirectChild(this._mapListener);
 
         this._detachDom = mappable.useDomContext(this, this._rootElement, suggestContainer);
 
@@ -164,7 +164,7 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
 
     private _updateIndicatorStatus(status: 'empty' | 'focus' | 'setted'): void {
         this._indicator.innerHTML = '';
-        this._indicator.classList.toggle('_empty', status === 'empty');
+        this._indicator.classList.toggle('mappable--route-control_waypoint-input__indicator_empty', status === 'empty');
 
         switch (status) {
             case 'empty':
