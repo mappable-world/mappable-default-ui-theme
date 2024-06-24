@@ -59,9 +59,9 @@ class MMapSearchCommonControl extends mappable.MMapComplexEntity<MMapSearchContr
     private _updateSuggestComponent = () => {
         if (this._searchInput.value) {
             this._suggestComponent.update({searchInputValue: this._searchInput.value});
-            this.addChild(this._suggestComponent);
+            this._addDirectChild(this._suggestComponent);
         } else {
-            this.removeChild(this._suggestComponent);
+            this._removeDirectChild(this._suggestComponent);
         }
     };
 
@@ -81,7 +81,7 @@ class MMapSearchCommonControl extends mappable.MMapComplexEntity<MMapSearchContr
         } else if (event.type === 'blur') {
             // add a check so that the function does not work if you click on the element of the suggest
             if (event.relatedTarget !== this._suggestComponent?.activeSuggest) {
-                this.removeChild(this._suggestComponent);
+                this._removeDirectChild(this._suggestComponent);
             }
         }
     };
@@ -209,7 +209,7 @@ class MMapSearchCommonControl extends mappable.MMapComplexEntity<MMapSearchContr
     }
 
     protected override _onDetach(): void {
-        this.removeChild(this._suggestComponent);
+        this._removeDirectChild(this._suggestComponent);
         this._suggestComponent = undefined;
 
         this._detachDom?.();

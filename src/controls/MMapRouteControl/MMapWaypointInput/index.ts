@@ -165,21 +165,21 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
     protected _onDetach(): void {
         this._detachDom?.();
         this._detachDom = undefined;
+        this._removeDirectChild(this._suggestComponent);
     }
 
     private _updateIndicatorStatus(status: 'empty' | 'focus' | 'setted'): void {
-        this._indicator.innerHTML = '';
         this._indicator.classList.toggle('mappable--route-control_waypoint-input__indicator_empty', status === 'empty');
 
         switch (status) {
             case 'empty':
-                this._indicator.insertAdjacentHTML('afterbegin', emptyIndicatorSVG);
+                this._indicator.innerHTML = emptyIndicatorSVG;
                 break;
             case 'focus':
-                this._indicator.insertAdjacentHTML('afterbegin', focusIndicatorSVG);
+                this._indicator.innerHTML = focusIndicatorSVG;
                 break;
             case 'setted':
-                this._indicator.insertAdjacentHTML('afterbegin', settedIndicatorSVG);
+                this._indicator.innerHTML = settedIndicatorSVG;
                 break;
         }
     }
@@ -196,7 +196,7 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
     }, 200);
 
     private _onFocusInput = (_event: FocusEvent) => {
-        this.addChild(this._suggestComponent);
+        this._addDirectChild(this._suggestComponent);
         this._updateIndicatorStatus('focus');
     };
 
@@ -206,7 +206,7 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
             return;
         }
         if (event.relatedTarget !== this._suggestComponent.activeSuggest) {
-            this.removeChild(this._suggestComponent);
+            this._removeDirectChild(this._suggestComponent);
         }
         if (event.relatedTarget === this._locationButton) {
             this._getGeolocation();
@@ -227,7 +227,7 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
         }
         const {uri, text} = this._suggestComponent.activeSuggest.dataset;
         this._search({uri, text});
-        this.removeChild(this._suggestComponent);
+        this._removeDirectChild(this._suggestComponent);
         this._inputEl.blur();
     };
 
