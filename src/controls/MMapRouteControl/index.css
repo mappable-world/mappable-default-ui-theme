@@ -3,7 +3,7 @@
     flex-direction: column;
     gap: 4px;
 
-    &._bottom {
+    &.mappable--route-control_bottom {
         flex-direction: column-reverse;
     }
 
@@ -44,7 +44,7 @@
         0px 4px 12px 0px rgba(95, 105, 131, 0.1),
         0px 4px 24px 0px rgba(95, 105, 131, 0.04);
 
-    &.error {
+    &.mappable--route-control_info__error {
         padding: 20px 16px;
         flex-direction: column;
         align-items: center;

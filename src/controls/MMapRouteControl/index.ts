@@ -140,7 +140,7 @@ class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControl
             () => {
                 const controlCtx = this._consumeContext(mappable.ControlContext);
                 const [verticalPosition] = controlCtx.position;
-                this._rootElement.classList.toggle('_bottom', verticalPosition === 'bottom');
+                this._rootElement.classList.toggle('mappable--route-control_bottom', verticalPosition === 'bottom');
             },
             {immediate: true}
         );
@@ -221,7 +221,7 @@ class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControl
         const type = this._routeMode;
         const params = {points, type, truck: type === 'truck' ? this._props.truckParameters : undefined};
 
-        this._routeInfoElement.classList.remove('error');
+        this._routeInfoElement.classList.remove('mappable--route-control_info__error');
         this._routeInfoElement.replaceChildren(createLoadingSpinner());
         this._rootElement.appendChild(this._routeInfoElement);
 
@@ -233,12 +233,12 @@ class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControl
                 this._routeInfoElement.replaceChildren(...this._getRouteDetails(response[0]));
             } else {
                 this._props.onBuildRouteError?.();
-                this._routeInfoElement.classList.add('error');
+                this._routeInfoElement.classList.add('mappable--route-control_info__error');
                 this._routeInfoElement.replaceChildren(...createRouteNoBuildError());
             }
         } catch (error) {
             this._props.onBuildRouteError?.();
-            this._routeInfoElement.classList.add('error');
+            this._routeInfoElement.classList.add('mappable--route-control_info__error');
             this._routeInfoElement.replaceChildren(...createRouteServerError(() => this._route()));
         }
     }
