@@ -72,7 +72,12 @@ export class MMapRouteControl extends mappable.MMapComplexEntity<MMapRouteContro
         this._router = new MMapCommonRouteControl(this._props);
 
         this._control.addChild(this._router);
-        this.addChild(this._control);
+
+        this._addDirectChild(this._control);
+    }
+
+    protected _onDetach(): void {
+        this._removeDirectChild(this._control);
     }
 }
 
@@ -152,6 +157,9 @@ class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControl
     protected _onDetach(): void {
         this._detachDom?.();
         this._detachDom = undefined;
+
+        this.removeChild(this._waypointInputFromElement);
+        this.removeChild(this._waypointInputToElement);
     }
 
     private _createWaypointInput(type: MMapWaypointInputProps['type'], waypoint?: LngLat): MMapWaypointInput {
