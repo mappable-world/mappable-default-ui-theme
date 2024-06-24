@@ -30,13 +30,17 @@ export type SelectWaypointArgs = {
 export type MMapWaypointInputProps = {
     type: 'from' | 'to';
     waypoint?: LngLat | null;
+    geolocationTextInput?: string;
     search?: ({params, map}: CustomSearch) => Promise<SearchResponse> | SearchResponse;
     suggest?: (args: CustomSuggest) => Promise<SuggestResponse> | SuggestResponse;
     onSelectWaypoint?: (args: SelectWaypointArgs | null) => void;
     onMouseMoveOnMap?: (coordinates: LngLat, lastCall: boolean) => void;
 };
 
-export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointInputProps> {
+const defaultProps = Object.freeze({geolocationTextInput: 'My location'});
+
+export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointInputProps, typeof defaultProps> {
+    static defaultProps = defaultProps;
     private _detachDom?: DomDetach;
     private _suggestComponent?: MMapSuggest;
 
@@ -240,7 +244,7 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
     };
 
     private async _getGeolocation() {
-        const text = 'My location';
+        const text = this._props.geolocationTextInput;
         this._inputEl.value = text;
 
         const position = await mappable.geolocation.getPosition();

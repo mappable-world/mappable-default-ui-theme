@@ -32,6 +32,9 @@ export type CustomRoute = {
 };
 
 export type MMapRouteControlProps = {
+    geolocationTextInput?: string;
+    clearFieldsText?: string;
+    changeOrderText?: string;
     availableTypes?: AvailableTypes[];
     truckParameters?: TruckParameters;
     waypoints?: [LngLat | null, LngLat | null];
@@ -44,7 +47,12 @@ export type MMapRouteControlProps = {
     onBuildRouteError?: () => void;
 };
 
-const defaultProps = Object.freeze({availableTypes: ['driving', 'truck', 'walking', 'transit']});
+const defaultProps = Object.freeze({
+    geolocationTextInput: 'My location',
+    clearFieldsText: 'Clear all',
+    changeOrderText: 'Change the order',
+    availableTypes: ['driving', 'truck', 'walking', 'transit']
+});
 type DefaultProps = typeof defaultProps;
 
 export class MMapRouteControl extends mappable.MMapComplexEntity<MMapRouteControlProps, DefaultProps> {
@@ -106,7 +114,10 @@ class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControl
         this._waypointInputFromElement = this._createWaypointInput('from', this._props.waypoints?.[0] ?? undefined);
         this._waypointInputToElement = this._createWaypointInput('to', this._props.waypoints?.[1] ?? undefined);
 
-        const {container, changeOrderButton, clearFieldsButton} = createActionsContainer();
+        const {container, changeOrderButton, clearFieldsButton} = createActionsContainer({
+            clearFieldsText: this._props.clearFieldsText,
+            changeOrderText: this._props.changeOrderText
+        });
         changeOrderButton.addEventListener('click', this._changeOrder);
         clearFieldsButton.addEventListener('click', this._clearAll);
         this._actionsContainerElement = container;
@@ -143,9 +154,11 @@ class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControl
 
     private _createWaypointInput(type: MMapWaypointInputProps['type'], waypoint?: LngLat): MMapWaypointInput {
         const waypointIndex = type === 'from' ? 0 : 1;
+        const {geolocationTextInput, onMouseMoveOnMap} = this._props;
         return new MMapWaypointInput({
             type,
             waypoint,
+            geolocationTextInput: geolocationTextInput,
             onSelectWaypoint: (result) => {
                 if (result === null) {
                     this._waypoints[waypointIndex] = null;
@@ -158,7 +171,7 @@ class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControl
                 this._onUpdateWaypoints(feature, waypointIndex);
             },
             onMouseMoveOnMap: (coordinates, lastCall) => {
-                this._props.onMouseMoveOnMap?.(coordinates, waypointIndex, lastCall);
+                onMouseMoveOnMap?.(coordinates, waypointIndex, lastCall);
             }
         });
     }

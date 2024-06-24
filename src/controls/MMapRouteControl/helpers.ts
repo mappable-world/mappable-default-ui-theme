@@ -54,18 +54,18 @@ export function createSegmentedControl(availableTypes: AvailableTypes[]): HTMLEl
     return element;
 }
 
-export function createActionsContainer() {
+export function createActionsContainer(options: {clearFieldsText: string; changeOrderText: string}) {
     const container = document.createElement('mappable');
     container.classList.add('mappable--route-control_actions');
 
     const changeOrderButton = document.createElement('button');
     changeOrderButton.insertAdjacentHTML('afterbegin', changeOrderSVG);
     const changeOrderButtonLabel = document.createElement('span');
-    changeOrderButtonLabel.textContent = 'Change the order';
+    changeOrderButtonLabel.textContent = options.changeOrderText;
     changeOrderButton.appendChild(changeOrderButtonLabel);
 
     const clearFieldsButton = document.createElement('button');
-    clearFieldsButton.textContent = 'Clear all';
+    clearFieldsButton.textContent = options.clearFieldsText;
 
     container.appendChild(changeOrderButton);
     container.appendChild(clearFieldsButton);
