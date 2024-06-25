@@ -289,6 +289,7 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
     private _onMapFastClick = (object: DomEventHandlerObject, event: DomEvent): void => {
         if (this._isInputFocused) {
             this._isHoverMode = false;
+            this._props.onMouseMoveOnMap?.(event.coordinates, true);
             this._inputEl.blur();
             this._search({text: event.coordinates.toString()}, event.coordinates);
         }

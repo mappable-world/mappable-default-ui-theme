@@ -19,10 +19,10 @@ async function main() {
 
     const {MMapRouteControl, MMapDefaultMarker} = await mappable.import('@mappable-world/mappable-default-ui-theme');
 
-    map = new MMap(document.getElementById('app'), {location: LOCATION, margin: [20, 20, 20, 20]});
-
-    map.addChild(new MMapDefaultSchemeLayer({}));
-    map.addChild(new MMapDefaultFeaturesLayer({}));
+    map = new MMap(document.getElementById('app'), {location: LOCATION, margin: [20, 20, 20, 20]}, [
+        new MMapDefaultSchemeLayer({}),
+        new MMapDefaultFeaturesLayer({})
+    ]);
 
     const fromPoint: MMapDefaultMarker = new MMapDefaultMarker({
         coordinates: map.center as LngLat,
@@ -32,7 +32,10 @@ async function main() {
         coordinates: map.center as LngLat,
         ...TO_POINT_STYLE
     });
-    let previewPoint: MMapDefaultMarker;
+    let previewPoint: MMapDefaultMarker = new MMapDefaultMarker({
+        coordinates: map.center as LngLat,
+        ...PREVIEW_POINT_STYLE
+    });
 
     let featuresOnMap: MMapFeature[] = [];
 
@@ -58,35 +61,24 @@ async function main() {
                     if (from) {
                         const {coordinates} = from.geometry;
                         fromPoint.update({coordinates});
-                        if (!map.children.includes(fromPoint)) {
-                            map.addChild(fromPoint);
-                        }
+                        map.addChild(fromPoint);
                     } else {
-                        if (map.children.includes(fromPoint)) {
-                            map.removeChild(fromPoint);
-                        }
+                        map.removeChild(fromPoint);
                     }
 
                     if (to) {
                         const {coordinates} = to.geometry;
                         toPoint.update({coordinates});
-                        if (!map.children.includes(toPoint)) {
-                            map.addChild(toPoint);
-                        }
+                        map.addChild(toPoint);
                     } else {
-                        if (map.children.includes(toPoint)) {
-                            map.removeChild(toPoint);
-                        }
+                        map.removeChild(toPoint);
+                    }
+                    if (!to && !from) {
+                        featuresOnMap.forEach((f) => map.removeChild(f));
+                        featuresOnMap = [];
                     }
                 },
                 onMouseMoveOnMap(coordinates, index, lastCall) {
-                    if (!previewPoint) {
-                        previewPoint = new MMapDefaultMarker({
-                            coordinates,
-                            ...PREVIEW_POINT_STYLE
-                        });
-                    }
-
                     if (!lastCall) {
                         previewPoint.update({coordinates});
 
@@ -95,7 +87,6 @@ async function main() {
                         }
                     } else {
                         map.removeChild(previewPoint);
-                        previewPoint = undefined;
                     }
                 }
             })
