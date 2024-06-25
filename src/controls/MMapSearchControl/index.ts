@@ -24,7 +24,7 @@ export type CustomSuggest = {
     map: MMap;
 };
 
-type CustomSearch = {
+export type CustomSearch = {
     params: SearchParams;
     map: MMap;
 };
@@ -46,6 +46,10 @@ class MMapSearchCommonControl extends mappable.MMapComplexEntity<MMapSearchContr
     private _unwatchControlContext?: () => void;
     private _isBottomOrder?: boolean;
 
+    constructor(props: MMapSearchControlProps) {
+        super(props, {container: true});
+    }
+
     private async _search(params: SearchParams) {
         const searchResult = (await this._props.search?.({params, map: this.root})) ?? (await mappable.search(params));
         this._props.searchResult(searchResult);
@@ -59,9 +63,9 @@ class MMapSearchCommonControl extends mappable.MMapComplexEntity<MMapSearchContr
     private _updateSuggestComponent = () => {
         if (this._searchInput.value) {
             this._suggestComponent.update({searchInputValue: this._searchInput.value});
-            this.addChild(this._suggestComponent);
+            this._addDirectChild(this._suggestComponent);
         } else {
-            this.removeChild(this._suggestComponent);
+            this._removeDirectChild(this._suggestComponent);
         }
     };
 
@@ -81,7 +85,7 @@ class MMapSearchCommonControl extends mappable.MMapComplexEntity<MMapSearchContr
         } else if (event.type === 'blur') {
             // add a check so that the function does not work if you click on the element of the suggest
             if (event.relatedTarget !== this._suggestComponent?.activeSuggest) {
-                this.removeChild(this._suggestComponent);
+                this._removeDirectChild(this._suggestComponent);
             }
         }
     };
@@ -209,7 +213,7 @@ class MMapSearchCommonControl extends mappable.MMapComplexEntity<MMapSearchContr
     }
 
     protected override _onDetach(): void {
-        this.removeChild(this._suggestComponent);
+        this._removeDirectChild(this._suggestComponent);
         this._suggestComponent = undefined;
 
         this._detachDom?.();
