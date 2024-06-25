@@ -237,6 +237,8 @@ class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControl
                 this._routeInfoElement.replaceChildren(...createRouteNoBuildError());
             }
         } catch (error) {
+            // eslint-disable-next-line no-console
+            console.error(error);
             this._props.onBuildRouteError?.();
             this._routeInfoElement.classList.add('mappable--route-control_info__error');
             this._routeInfoElement.replaceChildren(...createRouteServerError(() => this._route()));
