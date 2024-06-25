@@ -259,6 +259,10 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
 
     private async _search(params: SearchParams, reverseGeocodingCoordinate?: LngLat) {
         const searchResult = (await this._props.search?.({params, map: this.root})) ?? (await mappable.search(params));
+        if (searchResult.length === 0) {
+            return;
+        }
+
         const feature = searchResult[0];
         if (reverseGeocodingCoordinate) {
             this._inputEl.value = feature.properties.name;

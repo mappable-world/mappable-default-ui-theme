@@ -46,6 +46,10 @@ class MMapSearchCommonControl extends mappable.MMapComplexEntity<MMapSearchContr
     private _unwatchControlContext?: () => void;
     private _isBottomOrder?: boolean;
 
+    constructor(props: MMapSearchControlProps) {
+        super(props, {container: true});
+    }
+
     private async _search(params: SearchParams) {
         const searchResult = (await this._props.search?.({params, map: this.root})) ?? (await mappable.search(params));
         this._props.searchResult(searchResult);

@@ -64,7 +64,7 @@ export class MMapRouteControl extends mappable.MMapComplexEntity<MMapRouteContro
     private _router: MMapCommonRouteControl;
 
     constructor(props: MMapRouteControlProps) {
-        super(props);
+        super(props, {container: true});
     }
 
     protected _onAttach(): void {
@@ -244,6 +244,9 @@ class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControl
     }
 
     private _getRouteDetails(response: BaseRouteResponse): HTMLElement[] {
+        if (!response.toSteps) {
+            return [];
+        }
         const steps = response.toSteps();
         let totalLength = 0;
         let totalDuration = 0;
