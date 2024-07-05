@@ -1,3 +1,5 @@
-module.exports = {
-    plugins: [require('postcss-nested'), require('autoprefixer')]
+module.exports = (_api) => {
+    return {
+        plugins: ['postcss-nested', 'autoprefixer']
+    };
 };
