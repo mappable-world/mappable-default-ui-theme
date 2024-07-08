@@ -170,6 +170,8 @@ class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControl
             inputPlaceholder: this._props.waypointsPlaceholders[waypointIndex],
             waypoint,
             geolocationTextInput: geolocationTextInput,
+            search: this._props.search,
+            suggest: this._props.suggest,
             onSelectWaypoint: (result) => {
                 if (result === null) {
                     this._waypoints[waypointIndex] = null;
