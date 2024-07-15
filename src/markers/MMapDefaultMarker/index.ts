@@ -32,6 +32,13 @@ const HINT_SUBTITLE_CLASS = 'mappable--hint-subtitle';
 const HINT_STABLE = 'mappable--hint__stable';
 const HINT_HOVERED = 'mappable--hint__hovered';
 
+const NORMAL_SIZE_MARKER_HEIGHT = 59;
+const NORMAL_SIZE_MARKER_WIDTH = 44;
+
+const SMALL_SIZE_MARKER_WIDTH = 24;
+
+const MICRO_SIZE_MARKER_WIDTH = 14;
+
 const DISTANCE_BETWEEN_POPUP_AND_MARKER = 8;
 
 export type ThemesColor = {day: string; night: string};
@@ -302,19 +309,19 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
                 const popupPosition = this._props.popup.position ?? 'top';
 
                 if (popupPosition.includes('top')) {
-                    offset = 59 + DISTANCE_BETWEEN_POPUP_AND_MARKER;
+                    offset = NORMAL_SIZE_MARKER_HEIGHT + DISTANCE_BETWEEN_POPUP_AND_MARKER;
                 } else if (popupPosition.includes('bottom')) {
                     offset = DISTANCE_BETWEEN_POPUP_AND_MARKER;
                 } else {
-                    offset = 44 / 2 + DISTANCE_BETWEEN_POPUP_AND_MARKER;
+                    offset = NORMAL_SIZE_MARKER_WIDTH / 2 + DISTANCE_BETWEEN_POPUP_AND_MARKER;
                 }
 
                 break;
             case 'small':
-                offset = 24 / 2 + DISTANCE_BETWEEN_POPUP_AND_MARKER;
+                offset = SMALL_SIZE_MARKER_WIDTH / 2 + DISTANCE_BETWEEN_POPUP_AND_MARKER;
                 break;
             case 'micro':
-                offset = 14 / 2 + DISTANCE_BETWEEN_POPUP_AND_MARKER;
+                offset = MICRO_SIZE_MARKER_WIDTH / 2 + DISTANCE_BETWEEN_POPUP_AND_MARKER;
                 break;
         }
         return offset;
