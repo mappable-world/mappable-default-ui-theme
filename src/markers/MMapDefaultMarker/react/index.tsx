@@ -29,7 +29,7 @@ export const MMapDefaultMarkerReactifyOverride: CustomReactify<MMapDefaultMarker
         const [popupElement] = React.useState(document.createElement('mappable'));
         const [content, setContent] = React.useState<React.ReactElement>();
 
-        const popupContent = React.useMemo(() => {
+        const popup = React.useMemo(() => {
             if (props.popup === undefined) {
                 return undefined;
             }
@@ -40,12 +40,12 @@ export const MMapDefaultMarkerReactifyOverride: CustomReactify<MMapDefaultMarker
                 setContent(props.popup.content());
             }
 
-            return () => popupElement;
-        }, [props.popup.content, popupElement]);
+            return {...props.popup, content: () => popupElement};
+        }, [props.popup, popupElement]);
 
         return (
             <>
-                <MMapDefaultMarkerReactified {...props} popup={{...props.popup, content: popupContent}} ref={ref} />
+                <MMapDefaultMarkerReactified {...props} popup={popup} ref={ref} />
                 {ReactDOM.createPortal(content, popupElement)}
             </>
         );

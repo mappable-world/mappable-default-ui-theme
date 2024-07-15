@@ -55,12 +55,12 @@ export const MMapDefaultMarkerVuefyOverride: CustomVuefyFn<MMapDefaultMarker> = 
             const markerRef = Vue.ref<{entity: MMapDefaultMarker} | null>(null);
             const markerEntity = Vue.computed(() => markerRef.value?.entity);
 
-            const popupContent = Vue.computed<MMapDefaultMarkerProps['popup']['content']>(() => {
+            const popup = Vue.computed<MMapDefaultMarkerProps['popup']>(() => {
                 if (slots.popupContent === undefined) {
                     return undefined;
                 }
                 content.value = slots.popupContent();
-                return () => popupHTMLElement;
+                return {...props.popup, content: () => popupHTMLElement};
             });
             expose({entity: markerEntity});
             return () =>
@@ -68,7 +68,7 @@ export const MMapDefaultMarkerVuefyOverride: CustomVuefyFn<MMapDefaultMarker> = 
                     MMapDefaultMarkerV,
                     {
                         ...props,
-                        popup: {...props.popup, content: popupContent.value},
+                        popup: popup.value,
                         ref: markerRef
                     },
                     () => Vue.h(Vue.Teleport, {to: popupHTMLElement}, [content.value])
