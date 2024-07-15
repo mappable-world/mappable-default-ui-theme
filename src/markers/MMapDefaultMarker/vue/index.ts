@@ -43,11 +43,10 @@ export const MMapDefaultMarkerVuefyOverride: CustomVuefyFn<MMapDefaultMarker> = 
     {vuefy, Vue}
 ) => {
     const MMapDefaultMarkerV = vuefy.entity(MMapDefaultMarkerI);
-    const {popup, ...overridedProps} = props;
 
     return Vue.defineComponent({
         name: 'MMapDefaultMarker',
-        props: overridedProps,
+        props,
         slots: Object as TVue.SlotsType<MMapDefaultMarkerSlots>,
         setup(props, {slots, expose}) {
             const content: TVue.Ref<TVue.VNodeChild | null> = Vue.ref(null);
@@ -56,12 +55,12 @@ export const MMapDefaultMarkerVuefyOverride: CustomVuefyFn<MMapDefaultMarker> = 
             const markerRef = Vue.ref<{entity: MMapDefaultMarker} | null>(null);
             const markerEntity = Vue.computed(() => markerRef.value?.entity);
 
-            const popup = Vue.computed<MMapDefaultMarkerProps['popup']>(() => {
+            const popupContent = Vue.computed<MMapDefaultMarkerProps['popup']['content']>(() => {
                 if (slots.popupContent === undefined) {
                     return undefined;
                 }
                 content.value = slots.popupContent();
-                return {content: () => popupHTMLElement};
+                return () => popupHTMLElement;
             });
             expose({entity: markerEntity});
             return () =>
@@ -69,7 +68,7 @@ export const MMapDefaultMarkerVuefyOverride: CustomVuefyFn<MMapDefaultMarker> = 
                     MMapDefaultMarkerV,
                     {
                         ...props,
-                        popup: popup.value,
+                        popup: {...props.popup, content: popupContent.value},
                         ref: markerRef
                     },
                     () => Vue.h(Vue.Teleport, {to: popupHTMLElement}, [content.value])

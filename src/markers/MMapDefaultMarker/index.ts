@@ -1,6 +1,6 @@
 import {LngLat, MMapMarker, MMapMarkerProps} from '@mappable-world/mappable-types';
 import {IconColor, IconName, iconColors, icons} from '../../icons';
-import {MMapPopupContentProps, MMapPopupMarker} from '../MMapPopupMarker';
+import {MMapPopupMarkerProps, MMapPopupMarker} from '../MMapPopupMarker';
 import {MMapDefaultMarkerReactifyOverride} from './react';
 import {MMapDefaultMarkerVuefyOptions, MMapDefaultMarkerVuefyOverride} from './vue';
 
@@ -37,10 +37,7 @@ const DISTANCE_BETWEEN_POPUP_AND_MARKER = 8;
 export type ThemesColor = {day: string; night: string};
 export type MarkerColorProps = IconColor | ThemesColor;
 export type MarkerSizeProps = 'normal' | 'small' | 'micro';
-export type MarkerPopupProps = {
-    /** The function of creating popup content */
-    content: MMapPopupContentProps;
-};
+export type MarkerPopupProps = Omit<MMapPopupMarkerProps, keyof MMapMarkerProps>;
 
 export type MMapDefaultMarkerProps = MMapMarkerProps & {
     iconName?: IconName;
@@ -212,8 +209,8 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
         return new MMapPopupMarker({
             ...this._props,
             ...this._props.popup,
-            offset: this._getPopupOffset(),
-            show: false,
+            show: this._props.popup.show ?? false,
+            offset: this._props.popup.offset ?? this._getPopupOffset(),
             zIndex: 1000
         });
     }
@@ -302,7 +299,16 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
         let offset: number;
         switch (size) {
             case 'normal':
-                offset = 59 + DISTANCE_BETWEEN_POPUP_AND_MARKER;
+                const popupPosition = this._props.popup.position ?? 'top';
+
+                if (popupPosition.includes('top')) {
+                    offset = 59 + DISTANCE_BETWEEN_POPUP_AND_MARKER;
+                } else if (popupPosition.includes('bottom')) {
+                    offset = DISTANCE_BETWEEN_POPUP_AND_MARKER;
+                } else {
+                    offset = 44 / 2 + DISTANCE_BETWEEN_POPUP_AND_MARKER;
+                }
+
                 break;
             case 'small':
                 offset = 24 / 2 + DISTANCE_BETWEEN_POPUP_AND_MARKER;
