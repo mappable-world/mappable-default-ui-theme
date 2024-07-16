@@ -6,16 +6,13 @@ import type TVue from '@vue/runtime-core';
 
 export const MMapRouteControlVuefyOptions: CustomVuefyOptions<MMapRouteControl> = {
     props: {
-        geolocationTextInput: {type: String, default: 'My location'},
-        clearFieldsText: {type: String, default: 'Clear all'},
-        changeOrderText: {type: String, default: 'Change the order'},
-        availableTypes: {
-            type: Array as TVue.PropType<AvailableTypes[]>,
-            default: ['driving', 'truck', 'walking', 'transit']
-        },
+        geolocationTextInput: String,
+        clearFieldsText: String,
+        changeOrderText: String,
+        availableTypes: Array as TVue.PropType<AvailableTypes[]>,
         truckParameters: Object as TVue.PropType<TruckParameters>,
         waypoints: Array as unknown as TVue.PropType<[LngLat | null, LngLat | null]>,
-        waypointsPlaceholders: {type: Array as unknown as TVue.PropType<[string, string]>, default: ['From', 'To']},
+        waypointsPlaceholders: Array as unknown as TVue.PropType<[string, string]>,
         search: Function as TVue.PropType<MMapRouteControlProps['search']>,
         suggest: Function as TVue.PropType<MMapRouteControlProps['suggest']>,
         route: Function as TVue.PropType<MMapRouteControlProps['route']>,
