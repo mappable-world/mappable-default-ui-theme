@@ -54,7 +54,7 @@ async function main() {
             setFromCoords(from?.geometry?.coordinates);
             setToCoords(to?.geometry?.coordinates);
 
-            if (!from && !to) {
+            if (!from || !to) {
                 setShowFeature(false);
             }
             setPreviewCoords(undefined);

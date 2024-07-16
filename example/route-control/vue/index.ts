@@ -59,7 +59,7 @@ async function main() {
                 fromCoords.value = from?.geometry?.coordinates;
                 toCoords.value = to?.geometry?.coordinates;
 
-                if (!from && !to) {
+                if (!from || !to) {
                     showFeature.value = false;
                 }
                 previewCoords.value = undefined;
