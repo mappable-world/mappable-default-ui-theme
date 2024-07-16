@@ -1,6 +1,6 @@
 import {LngLat, MMapMarker, MMapMarkerProps} from '@mappable-world/mappable-types';
 import {IconColor, IconName, iconColors, icons} from '../../icons';
-import {MMapPopupContentProps, MMapPopupMarker} from '../MMapPopupMarker';
+import {MMapPopupMarkerProps, MMapPopupMarker} from '../MMapPopupMarker';
 import {MMapDefaultMarkerReactifyOverride} from './react';
 import {MMapDefaultMarkerVuefyOptions, MMapDefaultMarkerVuefyOverride} from './vue';
 
@@ -32,15 +32,19 @@ const HINT_SUBTITLE_CLASS = 'mappable--hint-subtitle';
 const HINT_STABLE = 'mappable--hint__stable';
 const HINT_HOVERED = 'mappable--hint__hovered';
 
+const NORMAL_SIZE_MARKER_HEIGHT = 59;
+const NORMAL_SIZE_MARKER_WIDTH = 44;
+
+const SMALL_SIZE_MARKER_WIDTH = 24;
+
+const MICRO_SIZE_MARKER_WIDTH = 14;
+
 const DISTANCE_BETWEEN_POPUP_AND_MARKER = 8;
 
 export type ThemesColor = {day: string; night: string};
 export type MarkerColorProps = IconColor | ThemesColor;
 export type MarkerSizeProps = 'normal' | 'small' | 'micro';
-export type MarkerPopupProps = {
-    /** The function of creating popup content */
-    content: MMapPopupContentProps;
-};
+export type MarkerPopupProps = Omit<MMapPopupMarkerProps, keyof MMapMarkerProps>;
 
 export type MMapDefaultMarkerProps = MMapMarkerProps & {
     iconName?: IconName;
@@ -212,8 +216,8 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
         return new MMapPopupMarker({
             ...this._props,
             ...this._props.popup,
-            offset: this._getPopupOffset(),
-            show: false,
+            show: this._props.popup.show ?? false,
+            offset: this._props.popup.offset ?? this._getPopupOffset(),
             zIndex: 1000
         });
     }
@@ -302,13 +306,22 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
         let offset: number;
         switch (size) {
             case 'normal':
-                offset = 59 + DISTANCE_BETWEEN_POPUP_AND_MARKER;
+                const popupPosition = this._props.popup.position ?? 'top';
+
+                if (popupPosition.includes('top')) {
+                    offset = NORMAL_SIZE_MARKER_HEIGHT + DISTANCE_BETWEEN_POPUP_AND_MARKER;
+                } else if (popupPosition.includes('bottom')) {
+                    offset = DISTANCE_BETWEEN_POPUP_AND_MARKER;
+                } else {
+                    offset = NORMAL_SIZE_MARKER_WIDTH / 2 + DISTANCE_BETWEEN_POPUP_AND_MARKER;
+                }
+
                 break;
             case 'small':
-                offset = 24 / 2 + DISTANCE_BETWEEN_POPUP_AND_MARKER;
+                offset = SMALL_SIZE_MARKER_WIDTH / 2 + DISTANCE_BETWEEN_POPUP_AND_MARKER;
                 break;
             case 'micro':
-                offset = 14 / 2 + DISTANCE_BETWEEN_POPUP_AND_MARKER;
+                offset = MICRO_SIZE_MARKER_WIDTH / 2 + DISTANCE_BETWEEN_POPUP_AND_MARKER;
                 break;
         }
         return offset;

@@ -1,13 +1,13 @@
 import {MMapEntity} from '@mappable-world/mappable-types';
 import {CustomReactify, OverrideProps, Prettify} from '@mappable-world/mappable-types/reactify/reactify';
 import type TReact from 'react';
-import {MMapDefaultMarkerProps, MMapDefaultMarker as MMapDefaultMarkerI} from '..';
+import {MMapDefaultMarkerProps, MarkerPopupProps, MMapDefaultMarker as MMapDefaultMarkerI} from '..';
 
 type MMapDefaultMarkerReactifiedProps = Prettify<
     OverrideProps<
         MMapDefaultMarkerProps,
         {
-            popup?: {
+            popup?: Omit<MarkerPopupProps, 'content'> & {
                 /** The function of creating popup content */
                 content: string | (() => TReact.ReactElement);
             };
@@ -29,7 +29,7 @@ export const MMapDefaultMarkerReactifyOverride: CustomReactify<MMapDefaultMarker
         const [popupElement] = React.useState(document.createElement('mappable'));
         const [content, setContent] = React.useState<React.ReactElement>();
 
-        const popupContent = React.useMemo(() => {
+        const popup = React.useMemo(() => {
             if (props.popup === undefined) {
                 return undefined;
             }
@@ -40,12 +40,12 @@ export const MMapDefaultMarkerReactifyOverride: CustomReactify<MMapDefaultMarker
                 setContent(props.popup.content());
             }
 
-            return {content: () => popupElement};
+            return {...props.popup, content: () => popupElement};
         }, [props.popup, popupElement]);
 
         return (
             <>
-                <MMapDefaultMarkerReactified {...props} popup={popupContent} ref={ref} />
+                <MMapDefaultMarkerReactified {...props} popup={popup} ref={ref} />
                 {ReactDOM.createPortal(content, popupElement)}
             </>
         );
