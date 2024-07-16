@@ -1,4 +1,4 @@
-import type {BaseRouteResponse, LngLat, MMapFeature, RouteOptions, Stroke} from '@mappable-world/mappable-types';
+import type {BaseRouteResponse, LngLat, MMapFeature, RouteOptions} from '@mappable-world/mappable-types';
 import type {MMapDefaultMarker} from '../../src';
 import {
     FROM_POINT_STYLE,
@@ -24,12 +24,25 @@ async function main() {
         new MMapDefaultFeaturesLayer({})
     ]);
 
+    const dragEndHandler = () => {
+        routeControl.update({
+            waypoints: [
+                map.children.includes(fromPoint) ? fromPoint.coordinates : null,
+                map.children.includes(toPoint) ? toPoint.coordinates : null
+            ]
+        });
+    };
+
     const fromPoint: MMapDefaultMarker = new MMapDefaultMarker({
         coordinates: map.center as LngLat,
+        onDragEnd: dragEndHandler,
+        draggable: true,
         ...FROM_POINT_STYLE
     });
     const toPoint: MMapDefaultMarker = new MMapDefaultMarker({
         coordinates: map.center as LngLat,
+        onDragEnd: dragEndHandler,
+        draggable: true,
         ...TO_POINT_STYLE
     });
     let previewPoint: MMapDefaultMarker = new MMapDefaultMarker({
@@ -39,59 +52,56 @@ async function main() {
 
     let featuresOnMap: MMapFeature[] = [];
 
-    map.addChild(
-        new MMapControls({position: 'top left'}).addChild(
-            new MMapRouteControl({
-                truckParameters: TRUCK_PARAMS,
-                waypoints: [map.center as LngLat, null],
-                onBuildRouteError() {
-                    featuresOnMap.forEach((f) => map.removeChild(f));
-                    featuresOnMap = [];
-                },
-                onRouteResult(result, type) {
-                    featuresOnMap.forEach((f) => map.removeChild(f));
-                    featuresOnMap = getFeatures(result, type);
-                    featuresOnMap.forEach((f) => map.addChild(f));
+    const routeControl = new MMapRouteControl({
+        truckParameters: TRUCK_PARAMS,
+        waypoints: [map.center as LngLat, null],
+        onBuildRouteError() {
+            featuresOnMap.forEach((f) => map.removeChild(f));
+            featuresOnMap = [];
+        },
+        onRouteResult(result, type) {
+            featuresOnMap.forEach((f) => map.removeChild(f));
+            featuresOnMap = getFeatures(result, type);
+            featuresOnMap.forEach((f) => map.addChild(f));
 
-                    const bounds = computeBoundsForPoints(result.toRoute().geometry.coordinates);
-                    map.update({location: {bounds, duration: 500}});
-                },
-                onUpdateWaypoints(waypoints) {
-                    const [from, to] = waypoints;
-                    if (from) {
-                        const {coordinates} = from.geometry;
-                        fromPoint.update({coordinates});
-                        map.addChild(fromPoint);
-                    } else {
-                        map.removeChild(fromPoint);
-                    }
+            const bounds = computeBoundsForPoints(result.toRoute().geometry.coordinates);
+            map.update({location: {bounds, duration: 500}});
+        },
+        onUpdateWaypoints(waypoints) {
+            const [from, to] = waypoints;
+            if (from) {
+                const {coordinates} = from.geometry;
+                fromPoint.update({coordinates});
+                map.addChild(fromPoint);
+            } else {
+                map.removeChild(fromPoint);
+            }
 
-                    if (to) {
-                        const {coordinates} = to.geometry;
-                        toPoint.update({coordinates});
-                        map.addChild(toPoint);
-                    } else {
-                        map.removeChild(toPoint);
-                    }
-                    if (!to && !from) {
-                        featuresOnMap.forEach((f) => map.removeChild(f));
-                        featuresOnMap = [];
-                    }
-                },
-                onMouseMoveOnMap(coordinates, index, lastCall) {
-                    if (!lastCall) {
-                        previewPoint.update({coordinates});
+            if (to) {
+                const {coordinates} = to.geometry;
+                toPoint.update({coordinates});
+                map.addChild(toPoint);
+            } else {
+                map.removeChild(toPoint);
+            }
+            if (!to || !from) {
+                featuresOnMap.forEach((f) => map.removeChild(f));
+                featuresOnMap = [];
+            }
+        },
+        onMouseMoveOnMap(coordinates, index, lastCall) {
+            if (!lastCall) {
+                previewPoint.update({coordinates});
 
-                        if (!map.children.includes(previewPoint)) {
-                            map.addChild(previewPoint);
-                        }
-                    } else {
-                        map.removeChild(previewPoint);
-                    }
+                if (!map.children.includes(previewPoint)) {
+                    map.addChild(previewPoint);
                 }
-            })
-        )
-    );
+            } else {
+                map.removeChild(previewPoint);
+            }
+        }
+    });
+    map.addChild(new MMapControls({position: 'top left'}).addChild(routeControl));
 
     const getFeatures = (result: BaseRouteResponse, type: RouteOptions['type']): MMapFeature[] => {
         if (type !== 'transit') {

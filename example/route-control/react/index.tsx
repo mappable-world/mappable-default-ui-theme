@@ -39,6 +39,7 @@ async function main() {
         const [fromCoords, setFromCoords] = React.useState<LngLat | undefined>();
         const [toCoords, setToCoords] = React.useState<LngLat | undefined>();
         const [previewCoords, setPreviewCoords] = React.useState<LngLat | undefined>();
+        const [waypoints, setWaypoints] = React.useState<[LngLat, LngLat]>([LOCATION.center, null]);
 
         const onRouteResult = React.useCallback((result: BaseRouteResponse, type: RouteOptions['type']) => {
             setRouteType(type);
@@ -53,7 +54,7 @@ async function main() {
             setFromCoords(from?.geometry?.coordinates);
             setToCoords(to?.geometry?.coordinates);
 
-            if (!from && !to) {
+            if (!from || !to) {
                 setShowFeature(false);
             }
             setPreviewCoords(undefined);
@@ -69,6 +70,20 @@ async function main() {
             },
             []
         );
+
+        const onDragEndHandler = React.useCallback(
+            (coordinates: LngLat, type: 'from' | 'to') => {
+                if (type === 'from') {
+                    setFromCoords(coordinates);
+                    setWaypoints([coordinates, toCoords]);
+                } else {
+                    setToCoords(coordinates);
+                    setWaypoints([fromCoords, coordinates]);
+                }
+            },
+            [fromCoords, toCoords]
+        );
+
         const features = React.useMemo(() => {
             if (!routeResult) {
                 return null;
@@ -96,7 +111,7 @@ async function main() {
                 <MMapControls position="top left">
                     <MMapRouteControl
                         truckParameters={TRUCK_PARAMS}
-                        waypoints={[LOCATION.center, null]}
+                        waypoints={waypoints}
                         onRouteResult={onRouteResult}
                         onUpdateWaypoints={onUpdateWaypoints}
                         onBuildRouteError={onBuildRouteError}
@@ -105,8 +120,22 @@ async function main() {
                 </MMapControls>
 
                 {showFeature && features}
-                {fromCoords !== undefined && <MMapDefaultMarker coordinates={fromCoords} {...FROM_POINT_STYLE} />}
-                {toCoords !== undefined && <MMapDefaultMarker coordinates={toCoords} {...TO_POINT_STYLE} />}
+                {fromCoords !== undefined && (
+                    <MMapDefaultMarker
+                        coordinates={fromCoords}
+                        draggable
+                        onDragEnd={(coordinates) => onDragEndHandler(coordinates, 'from')}
+                        {...FROM_POINT_STYLE}
+                    />
+                )}
+                {toCoords !== undefined && (
+                    <MMapDefaultMarker
+                        coordinates={toCoords}
+                        draggable
+                        onDragEnd={(coordinates) => onDragEndHandler(coordinates, 'to')}
+                        {...TO_POINT_STYLE}
+                    />
+                )}
                 {previewCoords !== undefined && (
                     <MMapDefaultMarker coordinates={previewCoords} {...PREVIEW_POINT_STYLE} />
                 )}

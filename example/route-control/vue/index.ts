@@ -42,6 +42,7 @@ async function main() {
             const fromCoords = Vue.ref<LngLat | undefined>();
             const toCoords = Vue.ref<LngLat | undefined>();
             const previewCoords = Vue.ref<LngLat | undefined>();
+            const waypoints = Vue.ref<[LngLat, LngLat]>([LOCATION.center, null]);
 
             const refMap = (ref: any) => {
                 window.map = ref?.entity;
@@ -58,7 +59,7 @@ async function main() {
                 fromCoords.value = from?.geometry?.coordinates;
                 toCoords.value = to?.geometry?.coordinates;
 
-                if (!from && !to) {
+                if (!from || !to) {
                     showFeature.value = false;
                 }
                 previewCoords.value = undefined;
@@ -68,6 +69,13 @@ async function main() {
             };
             const onMouseMoveOnMap: MMapRouteControlProps['onMouseMoveOnMap'] = (coordinates, index, lastCall) => {
                 previewCoords.value = lastCall ? undefined : coordinates;
+            };
+            const onDragEndHandler = (coordinates: LngLat, type: 'from' | 'to') => {
+                if (type === 'from') {
+                    waypoints.value = [coordinates, toCoords.value];
+                } else {
+                    waypoints.value = [fromCoords.value, coordinates];
+                }
             };
             const features = Vue.computed(() => {
                 if (!routeResult) {
@@ -105,11 +113,13 @@ async function main() {
                 fromCoords,
                 toCoords,
                 previewCoords,
+                waypoints,
                 features,
                 onRouteResult,
                 onUpdateWaypoints,
                 onBuildRouteError,
                 onMouseMoveOnMap,
+                onDragEndHandler,
                 refMap
             };
         },
@@ -120,7 +130,7 @@ async function main() {
                 <MMapControls position="top left">
                     <MMapRouteControl 
                         :truckParameters="TRUCK_PARAMS"
-                        :waypoints="[LOCATION.center, null]"
+                        :waypoints="waypoints"
                         :onRouteResult="onRouteResult"
                         :onUpdateWaypoints="onUpdateWaypoints"
                         :onBuildRouteError="onBuildRouteError"
@@ -133,10 +143,16 @@ async function main() {
                 </template>
                 <MMapDefaultMarker 
                     v-if="fromCoords !== undefined"
-                    :coordinates="fromCoords" v-bind="FROM_POINT_STYLE" />
+                    :coordinates="fromCoords" 
+                    draggable
+                    :onDragEnd="(coordinates) => onDragEndHandler(coordinates, 'from')"
+                    v-bind="FROM_POINT_STYLE" />
                 <MMapDefaultMarker 
                     v-if="toCoords !== undefined"
-                    :coordinates="toCoords" v-bind="TO_POINT_STYLE" />
+                    :coordinates="toCoords" 
+                    draggable
+                    :onDragEnd="(coordinates) => onDragEndHandler(coordinates, 'to')"
+                    v-bind="TO_POINT_STYLE" />
                 <MMapDefaultMarker 
                     v-if="previewCoords !== undefined"
                     :coordinates="previewCoords" v-bind="PREVIEW_POINT_STYLE" />
