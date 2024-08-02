@@ -206,6 +206,8 @@ class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControl
     private _clearAll = () => {
         this._waypointInputToElement.update({waypoint: null});
         this._waypointInputFromElement.update({waypoint: null});
+        this._routeInfoElement.replaceChildren();
+        this._rootElement.removeChild(this._routeInfoElement);
     };
 
     private _changeOrder = () => {
