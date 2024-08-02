@@ -60,6 +60,10 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
         return document.activeElement === this._inputEl;
     }
 
+    public triggerFocus(): void {
+        this._inputEl.focus();
+    }
+
     constructor(props: MMapWaypointInputProps) {
         super(props, {container: true});
 

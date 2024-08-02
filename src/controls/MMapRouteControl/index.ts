@@ -1,4 +1,3 @@
-import debounce from 'lodash/debounce';
 import {
     BaseRouteResponse,
     DomDetach,
@@ -10,6 +9,9 @@ import {
     SuggestResponse
 } from '@mappable-world/mappable-types';
 import {RouteOptions, TruckParameters} from '@mappable-world/mappable-types/imperative/route';
+import {CustomVuefyOptions} from '@mappable-world/mappable-types/modules/vuefy';
+import type TVue from '@vue/runtime-core';
+import debounce from 'lodash/debounce';
 import {CustomSearch, CustomSuggest} from '../MMapSearchControl';
 import {MMapWaypointInput, MMapWaypointInputProps, SelectWaypointArgs} from './MMapWaypointInput';
 import {
@@ -22,7 +24,6 @@ import {
 } from './helpers';
 import './index.css';
 import {formatDistance, formatDuration} from './utils';
-import {MMapRouteControlVuefyOptions} from './vue';
 
 export type WaypointsArray = Array<SelectWaypointArgs['feature'] | null>;
 
@@ -41,6 +42,7 @@ export type MMapRouteControlProps = {
     truckParameters?: TruckParameters;
     waypoints?: [LngLat | null, LngLat | null];
     waypointsPlaceholders?: [string, string];
+    autofocus?: boolean;
     search?: (args: CustomSearch) => Promise<SearchResponse> | SearchResponse;
     suggest?: (args: CustomSuggest) => Promise<SuggestResponse> | SuggestResponse;
     route?: (args: CustomRoute) => Promise<BaseRouteResponse[]> | BaseRouteResponse[];
@@ -55,9 +57,33 @@ const defaultProps = Object.freeze({
     clearFieldsText: 'Clear all',
     changeOrderText: 'Change the order',
     waypointsPlaceholders: ['From', 'To'],
-    availableTypes: ['driving', 'truck', 'walking', 'transit']
+    availableTypes: ['driving', 'truck', 'walking', 'transit'],
+    autofocus: true
 });
 type DefaultProps = typeof defaultProps;
+
+const MMapRouteControlVuefyOptions: CustomVuefyOptions<MMapRouteControl> = {
+    props: {
+        geolocationTextInput: String,
+        clearFieldsText: String,
+        changeOrderText: String,
+        availableTypes: Array as TVue.PropType<AvailableTypes[]>,
+        truckParameters: Object as TVue.PropType<TruckParameters>,
+        waypoints: Array as unknown as TVue.PropType<[LngLat | null, LngLat | null]>,
+        waypointsPlaceholders: Array as unknown as TVue.PropType<[string, string]>,
+        search: Function as TVue.PropType<MMapRouteControlProps['search']>,
+        suggest: Function as TVue.PropType<MMapRouteControlProps['suggest']>,
+        route: Function as TVue.PropType<MMapRouteControlProps['route']>,
+        onMouseMoveOnMap: Function as TVue.PropType<MMapRouteControlProps['onMouseMoveOnMap']>,
+        onUpdateWaypoints: Function as TVue.PropType<MMapRouteControlProps['onUpdateWaypoints']>,
+        onRouteResult: Function as TVue.PropType<MMapRouteControlProps['onRouteResult']>,
+        onBuildRouteError: Function as TVue.PropType<MMapRouteControlProps['onBuildRouteError']>,
+        autofocus: {
+            type: Boolean as TVue.PropType<MMapRouteControlProps['autofocus']>,
+            default: defaultProps.autofocus
+        }
+    }
+};
 
 export class MMapRouteControl extends mappable.MMapComplexEntity<MMapRouteControlProps, DefaultProps> {
     static defaultProps = defaultProps;
@@ -204,10 +230,12 @@ class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControl
     }
 
     private _clearAll = () => {
-        this._waypointInputToElement.update({waypoint: null});
         this._waypointInputFromElement.update({waypoint: null});
+        this._waypointInputToElement.update({waypoint: null});
         this._routeInfoElement.replaceChildren();
-        this._rootElement.removeChild(this._routeInfoElement);
+        if (this._routeInfoElement.parentElement === this._rootElement) {
+            this._rootElement.removeChild(this._routeInfoElement);
+        }
     };
 
     private _changeOrder = () => {
@@ -220,8 +248,20 @@ class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControl
         this._waypoints[index] = feature;
         this._props.onUpdateWaypoints?.(this._waypoints);
 
+        if (this._props.autofocus) {
+            this._autofocusNextInput(index);
+        }
+
         if (this._waypoints.every((point) => point !== null)) {
             this._route();
+        }
+    }
+
+    private _autofocusNextInput(index: number): void {
+        if (index === 0 && this._waypoints[1] === null) {
+            this._waypointInputToElement.triggerFocus();
+        } else if (index === 1 && this._waypoints[0] === null) {
+            this._waypointInputFromElement.triggerFocus();
         }
     }
 
