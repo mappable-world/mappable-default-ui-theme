@@ -14,7 +14,7 @@ const svgIcons: Record<AvailableTypes, string> = {
     transit: transitSVG
 };
 
-const AVAILABLE_TYPES: AvailableTypes[] = ['driving', 'truck', 'walking', 'transit'];
+const ALLOWED_TYPES: AvailableTypes[] = ['driving', 'truck', 'walking', 'transit'];
 
 export function createSegmentedControl(availableTypes: AvailableTypes[]): HTMLElement {
     const element = document.createElement('mappable');
@@ -30,7 +30,7 @@ export function createSegmentedControl(availableTypes: AvailableTypes[]): HTMLEl
 
     const options: {option: HTMLInputElement; label: HTMLLabelElement}[] = [];
     availableTypes.forEach((routeType) => {
-        if (!AVAILABLE_TYPES.includes(routeType)) {
+        if (!ALLOWED_TYPES.includes(routeType)) {
             return;
         }
         const option = document.createElement('input');
