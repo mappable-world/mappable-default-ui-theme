@@ -30,12 +30,19 @@ export type CustomSearch = {
 };
 
 type MMapSearchControlProps = {
+    placeholder?: string;
     search?: ({params, map}: CustomSearch) => Promise<SearchResponse> | SearchResponse;
     suggest?: ({text, map}: CustomSuggest) => Promise<SuggestResponse> | SuggestResponse;
     searchResult: (result: SearchResponse) => void;
 };
 
-class MMapSearchCommonControl extends mappable.MMapComplexEntity<MMapSearchControlProps> {
+const defaultProps = Object.freeze({
+    placeholder: 'Enter an address'
+});
+
+class MMapSearchCommonControl extends mappable.MMapComplexEntity<MMapSearchControlProps, typeof defaultProps> {
+    static defaultProps = defaultProps;
+
     private _detachDom?: DomDetach;
     private _rootElement?: HTMLElement;
     private _clearButton?: HTMLButtonElement;
@@ -169,7 +176,7 @@ class MMapSearchCommonControl extends mappable.MMapComplexEntity<MMapSearchContr
         this._searchInput.type = 'text';
         this._searchInput.autocomplete = 'off';
         this._searchInput.classList.add(SEARCH_CONTROL_INPUT_CLASS);
-        this._searchInput.placeholder = 'Enter an address';
+        this._searchInput.placeholder = this._props.placeholder;
         this._searchInput.addEventListener('input', this._onChangeSearchInput);
         this._searchInput.addEventListener('focus', this._onFocusBlurSearchInput);
         this._searchInput.addEventListener('blur', this._onFocusBlurSearchInput);
@@ -210,6 +217,12 @@ class MMapSearchCommonControl extends mappable.MMapComplexEntity<MMapSearchContr
             () => this._updateVerticalOrder(this._rootElement),
             {immediate: true}
         );
+    }
+
+    protected _onUpdate(props: Partial<MMapSearchControlProps>): void {
+        if (props.placeholder !== undefined) {
+            this._searchInput.placeholder = props.placeholder;
+        }
     }
 
     protected override _onDetach(): void {

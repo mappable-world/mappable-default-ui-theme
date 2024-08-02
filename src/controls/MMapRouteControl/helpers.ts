@@ -14,6 +14,8 @@ const svgIcons: Record<AvailableTypes, string> = {
     transit: transitSVG
 };
 
+const ALLOWED_TYPES: AvailableTypes[] = ['driving', 'truck', 'walking', 'transit'];
+
 export function createSegmentedControl(availableTypes: AvailableTypes[]): HTMLElement {
     const element = document.createElement('mappable');
     element.classList.add('mappable--route-control_modes');
@@ -22,14 +24,13 @@ export function createSegmentedControl(availableTypes: AvailableTypes[]): HTMLEl
     container.classList.add('mappable--route-control_modes__container');
     element.appendChild(container);
 
-    // TODO: Do it normally
     if (availableTypes.length < 1) {
         throw new Error('The route must contain at least one type of route.');
     }
 
     const options: {option: HTMLInputElement; label: HTMLLabelElement}[] = [];
-    (['driving', 'truck', 'walking', 'transit'] as AvailableTypes[]).forEach((routeType) => {
-        if (!availableTypes.includes(routeType)) {
+    availableTypes.forEach((routeType) => {
+        if (!ALLOWED_TYPES.includes(routeType)) {
             return;
         }
         const option = document.createElement('input');
