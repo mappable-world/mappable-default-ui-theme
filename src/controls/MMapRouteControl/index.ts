@@ -124,6 +124,8 @@ class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControl
     private _waypointInputFromElement: MMapWaypointInput;
     private _waypointInputToElement: MMapWaypointInput;
     private _actionsContainerElement: HTMLElement;
+    private _changeOrderButton: HTMLButtonElement;
+    private _clearFieldsButton: HTMLButtonElement;
 
     private _waypoints: WaypointsArray = [null, null];
 
@@ -158,8 +160,10 @@ class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControl
             clearFieldsText: this._props.clearFieldsText,
             changeOrderText: this._props.changeOrderText
         });
-        changeOrderButton.addEventListener('click', this._changeOrder);
-        clearFieldsButton.addEventListener('click', this._clearAll);
+        this._changeOrderButton = changeOrderButton;
+        this._changeOrderButton.addEventListener('click', this._changeOrder);
+        this._clearFieldsButton = clearFieldsButton;
+        this._clearFieldsButton.addEventListener('click', this._clearAll);
         this._actionsContainerElement = container;
         this._routeParametersElement.appendChild(this._actionsContainerElement);
 
@@ -188,9 +192,27 @@ class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControl
     }
 
     protected _onUpdate(diffProps: Partial<MMapRouteControlProps>): void {
-        if (diffProps.waypoints) {
+        if (diffProps.waypoints !== undefined) {
             this._waypointInputFromElement.update({waypoint: diffProps.waypoints[0]});
             this._waypointInputToElement.update({waypoint: diffProps.waypoints[1]});
+        }
+        if (diffProps.geolocationTextInput !== undefined) {
+            this._waypointInputFromElement.update({geolocationTextInput: diffProps.geolocationTextInput});
+            this._waypointInputToElement.update({geolocationTextInput: diffProps.geolocationTextInput});
+        }
+        if (diffProps.waypointsPlaceholders !== undefined) {
+            this._waypointInputFromElement.update({inputPlaceholder: diffProps.waypointsPlaceholders[0]});
+            this._waypointInputToElement.update({inputPlaceholder: diffProps.waypointsPlaceholders[1]});
+        }
+        if (diffProps.clearFieldsText !== undefined) {
+            this._clearFieldsButton.textContent = diffProps.clearFieldsText;
+        }
+        if (diffProps.changeOrderText !== undefined) {
+            this._changeOrderButton.textContent = diffProps.changeOrderText;
+        }
+        if (diffProps.availableTypes !== undefined) {
+            this._routeModesElement.replaceChildren(...createSegmentedControl(diffProps.availableTypes).children);
+            this._setRouteMode(diffProps.availableTypes[0]);
         }
     }
 
@@ -267,9 +289,13 @@ class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControl
 
     private _onUpdateRouteMode = (e: Event) => {
         const target = e.target as HTMLInputElement;
-        this._routeMode = target.value as RouteOptions['type'];
-        this._route();
+        this._setRouteMode(target.value as RouteOptions['type']);
     };
+
+    private _setRouteMode(mode: AvailableTypes): void {
+        this._routeMode = mode;
+        this._route();
+    }
 
     private _route = debounce(async () => {
         if (!this._waypoints.every((point) => point !== null)) {

@@ -155,7 +155,7 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
         }
     }
 
-    protected _onUpdate(): void {
+    protected _onUpdate(diffProps: Partial<MMapWaypointInputProps>): void {
         if (this._props.waypoint !== undefined) {
             if (this._props.waypoint === null) {
                 this._props.waypoint = undefined;
@@ -163,6 +163,10 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
             } else {
                 this._search({text: this._props.waypoint.toString()}, this._props.waypoint);
             }
+        }
+
+        if (diffProps.inputPlaceholder !== undefined) {
+            this._inputEl.placeholder = diffProps.inputPlaceholder;
         }
     }
 
