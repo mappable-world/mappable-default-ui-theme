@@ -34,11 +34,11 @@ class MMapSuggest extends mappable.MMapComplexEntity<MMapSuggestProps> {
     }
 
     private _updateSuggest(props: Partial<MMapSuggestProps>) {
-        if (props.searchInputValue) {
+        if (props.searchInputValue !== undefined) {
             this._updateSuggestList(props.searchInputValue);
         }
 
-        if (props.suggestNavigationAction) {
+        if (props.suggestNavigationAction !== undefined) {
             this._updateActiveSuggest(props.suggestNavigationAction);
         }
     }

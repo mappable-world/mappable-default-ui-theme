@@ -40,6 +40,9 @@ export type MMapWaypointInputProps = {
 
 const defaultProps = Object.freeze({geolocationTextInput: 'My location'});
 
+/**
+ * @internal
+ */
 export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointInputProps, typeof defaultProps> {
     static defaultProps = defaultProps;
     private _detachDom?: DomDetach;
@@ -194,6 +197,7 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
 
     private _resetInput() {
         this._inputEl.value = '';
+        this._suggestComponent.update({searchInputValue: ''});
         this._updateIndicatorStatus('empty');
         this._props.onSelectWaypoint(null);
     }
