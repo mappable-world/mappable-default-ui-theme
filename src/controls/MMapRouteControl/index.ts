@@ -192,6 +192,14 @@ class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControl
     }
 
     protected _onUpdate(diffProps: Partial<MMapRouteControlProps>): void {
+        if (diffProps.search !== undefined) {
+            this._waypointInputFromElement.update({search: diffProps.search});
+            this._waypointInputToElement.update({search: diffProps.search});
+        }
+        if (diffProps.suggest !== undefined) {
+            this._waypointInputFromElement.update({suggest: diffProps.suggest});
+            this._waypointInputToElement.update({suggest: diffProps.suggest});
+        }
         if (diffProps.waypoints !== undefined) {
             this._waypointInputFromElement.update({waypoint: diffProps.waypoints[0]});
             this._waypointInputToElement.update({waypoint: diffProps.waypoints[1]});
@@ -226,14 +234,14 @@ class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControl
 
     private _createWaypointInput(type: MMapWaypointInputProps['type'], waypoint?: LngLat): MMapWaypointInput {
         const waypointIndex = type === 'from' ? 0 : 1;
-        const {geolocationTextInput, onMouseMoveOnMap} = this._props;
+        const {geolocationTextInput, onMouseMoveOnMap, waypointsPlaceholders, search, suggest} = this._props;
         return new MMapWaypointInput({
             type,
-            inputPlaceholder: this._props.waypointsPlaceholders[waypointIndex],
+            inputPlaceholder: waypointsPlaceholders[waypointIndex],
             waypoint,
-            geolocationTextInput: geolocationTextInput,
-            search: this._props.search,
-            suggest: this._props.suggest,
+            geolocationTextInput,
+            search,
+            suggest,
             onSelectWaypoint: (result) => {
                 if (result === null) {
                     this._waypoints[waypointIndex] = null;
@@ -247,6 +255,11 @@ class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControl
             },
             onMouseMoveOnMap: (coordinates, lastCall) => {
                 onMouseMoveOnMap?.(coordinates, waypointIndex, lastCall);
+            },
+            onError: () => {
+                this._showServerError(() => {
+                    this._rootElement.removeChild(this._routeInfoElement);
+                });
             }
         });
     }
@@ -307,27 +320,33 @@ class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControl
 
         this._routeInfoElement.classList.remove('mappable--route-control_info__error');
         this._routeInfoElement.replaceChildren(createLoadingSpinner());
-        this._rootElement.appendChild(this._routeInfoElement);
 
         try {
             const response = (await this._props.route?.({params, map: this.root})) ?? (await mappable.route(params));
             const route = response[0].toRoute();
             if (route.geometry.coordinates.length !== 0) {
                 this._props.onRouteResult?.(response[0], this._routeMode);
+                this._rootElement.appendChild(this._routeInfoElement);
                 this._routeInfoElement.replaceChildren(...this._getRouteDetails(response[0]));
             } else {
                 this._props.onBuildRouteError?.();
+                this._rootElement.appendChild(this._routeInfoElement);
                 this._routeInfoElement.classList.add('mappable--route-control_info__error');
                 this._routeInfoElement.replaceChildren(...createRouteNoBuildError());
             }
         } catch (error) {
             // eslint-disable-next-line no-console
             console.error(error);
-            this._props.onBuildRouteError?.();
-            this._routeInfoElement.classList.add('mappable--route-control_info__error');
-            this._routeInfoElement.replaceChildren(...createRouteServerError(() => this._route()));
+            this._showServerError(() => this._route());
         }
     }, 200);
+
+    private _showServerError(onButtonClick: () => void) {
+        this._props.onBuildRouteError?.();
+        this._rootElement.appendChild(this._routeInfoElement);
+        this._routeInfoElement.classList.add('mappable--route-control_info__error');
+        this._routeInfoElement.replaceChildren(...createRouteServerError(onButtonClick));
+    }
 
     private _getRouteDetails(response: BaseRouteResponse): HTMLElement[] {
         if (!response.toSteps) {

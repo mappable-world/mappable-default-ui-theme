@@ -36,6 +36,7 @@ export type MMapWaypointInputProps = {
     suggest?: (args: CustomSuggest) => Promise<SuggestResponse> | SuggestResponse;
     onSelectWaypoint?: (args: SelectWaypointArgs | null) => void;
     onMouseMoveOnMap?: (coordinates: LngLat, lastCall: boolean) => void;
+    onError?: () => void;
 };
 
 const defaultProps = Object.freeze({geolocationTextInput: 'My location'});
@@ -289,6 +290,8 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
             // eslint-disable-next-line no-console
             console.error(error);
             this._updateIndicatorStatus('empty');
+            this._inputEl.value = '';
+            this._props.onError?.();
         }
     }
 
