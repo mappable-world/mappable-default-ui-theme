@@ -23,6 +23,8 @@ const INDICATOR_COLORS = {
     dark: {from: '#D6FD63', to: '#C8D2E6'}
 };
 
+const DELAY_BETWEEN_BLUR_AND_CLICK = 200;
+
 export type SelectWaypointArgs = {
     feature: SearchResponseFeature;
 };
@@ -60,9 +62,7 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
     private _isBottomPosition: boolean;
     private _isHoverMode = false;
 
-    private get _isInputFocused(): boolean {
-        return document.activeElement === this._inputEl;
-    }
+    private _isInputFocused: boolean = false;
 
     public triggerFocus(): void {
         this._inputEl.focus();
@@ -209,6 +209,7 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
     }, 200);
 
     private _onFocusInput = (_event: FocusEvent) => {
+        this._isInputFocused = true;
         this._addDirectChild(this._suggestComponent);
         this._updateIndicatorStatus('focus');
     };
@@ -230,6 +231,10 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
             return;
         }
         this._updateIndicatorStatus('empty');
+        // HACK: to check that input had focus before the click
+        setTimeout(() => {
+            this._isInputFocused = false;
+        }, DELAY_BETWEEN_BLUR_AND_CLICK);
     };
 
     private _submitWaypointInput = (event?: SubmitEvent) => {
@@ -312,6 +317,7 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
     private _onMapFastClick = (object: DomEventHandlerObject, event: DomEvent): void => {
         if (this._isInputFocused) {
             this._isHoverMode = false;
+            this._isInputFocused = false;
             this._props.onMouseMoveOnMap?.(event.coordinates, true);
             this._inputEl.blur();
             this._search({text: event.coordinates.toString()}, event.coordinates);
