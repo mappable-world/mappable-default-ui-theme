@@ -30,7 +30,7 @@ class MMapSuggest extends mappable.MMapComplexEntity<MMapSuggestProps> {
     private _unwatchControlContext?: () => void;
 
     public get activeSuggest() {
-        return this._getSuggestElements().find((element) => element.classList.contains(ACTIVE_CLASS));
+        return this._getSuggestElements().find((element) => element?.classList.contains(ACTIVE_CLASS));
     }
 
     private _updateSuggest(props: Partial<MMapSuggestProps>) {
