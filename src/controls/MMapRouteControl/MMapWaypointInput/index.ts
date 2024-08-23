@@ -117,11 +117,13 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
         form.appendChild(fieldButton);
 
         this._locationButton = document.createElement('button');
+        this._locationButton.addEventListener('mousedown', this._getGeolocation);
         this._locationButton.classList.add('mappable--route-control_waypoint-input__field-buttons__location');
         this._locationButton.insertAdjacentHTML('afterbegin', locationSVG);
         fieldButton.appendChild(this._locationButton);
 
         this._resetButton = document.createElement('button');
+        this._resetButton.addEventListener('mousedown', this._resetInput);
         this._resetButton.classList.add('mappable--route-control_waypoint-input__field-buttons__reset');
         this._resetButton.insertAdjacentHTML('afterbegin', resetSVG);
         fieldButton.appendChild(this._resetButton);
@@ -196,12 +198,12 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
         }
     }
 
-    private _resetInput() {
+    private _resetInput = () => {
         this._inputEl.value = '';
         this._suggestComponent.update({searchInputValue: ''});
         this._updateIndicatorStatus('empty');
         this._props.onSelectWaypoint(null);
-    }
+    };
 
     private _onUpdateWaypoint = debounce((e: Event) => {
         const target = e.target as HTMLInputElement;
@@ -222,14 +224,7 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
         if (event.relatedTarget !== this._suggestComponent.activeSuggest) {
             this._removeDirectChild(this._suggestComponent);
         }
-        if (event.relatedTarget === this._locationButton) {
-            this._getGeolocation();
-            return;
-        }
-        if (event.relatedTarget === this._resetButton) {
-            this._resetInput();
-            return;
-        }
+
         this._updateIndicatorStatus('empty');
         // HACK: to check that input had focus before the click
         setTimeout(() => {
@@ -262,7 +257,7 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
         }
     };
 
-    private async _getGeolocation() {
+    private _getGeolocation = async () => {
         const text = this._props.geolocationTextInput;
         this._inputEl.value = text;
 
@@ -273,7 +268,7 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
         };
         this._updateIndicatorStatus('setted');
         this._props.onSelectWaypoint({feature});
-    }
+    };
 
     private async _search(params: SearchParams, reverseGeocodingCoordinate?: LngLat) {
         try {
