@@ -54,17 +54,22 @@ export const MMapDefaultMarkerVuefyOverride: CustomVuefyFn<MMapDefaultMarker> = 
         props,
         slots: Object as TVue.SlotsType<MMapDefaultMarkerSlots>,
         setup(props, {slots, expose}) {
-            const content: TVue.Ref<TVue.VNodeChild | null> = Vue.ref(null);
+            const content: TVue.Ref<TVue.VNodeChild | string | null> = Vue.ref(null);
             const popupHTMLElement = document.createElement('mappable');
 
             const markerRef = Vue.ref<{entity: MMapDefaultMarker} | null>(null);
             const markerEntity = Vue.computed(() => markerRef.value?.entity);
 
             const popup = Vue.computed<MMapDefaultMarkerProps['popup']>(() => {
-                if (slots.popupContent === undefined) {
+                if (slots.popupContent === undefined && props.popup?.content === undefined) {
                     return undefined;
                 }
-                content.value = slots.popupContent();
+
+                if (typeof props.popup?.content === 'string') {
+                    content.value = props.popup.content;
+                } else {
+                    content.value = slots.popupContent?.();
+                }
                 return {...props.popup, content: () => popupHTMLElement};
             });
             expose({entity: markerEntity});
