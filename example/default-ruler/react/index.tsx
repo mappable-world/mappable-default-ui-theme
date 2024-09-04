@@ -8,19 +8,28 @@ async function main() {
     // To use the React version of the API, include the module @mappable-world/mappable-reactify
     const [mappableReact] = await Promise.all([mappable.import('@mappable-world/mappable-reactify'), mappable.ready]);
     const reactify = mappableReact.reactify.bindTo(React, ReactDOM);
-    const {MMap, MMapDefaultSchemeLayer} = reactify.module(mappable);
+    const {MMap, MMapDefaultSchemeLayer, MMapControls, MMapControlButton} = reactify.module(mappable);
     const {MMapDefaultRuler} = reactify.module(await mappable.import('@mappable-world/mappable-default-ui-theme'));
-    const {useState} = React;
+    const {useState, useCallback} = React;
 
     function App() {
-        const [location, setLocation] = useState(LOCATION);
+        const [location] = useState(LOCATION);
+        const [rulerCoordinates] = useState(RULER_COORDINATES);
+        const [editable, setEditable] = useState(true);
+
+        const switchEditable = useCallback(() => setEditable((editable) => !editable), []);
+        const onFinish = useCallback(() => setEditable(false), []);
 
         return (
             // Initialize the map and pass initialization parameters
             <MMap location={location} showScaleInCopyrights={true} ref={(x) => (map = x)}>
                 {/* Add a map scheme layer */}
                 <MMapDefaultSchemeLayer />
-                <MMapDefaultRuler type="ruler" points={RULER_COORDINATES} />
+                <MMapDefaultRuler type="ruler" points={rulerCoordinates} editable={editable} onFinish={onFinish} />
+
+                <MMapControls position="top right">
+                    <MMapControlButton onClick={switchEditable} text="Switch edit ruler" />
+                </MMapControls>
             </MMap>
         );
     }

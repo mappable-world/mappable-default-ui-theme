@@ -1,5 +1,7 @@
 import type {DrawingStyle} from '@mappable-world/mappable-types';
 import type {MMapRuler, MMapRulerProps} from '@mappable-world/mappable-types/modules/ruler';
+import {CustomVuefyOptions} from '@mappable-world/mappable-types/modules/vuefy';
+import type TVue from '@vue/runtime-core';
 import {createMMapElement} from '../common/utils';
 import markerDarkSVG from './icons/editor-point-dark.svg';
 import markerLightSVG from './icons/editor-point-light.svg';
@@ -17,8 +19,28 @@ const FILL_DARK = '#C8FF8012';
 export type MMapDefaultRulerProps = Pick<
     MMapRulerProps,
     'points' | 'zIndex' | 'editable' | 'onUpdate' | 'onUpdateEnd' | 'onUpdateStart' | 'source' | 'type'
->;
+> & {onFinish?: () => void};
+
+export const MMapDefaultRulerVuefyOptions: CustomVuefyOptions<MMapDefaultRuler> = {
+    props: {
+        type: String as TVue.PropType<MMapDefaultRulerProps['type']>,
+        points: Array as TVue.PropType<MMapDefaultRulerProps['points']>,
+        editable: {
+            type: Boolean as TVue.PropType<MMapDefaultRulerProps['editable']>,
+            default: undefined
+        },
+        source: String as TVue.PropType<MMapDefaultRulerProps['type']>,
+        zIndex: Number as TVue.PropType<MMapDefaultRulerProps['zIndex']>,
+        onUpdate: Function as TVue.PropType<MMapDefaultRulerProps['onUpdate']>,
+        onUpdateEnd: Function as TVue.PropType<MMapDefaultRulerProps['onUpdateEnd']>,
+        onUpdateStart: Function as TVue.PropType<MMapDefaultRulerProps['onUpdateStart']>,
+        onFinish: Function as TVue.PropType<MMapDefaultRulerProps['onFinish']>
+    }
+};
+
 export class MMapDefaultRuler extends mappable.MMapComplexEntity<MMapDefaultRulerProps> {
+    static [mappable.optionsKeyVuefy] = MMapDefaultRulerVuefyOptions;
+
     private _ruler!: MMapRuler;
     private _previewPoint: HTMLElement;
 
@@ -63,10 +85,11 @@ export class MMapDefaultRuler extends mappable.MMapComplexEntity<MMapDefaultRule
 
     private _onDeleteAllPoints = () => {
         setTimeout(() => {
-            this._ruler.update({points: []});
+            this.update({points: []});
         });
     };
     private _onFinish = () => {
-        this._ruler.update({editable: false});
+        this.update({editable: false});
+        this._props.onFinish?.();
     };
 }

@@ -1,6 +1,6 @@
 import {LngLat, MMapMarker, MMapMarkerProps} from '@mappable-world/mappable-types';
 import {IconColor, IconName, iconColors, icons} from '../../icons';
-import {MMapPopupMarkerProps, MMapPopupMarker} from '../MMapPopupMarker';
+import {MMapPopupMarker, MMapPopupMarkerProps} from '../MMapPopupMarker';
 import {MMapDefaultMarkerReactifyOverride} from './react';
 import {MMapDefaultMarkerVuefyOptions, MMapDefaultMarkerVuefyOverride} from './vue';
 
@@ -241,12 +241,12 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
         return hintContainer;
     }
 
-    private _onMarkerClick = (event: MouseEvent) => {
+    private _onMarkerClick: MMapDefaultMarkerProps['onClick'] = (...args) => {
         if (!this._popup) {
             return;
         }
         this._popup.update({show: !this._popup.isOpen});
-        this._props.onClick?.(event);
+        this._props.onClick?.(...args);
     };
 
     private _updateTheme() {

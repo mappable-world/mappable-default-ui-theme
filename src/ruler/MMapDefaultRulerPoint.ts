@@ -61,11 +61,13 @@ export class MMapDefaultRulerPoint extends mappable.MMapComplexEntity<MMapDefaul
 
         this._actionsElement = createMMapElement('mappable--default-ruler-point_actions');
         const deleteButton = document.createElement('button');
+        deleteButton.title = 'Remove all points';
         deleteButton.addEventListener('click', this._props.onDeleteAllPoints);
         deleteButton.innerHTML = deleteSVG;
         this._actionsElement.appendChild(deleteButton);
 
         const finishButton = document.createElement('button');
+        finishButton.title = 'Finish editing the ruler';
         finishButton.addEventListener('click', this._props.onFinish);
         finishButton.classList.add('mappable--default-ruler-point_actions__finish');
         const finishButtonIcon = document.createElement('span');

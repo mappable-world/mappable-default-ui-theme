@@ -6,7 +6,7 @@ main();
 async function main() {
     // Waiting for all api elements to be loaded
     await mappable.ready;
-    const {MMap, MMapDefaultSchemeLayer} = mappable;
+    const {MMap, MMapDefaultSchemeLayer, MMapControlButton, MMapControls} = mappable;
     const {MMapDefaultRuler} = await mappable.import('@mappable-world/mappable-default-ui-theme');
     // Initialize the map
     map = new MMap(
@@ -18,6 +18,27 @@ async function main() {
         [new MMapDefaultSchemeLayer({})]
     );
 
-    const ruler = new MMapDefaultRuler({type: 'ruler', points: RULER_COORDINATES});
+    let editable = true;
+
+    const ruler = new MMapDefaultRuler({
+        type: 'ruler',
+        editable,
+        points: RULER_COORDINATES,
+        onFinish: () => {
+            editable = false;
+        }
+    });
     map.addChild(ruler);
+
+    map.addChild(
+        new MMapControls({position: 'top right'}, [
+            new MMapControlButton({
+                text: 'Switch edit ruler',
+                onClick: () => {
+                    editable = !editable;
+                    ruler.update({editable});
+                }
+            })
+        ])
+    );
 }
