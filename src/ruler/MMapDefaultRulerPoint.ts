@@ -7,6 +7,8 @@ import finishSVG from './icons/icon_check.svg';
 import deleteSVG from './icons/icon_trash.svg';
 import {formatArea, formatDistance} from './utils';
 
+const HIDDEN_CLASS_NAME = 'mappable--default-ruler-point__hidden';
+
 export type MMapDefaultRulerPointProps = RenderPointArgs & {onDeleteAllPoints: () => void; onFinish: () => void};
 
 export class MMapDefaultRulerPoint extends mappable.MMapComplexEntity<MMapDefaultRulerPointProps> {
@@ -36,8 +38,8 @@ export class MMapDefaultRulerPoint extends mappable.MMapComplexEntity<MMapDefaul
 
         this._tooltipMarker = this._createTooltipMarker(state);
         this.addChild(this._tooltipMarker);
-        this._measurementsElement.classList.toggle('_hidden', !this._isLastPoint || state.totalCount === 1);
-        this._actionsElement.classList.toggle('_hidden', !this._isLastPoint || state.totalCount === 1);
+        this._measurementsElement.classList.toggle(HIDDEN_CLASS_NAME, !this._isLastPoint || state.totalCount === 1);
+        this._actionsElement.classList.toggle(HIDDEN_CLASS_NAME, !this._isLastPoint || state.totalCount === 1);
 
         this._listener = new mappable.MMapListener({
             onMouseEnter: (object) => {
@@ -131,13 +133,16 @@ export class MMapDefaultRulerPoint extends mappable.MMapComplexEntity<MMapDefaul
         }
 
         this._measurementsElement.classList.toggle(
-            '_hidden',
+            HIDDEN_CLASS_NAME,
             (!this._isHovered && !this._isLastPoint) || this._props.state.totalCount === 1
         );
         if (!this._props.state.editable) {
-            this._actionsElement.classList.add('_hidden');
+            this._actionsElement.classList.add(HIDDEN_CLASS_NAME);
         } else {
-            this._actionsElement.classList.toggle('_hidden', !this._isLastPoint || this._props.state.totalCount === 1);
+            this._actionsElement.classList.toggle(
+                HIDDEN_CLASS_NAME,
+                !this._isLastPoint || this._props.state.totalCount === 1
+            );
         }
     }
 
@@ -149,11 +154,11 @@ export class MMapDefaultRulerPoint extends mappable.MMapComplexEntity<MMapDefaul
 
     private _onMouseEnter() {
         this._isHovered = true;
-        this._measurementsElement.classList.remove('_hidden');
+        this._measurementsElement.classList.remove(HIDDEN_CLASS_NAME);
     }
     private _onMouseLeave() {
         this._isHovered = false;
-        this._measurementsElement.classList.toggle('_hidden', !this._isLastPoint);
+        this._measurementsElement.classList.toggle(HIDDEN_CLASS_NAME, !this._isLastPoint);
     }
 
     private _getMeasurementsLabel(measurements: Measurements): string {

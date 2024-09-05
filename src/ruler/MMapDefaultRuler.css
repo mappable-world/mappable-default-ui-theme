@@ -57,11 +57,11 @@
     transform: translate(10px, -50%);
 }
 
-.mappable--default-ruler-point_measurements._hidden {
+.mappable--default-ruler-point_measurements.mappable--default-ruler-point__hidden {
     display: none;
 }
 
-.mappable--default-ruler-point_actions._hidden {
+.mappable--default-ruler-point_actions.mappable--default-ruler-point__hidden {
     display: none;
 }
 
