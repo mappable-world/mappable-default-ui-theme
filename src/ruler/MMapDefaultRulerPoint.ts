@@ -18,6 +18,8 @@ export class MMapDefaultRulerPoint extends mappable.MMapComplexEntity<MMapDefaul
     private _tooltipElement!: HTMLElement;
     private _measurementsElement!: HTMLElement;
     private _actionsElement!: HTMLElement;
+    private _deleteButton: HTMLButtonElement;
+    private _finishButton: HTMLButtonElement;
     private _isHovered: boolean = false;
 
     private get _isLastPoint() {
@@ -60,23 +62,23 @@ export class MMapDefaultRulerPoint extends mappable.MMapComplexEntity<MMapDefaul
         this._tooltipElement.appendChild(this._measurementsElement);
 
         this._actionsElement = createMMapElement('mappable--default-ruler-point_actions');
-        const deleteButton = document.createElement('button');
-        deleteButton.title = 'Remove all points';
-        deleteButton.addEventListener('click', this._props.onDeleteAllPoints);
-        deleteButton.innerHTML = deleteSVG;
-        this._actionsElement.appendChild(deleteButton);
+        this._deleteButton = document.createElement('button');
+        this._deleteButton.title = 'Remove all points';
+        this._deleteButton.addEventListener('click', this._onDeleteAllHandler);
+        this._deleteButton.innerHTML = deleteSVG;
+        this._actionsElement.appendChild(this._deleteButton);
 
-        const finishButton = document.createElement('button');
-        finishButton.title = 'Finish editing the ruler';
-        finishButton.addEventListener('click', this._props.onFinish);
-        finishButton.classList.add('mappable--default-ruler-point_actions__finish');
+        this._finishButton = document.createElement('button');
+        this._finishButton.title = 'Finish editing the ruler';
+        this._finishButton.addEventListener('click', this._onFinishHandler);
+        this._finishButton.classList.add('mappable--default-ruler-point_actions__finish');
         const finishButtonIcon = document.createElement('span');
         finishButtonIcon.innerHTML = finishSVG;
-        finishButton.appendChild(finishButtonIcon);
+        this._finishButton.appendChild(finishButtonIcon);
         const finishButtonLabel = document.createElement('span');
         finishButtonLabel.textContent = 'Finish';
-        finishButton.appendChild(finishButtonLabel);
-        this._actionsElement.appendChild(finishButton);
+        this._finishButton.appendChild(finishButtonLabel);
+        this._actionsElement.appendChild(this._finishButton);
 
         this._tooltipElement.appendChild(this._actionsElement);
 
@@ -112,6 +114,11 @@ export class MMapDefaultRulerPoint extends mappable.MMapComplexEntity<MMapDefaul
 
     protected _onAttach(): void {
         this._watchContext(mappable.ThemeContext, this._updateTheme, {immediate: true});
+    }
+
+    protected _onDetach(): void {
+        this._deleteButton.removeEventListener('click', this._onDeleteAllHandler);
+        this._finishButton.removeEventListener('click', this._onFinishHandler);
     }
 
     protected _onUpdate(props: Partial<RenderPointArgs>): void {
@@ -157,4 +164,13 @@ export class MMapDefaultRulerPoint extends mappable.MMapComplexEntity<MMapDefaul
         }
         return '';
     }
+
+    private _onDeleteAllHandler = (event: MouseEvent) => {
+        this._props.onDeleteAllPoints();
+        event.stopPropagation();
+    };
+    private _onFinishHandler = (event: MouseEvent) => {
+        this._props.onFinish();
+        event.stopPropagation();
+    };
 }

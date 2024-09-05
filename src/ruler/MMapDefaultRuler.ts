@@ -84,9 +84,7 @@ export class MMapDefaultRuler extends mappable.MMapComplexEntity<MMapDefaultRule
     };
 
     private _onDeleteAllPoints = () => {
-        setTimeout(() => {
-            this.update({points: []});
-        });
+        this.update({points: []});
     };
     private _onFinish = () => {
         this.update({editable: false});
