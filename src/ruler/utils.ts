@@ -1,11 +1,15 @@
+import i18next from 'i18next';
+
 export function formatDistance(distance: number): string {
-    return distance > 900 ? `${roundDistance(distance / 1000)} km` : `${roundDistance(distance)} m`;
+    return distance > 900
+        ? i18next.t('distance.kilometers', {value: roundDistance(distance / 1000)})
+        : i18next.t('distance.meters', {value: roundDistance(distance)});
 }
 
 export function formatArea(area: number): string {
     return area > 900_000
-        ? `${splitNumber(roundDistance(area / 1_000_000))} km²`
-        : `${splitNumber(roundDistance(area))} m²`;
+        ? i18next.t('area.squareKilometers', {value: roundDistance(area / 1_000_000)})
+        : i18next.t('area.squareMeters', {value: roundDistance(area)});
 }
 
 function roundDistance(distance: number): number {
@@ -14,8 +18,4 @@ function roundDistance(distance: number): number {
     }
     const factor = Math.pow(10, distance > 10 ? 1 : 2);
     return Math.round(distance * factor) / factor;
-}
-
-function splitNumber(value: number): string {
-    return value.toString().replace(/(\d)(?=(\d{3})+$)/g, '$1 ');
 }
