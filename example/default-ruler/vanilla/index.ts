@@ -1,3 +1,4 @@
+import {RulerType} from '@mappable-world/mappable-types/modules/ruler';
 import {LOCATION, RULER_COORDINATES} from '../common';
 
 window.map = null;
@@ -19,9 +20,10 @@ async function main() {
     );
 
     let editable = true;
+    let rulerType: RulerType = 'ruler';
 
     const ruler = new MMapDefaultRuler({
-        type: 'ruler',
+        type: rulerType,
         editable,
         points: RULER_COORDINATES,
         onFinish: () => {
@@ -37,6 +39,17 @@ async function main() {
                 onClick: () => {
                     editable = !editable;
                     ruler.update({editable});
+                }
+            })
+        ])
+    );
+    map.addChild(
+        new MMapControls({position: 'top left'}, [
+            new MMapControlButton({
+                text: 'Switch ruler type',
+                onClick: () => {
+                    rulerType = rulerType === 'ruler' ? 'planimeter' : 'ruler';
+                    ruler.update({type: rulerType});
                 }
             })
         ])

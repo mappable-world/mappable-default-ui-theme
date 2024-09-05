@@ -1,3 +1,4 @@
+import {RulerType} from '@mappable-world/mappable-types/modules/ruler';
 import {LOCATION, RULER_COORDINATES} from '../common';
 
 window.map = null;
@@ -17,22 +18,29 @@ async function main() {
                 window.map = ref?.entity;
             };
             const editable = Vue.ref(true);
+            const rulerType = Vue.ref<RulerType>('ruler');
 
             const switchEditable = () => {
                 editable.value = !editable.value;
+            };
+            const switchType = () => {
+                rulerType.value = rulerType.value === 'ruler' ? 'planimeter' : 'ruler';
             };
 
             const onFinish = () => {
                 editable.value = false;
             };
-            return {LOCATION, RULER_COORDINATES, refMap, editable, switchEditable, onFinish};
+            return {LOCATION, RULER_COORDINATES, refMap, editable, rulerType, switchEditable, switchType, onFinish};
         },
         template: `
             <MMap :location="LOCATION" :showScaleInCopyrights="true" :ref="refMap">
                 <MMapDefaultSchemeLayer />
-                <MMapDefaultRuler type="ruler" :points="RULER_COORDINATES" :editable="editable" :onFinish="onFinish" />
+                <MMapDefaultRuler :type="rulerType" :points="RULER_COORDINATES" :editable="editable" :onFinish="onFinish" />
                 <MMapControls position="top right">
                     <MMapControlButton @click="switchEditable" text="Switch edit ruler" />
+                </MMapControls>
+                <MMapControls position="top left">
+                    <MMapControlButton @click="switchType" text="Switch ruler type" />
                 </MMapControls>
             </MMap>`
     });

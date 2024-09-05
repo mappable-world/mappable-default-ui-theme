@@ -1,3 +1,4 @@
+import {RulerType} from '@mappable-world/mappable-types/modules/ruler';
 import {LOCATION, RULER_COORDINATES} from '../common';
 
 window.map = null;
@@ -15,9 +16,14 @@ async function main() {
     function App() {
         const [location] = useState(LOCATION);
         const [rulerCoordinates] = useState(RULER_COORDINATES);
+        const [rulerType, setRulerType] = useState<RulerType>('ruler');
         const [editable, setEditable] = useState(true);
 
         const switchEditable = useCallback(() => setEditable((editable) => !editable), []);
+        const switchType = useCallback(
+            () => setRulerType((rulerType) => (rulerType === 'ruler' ? 'planimeter' : 'ruler')),
+            []
+        );
         const onFinish = useCallback(() => setEditable(false), []);
 
         return (
@@ -25,10 +31,13 @@ async function main() {
             <MMap location={location} showScaleInCopyrights={true} ref={(x) => (map = x)}>
                 {/* Add a map scheme layer */}
                 <MMapDefaultSchemeLayer />
-                <MMapDefaultRuler type="ruler" points={rulerCoordinates} editable={editable} onFinish={onFinish} />
+                <MMapDefaultRuler type={rulerType} points={rulerCoordinates} editable={editable} onFinish={onFinish} />
 
                 <MMapControls position="top right">
                     <MMapControlButton onClick={switchEditable} text="Switch edit ruler" />
+                </MMapControls>
+                <MMapControls position="top left">
+                    <MMapControlButton onClick={switchType} text="Switch ruler type" />
                 </MMapControls>
             </MMap>
         );
