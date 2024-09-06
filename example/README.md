@@ -99,6 +99,24 @@ For `MMapPopupMarker`:
 
 There is a [live example](./popups-on-map/vanilla/index.html) for `MMapPopupMarker` to demonstrate the possibilities of its operation.
 
+## Default ruler
+
+The default MMapDefaultRuler is a ready-made implementation of the MMapRuler module. It has ready-made visual styles and controls,
+including double-clicking to delete a point and a steering wheel with two buttons: Finish for finishing editing and Delete for deleting all points.
+
+| Props name    | Description                                                                                             |
+| ------------- | ------------------------------------------------------------------------------------------------------- |
+| onFinish      | Ruler editing finish callback                                                                           |
+| points        | Ruler points coordinates array                                                                          |
+| zIndex        | Ruler layer zIndex                                                                                      |
+| editable      | Flag that the ruler can be edited                                                                       |
+| onUpdate      | Callback function, when updating the ruler                                                              |
+| onUpdateEnd   | Callback function when the ruler update ends                                                            |
+| onUpdateStart | Callback function when the ruler update starts                                                          |
+| source        | Name for the ruler's data source                                                                        |
+| type          | Type of ruler. `ruler` – line that measures the distance. `planimeter` - polygon that measures the area |
+|               |
+
 ## Examples
 
 - [Add controls to the map](./controls/vanilla/index.html)
@@ -111,3 +129,5 @@ There is a [live example](./popups-on-map/vanilla/index.html) for `MMapPopupMark
   ([source code](https://github.com/mappable-world/mappable-default-ui-theme/tree/main/example/popups-on-map))
 - [Adding a search control to the map](./search-control/vanilla/index.html)
   ([source code](https://github.com/mappable-world/mappable-default-ui-theme/tree/main/example/search-control))
+- [Adding a default ruler to the map](./default-ruler/vanilla/index.html)
+  ([source code](https://github.com/mappable-world/mappable-default-ui-theme/tree/main/example/default-ruler))
