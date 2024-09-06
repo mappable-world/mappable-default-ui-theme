@@ -28,17 +28,19 @@ class MMapSuggest extends mappable.MMapComplexEntity<MMapSuggestProps> {
     private _rootElement?: HTMLElement;
     private _unwatchThemeContext?: () => void;
     private _unwatchControlContext?: () => void;
+    private _searchInputValue?: string;
 
     public get activeSuggest() {
-        return this._getSuggestElements().find((element) => element.classList.contains(ACTIVE_CLASS));
+        return this._getSuggestElements().find((element) => element?.classList.contains(ACTIVE_CLASS));
     }
 
     private _updateSuggest(props: Partial<MMapSuggestProps>) {
-        if (props.searchInputValue) {
+        if (props.searchInputValue !== undefined && props.searchInputValue !== this._searchInputValue) {
+            this._searchInputValue = props.searchInputValue;
             this._updateSuggestList(props.searchInputValue);
         }
 
-        if (props.suggestNavigationAction) {
+        if (props.suggestNavigationAction !== undefined) {
             this._updateActiveSuggest(props.suggestNavigationAction);
         }
     }
@@ -147,7 +149,8 @@ class MMapSuggest extends mappable.MMapComplexEntity<MMapSuggestProps> {
 
     protected override _onAttach(): void {
         this._rootElement = document.createElement('mappable');
-        this._rootElement.classList.add(SUGGEST_CLASS, HIDE_CLASS);
+        this._rootElement.classList.add(SUGGEST_CLASS);
+        this._rootElement?.classList.toggle(HIDE_CLASS, !this.children.length);
         this._rootElement.addEventListener('mouseover', this._onMouseOverHandler);
         this._rootElement.addEventListener('mouseout', this._onMouseOutHandler);
 
@@ -158,9 +161,7 @@ class MMapSuggest extends mappable.MMapComplexEntity<MMapSuggestProps> {
         this._unwatchThemeContext = this._watchContext(
             mappable.ThemeContext,
             () => this._updateTheme(this._rootElement),
-            {
-                immediate: true
-            }
+            {immediate: true}
         );
 
         this._unwatchControlContext = this._watchContext(
@@ -175,8 +176,6 @@ class MMapSuggest extends mappable.MMapComplexEntity<MMapSuggestProps> {
     }
 
     protected override _onDetach(): void {
-        this._removeSuggestItems();
-
         this._detachDom?.();
         this._detachDom = undefined;
 
