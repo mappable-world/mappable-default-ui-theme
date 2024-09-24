@@ -92,7 +92,7 @@ class MMapSuggest extends mappable.MMapComplexEntity<MMapSuggestProps> {
 
     private _addSuggestItems(suggest: SuggestResponse, onSuggestClick: MMapSuggestProps['onSuggestClick']) {
         suggest.forEach((suggestItem) => {
-            const searchParams = {uri: suggestItem.uri, text: suggestItem.title.text};
+            const searchParams = {uri: suggestItem.uri, text: suggestItem.value};
 
             this.addChild(
                 new MMapSuggestItem({
