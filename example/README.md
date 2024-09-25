@@ -129,5 +129,7 @@ including double-clicking to delete a point and a steering wheel with two button
   ([source code](https://github.com/mappable-world/mappable-default-ui-theme/tree/main/example/popups-on-map))
 - [Adding a search control to the map](./search-control/vanilla/index.html)
   ([source code](https://github.com/mappable-world/mappable-default-ui-theme/tree/main/example/search-control))
+- [Adding a route control to the map](./route-control/vanilla/index.html)
+  ([source code](https://github.com/mappable-world/mappable-default-ui-theme/tree/main/example/route-control))
 - [Adding a default ruler to the map](./default-ruler/vanilla/index.html)
   ([source code](https://github.com/mappable-world/mappable-default-ui-theme/tree/main/example/default-ruler))

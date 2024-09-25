@@ -139,7 +139,8 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
         this._marker = new mappable.MMapMarker(
             {
                 ...this._props,
-                onClick: this._onMarkerClick
+                onClick: this._onMarkerClick,
+                onDragMove: this._onMarkerDragMove
             },
             this._markerElement
         );
@@ -216,6 +217,7 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
         return new MMapPopupMarker({
             ...this._props,
             ...this._props.popup,
+            draggable: false,
             show: this._props.popup.show ?? false,
             offset: this._props.popup.offset ?? this._getPopupOffset(),
             zIndex: 1000
@@ -242,11 +244,17 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
     }
 
     private _onMarkerClick: MMapDefaultMarkerProps['onClick'] = (...args) => {
-        if (!this._popup) {
-            return;
+        if (this._popup) {
+            this._popup.update({show: this._popup.isOpen});
         }
-        this._popup.update({show: !this._popup.isOpen});
         this._props.onClick?.(...args);
+    };
+
+    private _onMarkerDragMove: MMapDefaultMarkerProps['onDragMove'] = (coordinates) => {
+        if (this._popup) {
+            this._popup.update({coordinates});
+        }
+        this._props.onDragMove?.(coordinates);
     };
 
     private _updateTheme() {
