@@ -16,16 +16,20 @@ The package is located in the `dist` folder:
 - `dist/esm` es6 modules for direct connection in your project
 - `dist/index.js` Mappable JS Module
 
-Recommended use `@mappable-world/mappable-default-ui-theme` as usual npm package:
+Recommended use `@mappable-world/mappable-default-ui-theme` as usual npm package.
+
+### Usage with npm
+
+Install `@mappable-world/mappable-default-ui-theme` package from npm:
 
 ```sh
 npm install @mappable-world/mappable-default-ui-theme
 ```
 
-and dynamic import
+The JS API is loaded dynamically, so the package must be used after the main JS API has loaded:
 
 ```js
-await mappable.ready;
+await mappable.ready; // waiting for the main JS API to load.
 
 // ...
 
@@ -34,6 +38,13 @@ const {MMapDefaultMarker} = await import('@mappable-world/mappable-default-ui-th
 // ...
 
 map.addChild(new MMapDefaultMarker(props));
+```
+
+You also need to import css styles into your project:
+
+```css
+/* index.css */
+@import '@mappable-world/mappable-default-ui-theme/dist/esm/index.css';
 ```
 
 ### Usage without npm
