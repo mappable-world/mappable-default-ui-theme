@@ -13,7 +13,7 @@ import smallPoiSVG from './backgrounds/small-poi.svg';
 
 import './index.css';
 
-const GLYPH_COLOR = '#FFFFFF';
+const GLYPH_DEFAULT_COLOR = '#FFFFFF';
 
 const MARKER_BASE_CLASS = 'mappable--default-marker-point';
 const MARKER_BASE_DARK_CLASS = 'mappable--default-marker-point_dark';
@@ -41,7 +41,14 @@ const MICRO_SIZE_MARKER_WIDTH = 14;
 
 const DISTANCE_BETWEEN_POPUP_AND_MARKER = 8;
 
-export type ThemesColor = {day: string; night: string};
+export type ThemesColor = {
+    day: string;
+    night: string;
+    iconDay?: string;
+    iconNight?: string;
+    strokeDay?: string;
+    strokeNight?: string;
+};
 export type MarkerColorProps = IconColor | ThemesColor;
 export type MarkerSizeProps = 'normal' | 'small' | 'micro';
 export type MarkerPopupProps = Omit<MMapPopupMarkerProps, keyof MMapMarkerProps>;
@@ -56,7 +63,7 @@ export type MMapDefaultMarkerProps = MMapMarkerProps & {
     popup?: MarkerPopupProps;
 };
 
-const defaultProps = Object.freeze({color: 'darkgray', size: 'small', staticHint: true});
+const defaultProps = Object.freeze({color: 'black', size: 'small', staticHint: true});
 type DefaultProps = typeof defaultProps;
 
 type BackgroundAndIcon = {background: HTMLElement; stroke: HTMLElement; icon: HTMLElement};
@@ -261,7 +268,14 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
         const themeCtx = this._consumeContext(mappable.ThemeContext);
         const theme = themeCtx.theme;
 
-        const strokeColor = GLYPH_COLOR;
+        const strokeColor =
+            theme === 'light'
+                ? this._color.strokeDay ?? GLYPH_DEFAULT_COLOR
+                : this._color.strokeNight ?? GLYPH_DEFAULT_COLOR;
+        const iconColor =
+            theme === 'light'
+                ? this._color.iconDay ?? GLYPH_DEFAULT_COLOR
+                : this._color.iconNight ?? GLYPH_DEFAULT_COLOR;
         const backgroundColor = theme === 'light' ? this._color.day : this._color.night;
         this._markerElement.classList.toggle(MARKER_BASE_DARK_CLASS, theme === 'dark');
 
@@ -269,12 +283,12 @@ export class MMapDefaultMarker extends mappable.MMapComplexEntity<MMapDefaultMar
             case 'normal':
                 this._background.style.color = backgroundColor;
                 this._stroke.style.color = strokeColor;
-                this._icon.style.color = strokeColor;
+                this._icon.style.color = iconColor;
                 break;
             case 'small':
                 this._background.style.color = backgroundColor;
                 this._stroke.style.color = strokeColor;
-                this._icon.style.color = strokeColor;
+                this._icon.style.color = iconColor;
                 break;
             case 'micro':
                 this._background.style.color = backgroundColor;
