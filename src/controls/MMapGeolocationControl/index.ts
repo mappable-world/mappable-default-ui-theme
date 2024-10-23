@@ -17,6 +17,8 @@ type MMapGeolocationControlProps = {
     easing?: EasingFunctionDescription;
     /** Map location animate duration */
     duration?: number;
+    /** Map zoom after geolocate position */
+    zoom?: number;
 };
 
 const defaultProps = Object.freeze({duration: 500});
@@ -28,7 +30,8 @@ const MMapGeolocationControlVuefyOptions: CustomVuefyOptions<MMapGeolocationCont
         onGeolocatePosition: Function as TVue.PropType<MMapGeolocationControlProps['onGeolocatePosition']>,
         source: String,
         easing: [String, Object, Function] as TVue.PropType<EasingFunctionDescription>,
-        duration: {type: Number, default: defaultProps.duration}
+        duration: {type: Number, default: defaultProps.duration},
+        zoom: {type: Number}
     }
 };
 
@@ -88,6 +91,7 @@ class MMapGeolocationControl extends mappable.MMapGroupEntity<MMapGeolocationCon
         map?.update({
             location: {
                 center: this._position,
+                zoom: this._props.zoom,
                 duration: this._props.duration,
                 easing: this._props.easing
             }

@@ -29,7 +29,7 @@ async function main() {
                 <MMapDefaultFeaturesLayer />
                 <MMapControls position="left">
                     <MMapZoomControl />
-                    <MMapGeolocationControl />
+                    <MMapGeolocationControl zoom={11} />
                 </MMapControls>
                 <MMapControls position="bottom">
                     <MMapZoomControl />

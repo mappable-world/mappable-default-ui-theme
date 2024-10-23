@@ -15,7 +15,9 @@ async function main() {
         [new MMapDefaultSchemeLayer({}), new MMapDefaultFeaturesLayer({})]
     );
 
-    map.addChild(new MMapControls({position: 'left'}, [new MMapZoomControl({}), new MMapGeolocationControl({})]));
+    map.addChild(
+        new MMapControls({position: 'left'}, [new MMapZoomControl({}), new MMapGeolocationControl({zoom: 11})])
+    );
     map.addChild(new MMapControls({position: 'bottom'}, [new MMapZoomControl({})]));
     map.addChild(
         new MMapControls({position: 'right'}, [
