@@ -1,7 +1,8 @@
 import type {EasingFunctionDescription, MMapControl, MMapListener} from '@mappable-world/mappable-types';
 import {MMapCameraRequest} from '@mappable-world/mappable-types/imperative/MMap';
+import type {CustomVuefyOptions} from '@mappable-world/mappable-types/modules/vuefy';
+import type TVue from '@vue/runtime-core';
 import {CLICK_TOLERANCE_PX, Position, radToDeg, toggleTilt} from '../utils/angle-utils';
-import {MMapTiltControlVuefyOptions} from './vue';
 
 import './index.css';
 
@@ -16,6 +17,13 @@ export type MMapTiltControlProps = {
 };
 const defaultProps = Object.freeze({duration: 200});
 type DefaultProps = typeof defaultProps;
+
+export const MMapTiltControlVuefyOptions: CustomVuefyOptions<MMapTiltControl> = {
+    props: {
+        easing: [Function, String, Object] as TVue.PropType<EasingFunctionDescription>,
+        duration: {type: Number, default: defaultProps.duration}
+    }
+};
 
 /**
  * Display tilt control on a map.

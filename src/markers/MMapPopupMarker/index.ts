@@ -1,4 +1,5 @@
 import {LngLat, MMapMarker, MMapMarkerProps} from '@mappable-world/mappable-types';
+import {DefaultProps, defaultProps} from './props';
 import {MMapPopupMarkerReactifyOverride} from './react';
 import {MMapPopupMarkerVuefyOptions, MMapPopupMarkerVuefyOverride} from './vue';
 
@@ -29,9 +30,6 @@ export type MMapPopupMarkerProps = MMapMarkerProps & {
     /** Popup opening callback */
     onOpen?: () => void;
 };
-
-const defaultProps = Object.freeze({position: 'top', offset: 0, show: true});
-type DefaultProps = typeof defaultProps;
 
 /**
  * `MMapPopupMarker` is a popup with customized content.

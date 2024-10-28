@@ -2,6 +2,6 @@ export {MMapGeolocationControl, MMapGeolocationControlProps} from './MMapGeoloca
 export {MMapRotateControl, MMapRotateControlProps} from './MMapRotateControl';
 export {MMapRotateTiltControl, MMapRotateTiltControlProps} from './MMapRotateTiltControl';
 export * from './MMapRouteControl';
-export {MMapSearchControl, MMapSearchControlProps} from './MMapSearchControl';
+export * from './MMapSearchControl';
 export {MMapTiltControl, MMapTiltControlProps} from './MMapTiltControl';
 export {MMapZoomControl, MMapZoomControlProps} from './MMapZoomControl';

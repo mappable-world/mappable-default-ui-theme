@@ -1,7 +1,8 @@
 import type {EasingFunctionDescription, MMapControl} from '@mappable-world/mappable-types';
+import type {CustomVuefyOptions} from '@mappable-world/mappable-types/modules/vuefy';
+import type TVue from '@vue/runtime-core';
 import {MMapRotateControl} from './MMapRotateControl';
 import {MMapTiltControl} from './MMapTiltControl';
-import {MMapRotateTiltControlVuefyOptions} from './vue';
 
 /**
  * MMapRotateTiltControl props
@@ -14,6 +15,13 @@ export type MMapRotateTiltControlProps = {
 };
 const defaultProps = Object.freeze({duration: 200});
 type DefaultProps = typeof defaultProps;
+
+export const MMapRotateTiltControlVuefyOptions: CustomVuefyOptions<MMapRotateTiltControl> = {
+    props: {
+        easing: [Function, String, Object] as TVue.PropType<EasingFunctionDescription>,
+        duration: {type: Number, default: defaultProps.duration}
+    }
+};
 
 /**
  * Display tilt and rotation controls on a map.

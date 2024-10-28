@@ -3,6 +3,7 @@ import {CustomVuefyFn, CustomVuefyOptions} from '@mappable-world/mappable-types/
 import type TVue from '@vue/runtime-core';
 import {MMapDefaultMarker, MMapDefaultMarkerProps, MarkerColorProps, MarkerPopupProps, MarkerSizeProps} from '../';
 import {IconName} from '../../../icons';
+import {defaultProps} from '../props';
 
 type VuefyMarkerPopup = Omit<MarkerPopupProps, 'content'>;
 
@@ -13,12 +14,12 @@ export const MMapDefaultMarkerVuefyOptions: CustomVuefyOptions<
     props: {
         coordinates: {type: Object, required: true},
         source: String,
-        zIndex: {type: Number, default: 0},
+        zIndex: {type: Number, default: undefined},
         properties: Object,
         id: String,
         disableRoundCoordinates: {type: Boolean, default: undefined},
-        hideOutsideViewport: {type: [Object, Boolean], default: false},
-        draggable: {type: Boolean, default: false},
+        hideOutsideViewport: {type: [Object, Boolean], default: undefined},
+        draggable: {type: Boolean, default: undefined},
         mapFollowsOnDrag: {type: [Boolean, Object]},
         onDragStart: Function as TVue.PropType<MMapMarkerEventHandler>,
         onDragEnd: Function as TVue.PropType<MMapMarkerEventHandler>,
@@ -29,11 +30,11 @@ export const MMapDefaultMarkerVuefyOptions: CustomVuefyOptions<
         onClick: Function as TVue.PropType<MMapFeatureProps['onClick']>,
         onFastClick: Function as TVue.PropType<MMapFeatureProps['onFastClick']>,
         iconName: {type: String as TVue.PropType<IconName>},
-        color: {type: [Object, String] as TVue.PropType<MarkerColorProps>, default: 'darkgray'},
-        size: {type: String as TVue.PropType<MarkerSizeProps>, default: 'small'},
+        color: {type: [Object, String] as TVue.PropType<MarkerColorProps>, default: defaultProps.color},
+        size: {type: String as TVue.PropType<MarkerSizeProps>, default: defaultProps.size},
         title: {type: String},
         subtitle: {type: String},
-        staticHint: {type: Boolean, default: true},
+        staticHint: {type: Boolean, default: defaultProps.staticHint},
         popup: {type: Object as TVue.PropType<VuefyMarkerPopup>}
     }
 };
