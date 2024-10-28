@@ -14,7 +14,7 @@ export const MMapDefaultMarkerVuefyOptions: CustomVuefyOptions<
     props: {
         coordinates: {type: Object, required: true},
         source: String,
-        zIndex: {type: Number, default: 0},
+        zIndex: {type: Number, default: undefined},
         properties: Object,
         id: String,
         disableRoundCoordinates: {type: Boolean, default: undefined},
