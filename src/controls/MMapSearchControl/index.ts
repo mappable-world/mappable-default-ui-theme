@@ -1,8 +1,10 @@
 import type {DomDetach} from '@mappable-world/mappable-types/imperative/DomContext';
-import type {MMapControl} from '@mappable-world/mappable-types/imperative/MMapControl';
 import type {MMap} from '@mappable-world/mappable-types/imperative/MMap';
+import type {MMapControl} from '@mappable-world/mappable-types/imperative/MMapControl';
 import type {SearchResponse} from '@mappable-world/mappable-types/imperative/search';
 import type {SuggestResponse} from '@mappable-world/mappable-types/imperative/suggest';
+import {CustomVuefyOptions} from '@mappable-world/mappable-types/modules/vuefy';
+import type TVue from '@vue/runtime-core';
 import {debounce} from 'lodash';
 import {MMapSuggest} from './MMapSuggest';
 
@@ -29,19 +31,33 @@ export type CustomSearch = {
     map: MMap;
 };
 
+export type SearchCallback = (params: CustomSearch) => Promise<SearchResponse> | SearchResponse;
+export type SuggestCallback = (params: CustomSuggest) => Promise<SuggestResponse> | SuggestResponse;
+export type SearchResultCallback = (result: SearchResponse) => void;
+
 type MMapSearchControlProps = {
     placeholder?: string;
-    search?: ({params, map}: CustomSearch) => Promise<SearchResponse> | SearchResponse;
-    suggest?: ({text, map}: CustomSuggest) => Promise<SuggestResponse> | SuggestResponse;
-    searchResult: (result: SearchResponse) => void;
+    search?: SearchCallback;
+    suggest?: SuggestCallback;
+    searchResult: SearchResultCallback;
 };
 
 const defaultProps = Object.freeze({
     placeholder: 'Enter an address'
 });
 
+const MMapSearchControlVuefyOptions: CustomVuefyOptions<MMapSearchControl> = {
+    props: {
+        placeholder: {type: String, default: defaultProps.placeholder},
+        search: {type: Function as TVue.PropType<SearchCallback>},
+        suggest: {type: Function as TVue.PropType<SuggestCallback>},
+        searchResult: {type: Function as TVue.PropType<SearchResultCallback>}
+    }
+};
+
 class MMapSearchCommonControl extends mappable.MMapComplexEntity<MMapSearchControlProps, typeof defaultProps> {
     static defaultProps = defaultProps;
+    static [mappable.optionsKeyVuefy] = MMapSearchControlVuefyOptions;
 
     private _detachDom?: DomDetach;
     private _rootElement?: HTMLElement;

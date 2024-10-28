@@ -1,7 +1,8 @@
 import type {EasingFunctionDescription, MMapControl, MMapListener} from '@mappable-world/mappable-types';
 import {MMapCameraRequest} from '@mappable-world/mappable-types/imperative/MMap';
+import type {CustomVuefyOptions} from '@mappable-world/mappable-types/modules/vuefy';
+import type TVue from '@vue/runtime-core';
 import {Position, getDeltaAzimuth, toggleRotate} from '../utils/angle-utils';
-import {MMapRotateControlVuefyOptions} from './vue';
 
 import './index.css';
 
@@ -16,6 +17,13 @@ export type MMapRotateControlProps = {
 };
 const defaultProps = Object.freeze({duration: 200});
 type DefaultProps = typeof defaultProps;
+
+export const MMapRotateControlVuefyOptions: CustomVuefyOptions<MMapRotateControl> = {
+    props: {
+        easing: [Function, String, Object] as TVue.PropType<EasingFunctionDescription>,
+        duration: {type: Number, default: defaultProps.duration}
+    }
+};
 
 /**
  * Display rotate control on a map.
