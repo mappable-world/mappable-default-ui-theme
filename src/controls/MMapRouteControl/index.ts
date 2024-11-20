@@ -24,6 +24,7 @@ import {
 } from './helpers';
 import './index.css';
 import {formatDistance, formatDuration} from './utils';
+import {areFuzzyEqual} from '../../common/utils';
 
 export type WaypointsArray = Array<SelectWaypointArgs['feature'] | null>;
 
@@ -204,8 +205,12 @@ class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControl
             this._waypointInputToElement.update({suggest: diffProps.suggest});
         }
         if (diffProps.waypoints !== undefined) {
-            this._waypointInputFromElement.update({waypoint: diffProps.waypoints[0]});
-            this._waypointInputToElement.update({waypoint: diffProps.waypoints[1]});
+            if (!areFuzzyEqual(this._waypoints[0].geometry.coordinates, diffProps.waypoints[0])) {
+                this._waypointInputFromElement.update({waypoint: diffProps.waypoints[0], value: undefined});
+            }
+            if (!areFuzzyEqual(this._waypoints[1].geometry.coordinates, diffProps.waypoints[1])) {
+                this._waypointInputToElement.update({waypoint: diffProps.waypoints[1], value: undefined});
+            }
         }
         if (diffProps.geolocationTextInput !== undefined) {
             this._waypointInputFromElement.update({geolocationTextInput: diffProps.geolocationTextInput});
@@ -278,8 +283,16 @@ class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControl
 
     private _changeOrder = () => {
         const [fromOld, toOld] = this._waypoints;
-        this._waypointInputToElement.update({waypoint: fromOld === null ? null : fromOld.geometry.coordinates});
-        this._waypointInputFromElement.update({waypoint: toOld === null ? null : toOld.geometry.coordinates});
+        const fromValue = this._waypointInputFromElement.getValue();
+        const toValue = this._waypointInputToElement.getValue();
+        this._waypointInputToElement.update({
+            waypoint: fromOld === null ? null : fromOld.geometry.coordinates,
+            value: !fromValue ? null : fromValue
+        });
+        this._waypointInputFromElement.update({
+            waypoint: toOld === null ? null : toOld.geometry.coordinates,
+            value: !toValue ? null : toValue
+        });
     };
 
     private _onUpdateWaypoints(feature: Feature | null, index: number) {
