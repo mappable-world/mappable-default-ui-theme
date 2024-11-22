@@ -216,7 +216,10 @@ export class MMapWaypointInput extends mappable.MMapComplexEntity<MMapWaypointIn
 
     private _onFocusInput = (_event: FocusEvent) => {
         this._isInputFocused = true;
-        this._suggestComponent.update({suggestNavigationAction: undefined});
+        this._suggestComponent.update({
+            searchInputValue: this.getValue(),
+            suggestNavigationAction: undefined
+        });
         this._addDirectChild(this._suggestComponent);
         this._updateIndicatorStatus('focus');
     };

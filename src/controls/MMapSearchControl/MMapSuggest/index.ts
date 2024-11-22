@@ -46,11 +46,11 @@ class MMapSuggest extends mappable.MMapComplexEntity<MMapSuggestProps> {
     }
 
     private _updateSuggestList = async (searchInputValue: MMapSuggestProps['searchInputValue']) => {
+        this._removeSuggestItems();
+
         const suggestResult =
             (await this._props.suggest?.({text: searchInputValue, map: this.root})) ??
             (await mappable.suggest({text: searchInputValue}));
-
-        this._removeSuggestItems();
 
         this._addSuggestItems(suggestResult, this._props.onSuggestClick);
 
