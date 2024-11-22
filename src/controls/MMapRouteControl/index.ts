@@ -254,6 +254,7 @@ class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControl
                 if (result === null) {
                     this._waypoints[waypointIndex] = null;
                     this._onUpdateWaypoints(null, waypointIndex);
+                    this._clearInfo();
                     return;
                 }
 
@@ -275,11 +276,15 @@ class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControl
     private _clearAll = () => {
         this._waypointInputFromElement.update({waypoint: null});
         this._waypointInputToElement.update({waypoint: null});
+        this._clearInfo();
+    };
+
+    private _clearInfo = () => {
         this._routeInfoElement.replaceChildren();
         if (this._routeInfoElement.parentElement === this._rootElement) {
             this._rootElement.removeChild(this._routeInfoElement);
         }
-    };
+    }
 
     private _changeOrder = () => {
         const [fromOld, toOld] = this._waypoints;
@@ -336,7 +341,6 @@ class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControl
 
         this._routeInfoElement.classList.remove('mappable--route-control_info__error');
         this._routeInfoElement.replaceChildren(createLoadingSpinner());
-
         try {
             const response = (await this._props.route?.({params, map: this.root})) ?? (await mappable.route(params));
             const route = response[0].toRoute();
@@ -377,7 +381,6 @@ class MMapCommonRouteControl extends mappable.MMapComplexEntity<MMapRouteControl
         });
         const formattedLength = formatDistance(totalLength);
         const formattedDuration = formatDuration(totalDuration);
-
         return [
             createInfoElementComponent('time', formattedDuration),
             createInfoElementComponent('distance', formattedLength)
